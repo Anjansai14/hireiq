@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><script src="data.js"></script></helmet>
+<div onClick="{{ cancel }}" style="position:fixed;inset:0;background:rgba(16,36,43,.45);display:grid;place-items:center;z-index:70;padding:24px">
+  <form onClick="{{ stop }}" onSubmit="{{ createFilm }}" style="width:480px;max-width:100%;background:#fff;border-radius:16px;box-shadow:var(--e-3);padding:24px;display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;gap:12px;align-items:flex-start"><div style="flex:1"><b style="font-size:18px;display:block">Add a film</b><span style="font-size:13px;color:var(--ink-600)">You can add files and context on the next page.</span></div><button type="button" onClick="{{ cancel }}" aria-label="Close" style="width:32px;height:32px;border:0;border-radius:6px;background:none;cursor:pointer;color:var(--ink-500);display:grid;place-items:center" style-hover="background:var(--ink-100)"><svg width="16" height="16"><use href="#i-x"></use></svg></button></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px;font-weight:600">Movie name</label><input autoFocus="{{ true }}" value="{{ title }}" onChange="{{ setTitle }}" placeholder="e.g. Kaala Bhairava" style="height:40px;padding:0 12px;border:1px solid {{ titleBorder }};border-radius:8px"><sc-if value="{{ titleErr }}"><span style="font-size:12px;color:var(--danger-600)">{{ titleErr }}</span></sc-if></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px">
+      <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px;font-weight:600">Movie language</label><select value="{{ lang }}" onChange="{{ setLang }}" style="height:40px;padding:0 10px;border:1px solid var(--ink-300);border-radius:8px;background:#fff"><option>Telugu</option><option>Hindi</option><option>Kannada</option><option>Tamil</option><option>Malayalam</option></select></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px;font-weight:600">Release date</label><input type="date" value="{{ release }}" onChange="{{ setRelease }}" style="height:40px;padding:0 10px;border:1px solid var(--ink-300);border-radius:8px"></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end"><button type="button" onClick="{{ cancel }}" style="height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--ink-300);background:#fff;font-weight:600;cursor:pointer" style-hover="background:var(--ink-50)">Cancel</button><button type="submit" style="height:40px;padding:0 16px;border-radius:8px;border:0;background:var(--teal-700);color:#fff;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px" style-hover="background:var(--teal-800)"><sc-if value="{{ busy }}"><span style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:spin .8s linear infinite"></span></sc-if>Create film</button></div>
+  </form>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { title: '', lang: 'Telugu', release: '', titleErr: '', busy: false };
+  componentWillUnmount() { clearTimeout(this.t); }
+  renderVals() {
+    if (!window.IQ) return {};
+    const st = this.state, close = () => this.props.onClose && this.props.onClose();
+    return {
+      title: st.title, lang: st.lang, release: st.release, titleErr: st.titleErr, busy: st.busy, titleBorder: st.titleErr ? 'var(--danger-600)' : 'var(--ink-300)',
+      setTitle: e => this.setState({ title: e.target.value, titleErr: '' }), setLang: e => this.setState({ lang: e.target.value }), setRelease: e => this.setState({ release: e.target.value }),
+      cancel: close, stop: e => e.stopPropagation(),
+      createFilm: e => { e.preventDefault(); const t = st.title.trim(); if (!t) return this.setState({ titleErr: 'Give the film a name.' }); if (IQ.s.films.some(f => f.title.toLowerCase() === t.toLowerCase())) return this.setState({ titleErr: 'A film with this name already exists.' });
+        this.setState({ busy: true }); this.t = setTimeout(() => { const id = IQ.uid('f'); const B = (key, label, tier, value, source) => ({ key, label, tier, value, source, status: value ? 'Confirmed' : 'Missing', date: IQ.TODAY });
+          IQ.set(x => { x.films.push({ id, title: t, language: st.lang, release: st.release || '2027-01-15', studio: 'Studio not set', context: '', brief: [B('title', 'Title', 'req', t, 'Entered'), B('language', 'Original language', 'req', st.lang, 'Entered'), B('release', 'Release date', 'req', st.release ? IQ.d(st.release) : '', st.release ? 'Entered' : ''), B('genre', 'Genre', 'req', '', ''), B('cert', 'Certificate (expected)', 'req', '', ''), B('cast', 'Lead cast', 'req', '', ''), B('markets', 'Target markets', 'req', '', ''), B('synopsis', 'Synopsis', 'req', '', ''), B('budget', 'Promotion budget', 'req', '', ''), B('dubs', 'Dub languages', 'strong', '', ''), B('assets', 'Key asset calendar', 'strong', '', ''), B('competing', 'Competing releases', 'strong', '', ''), B('tone', 'Brand tone', 'strong', '', ''), B('director', 'Director', 'opt', '', ''), B('music', 'Music director', 'opt', '', ''), B('franchise', 'Franchise', 'opt', '', '')], flags: [{ type: 'Real person', status: 'Not checked', note: '' }, { type: 'Living art form', status: 'Not checked', note: '' }, { type: 'Real events', status: 'Not checked', note: '' }], reads: [], watch: [], activity: [{ t: IQ.TODAY + 'T10:00', text: 'Film created by Anika Rao', kind: 'film' }] }); x.filmId = id; });
+          close(); IQ.go('brief', { tab: 'overview' }); IQ.toast(t + ' created. Add files or context to fill the brief.'); }, 600); }
+    };
+  }
+}
+</script>
+</body>
+</html>

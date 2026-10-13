@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><script src="hire-data.js"></script></helmet>
+<div style="padding:28px 32px 48px;max-width:1240px;display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap">
+    <div style="flex:1;min-width:240px"><h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-.015em">Artifacts</h1><p style="margin:4px 0 0;color:var(--ink-600)">{{ film }} · everything Copilot has generated for this course</p></div>
+    <div style="position:relative;width:240px;max-width:100%"><svg width="16" height="16" style="position:absolute;left:12px;top:12px;color:var(--ink-500)"><use href="#i-search"></use></svg><input value="{{ q }}" onChange="{{ setQ }}" placeholder="Search artifacts" style="width:100%;height:40px;padding:0 12px 0 36px;border:1px solid var(--ink-300);border-radius:8px;background:#fff"></div>
+  </div>
+  <div style="display:flex;gap:24px;border-bottom:1px solid var(--ink-100);overflow-x:auto;overflow-y:hidden">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.go }}" style="display:inline-flex;align-items:center;gap:8px;border:0;background:none;padding:10px 0;margin-bottom:-1px;border-bottom:2px solid {{ t.bc }};color:{{ t.c }};font-weight:{{ t.fw }};cursor:pointer;white-space:nowrap"><svg width="16" height="16"><use href="{{ t.icon }}"></use></svg>{{ t.label }} <span style="color:var(--ink-500);font-weight:400">{{ t.n }}</span></button></sc-for>
+  </div>
+  <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}"><div style="padding:48px;text-align:center;color:var(--ink-500);background:#fff;border:1px solid var(--ink-100);border-radius:12px">Nothing here yet. Ask Copilot to generate one.</div></sc-if>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">
+    <sc-for list="{{ items }}" as="a" hint-placeholder-count="8">
+      <div onClick="{{ a.open }}" style="display:flex;flex-direction:column;text-align:left;padding:0;border:1px solid var(--ink-100);border-radius:12px;background:#fff;cursor:pointer;overflow:hidden;color:inherit" style-hover="border-color:var(--teal-600);box-shadow:var(--e-1)">
+        <div style="position:relative;aspect-ratio:{{ a.ratio }};background:{{ a.bg }};display:grid;place-items:center;color:{{ a.fg }}">
+          <sc-if value="{{ a.isReport }}"><div style="width:62%;height:78%;background:#fff;border-radius:4px;box-shadow:var(--e-1);padding:12px;display:flex;flex-direction:column;gap:6px"><span style="height:6px;width:70%;background:var(--ink-300);border-radius:2px"></span><span style="height:4px;width:100%;background:var(--ink-100);border-radius:2px"></span><span style="height:4px;width:90%;background:var(--ink-100);border-radius:2px"></span><span style="flex:1;display:flex;align-items:flex-end;gap:4px;padding-top:6px"><span style="flex:1;height:40%;background:var(--teal-100)"></span><span style="flex:1;height:70%;background:var(--teal-600)"></span><span style="flex:1;height:55%;background:var(--teal-100)"></span><span style="flex:1;height:90%;background:var(--teal-600)"></span></span></div></sc-if>
+          <sc-if value="{{ a.isMedia }}"><svg width="28" height="28"><use href="{{ a.icon }}"></use></svg></sc-if>
+          <sc-if value="{{ a.dur }}"><span style="position:absolute;right:8px;bottom:8px;height:20px;padding:0 6px;border-radius:4px;background:rgba(16,36,43,.75);color:#fff;font-size:11px;font-weight:600;display:inline-flex;align-items:center">{{ a.dur }}</span></sc-if>
+        </div>
+        <div style="padding:10px 8px 10px 14px;display:flex;gap:4px;align-items:center;min-width:0;border-top:1px solid var(--ink-100)">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px"><b style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.name }}</b><span style="font-size:12px;color:var(--ink-600);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.meta }}</span></div>
+          <button onClick="{{ a.dl }}" aria-label="Download" title="Download" style="width:32px;height:32px;flex:none;border:0;border-radius:6px;background:none;cursor:pointer;color:var(--ink-600);display:grid;place-items:center" style-hover="background:var(--ink-50);color:var(--teal-700)"><svg width="16" height="16"><use href="#i-download"></use></svg></button>
+          <button onClick="{{ a.del }}" aria-label="Delete" title="Delete" style="width:32px;height:32px;flex:none;border:0;border-radius:6px;background:none;cursor:pointer;color:var(--ink-600);display:grid;place-items:center" style-hover="background:var(--danger-100);color:var(--danger-600)"><svg width="16" height="16"><use href="#i-trash"></use></svg></button>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ close }}" style="position:fixed;inset:0;background:rgba(16,36,43,.45);display:grid;place-items:center;z-index:60;padding:24px">
+      <div onClick="{{ stop }}" style="width:640px;max-width:100%;max-height:90vh;overflow:auto;background:#fff;border-radius:16px;box-shadow:var(--e-3);display:flex;flex-direction:column">
+        <div style="aspect-ratio:{{ sel.ratio }};max-height:360px;background:{{ sel.bg }};color:{{ sel.fg }};display:grid;place-items:center;border-radius:16px 16px 0 0"><svg width="40" height="40"><use href="{{ sel.icon }}"></use></svg></div>
+        <div style="padding:20px 24px 24px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;gap:12px;align-items:flex-start"><div style="flex:1;min-width:0"><b style="font-size:18px;display:block">{{ sel.name }}</b><span style="font-size:13px;color:var(--ink-600)">{{ sel.meta }}</span></div><button onClick="{{ close }}" aria-label="Close" style="width:32px;height:32px;border:0;border-radius:6px;background:none;cursor:pointer;color:var(--ink-500);display:grid;place-items:center" style-hover="background:var(--ink-100)"><svg width="16" height="16"><use href="#i-x"></use></svg></button></div>
+          <div style="padding:12px 14px;background:var(--ink-50);border-radius:8px;font-size:13px;color:var(--ink-700)"><span style="display:block;font-size:12px;font-weight:600;color:var(--ink-500);margin-bottom:4px">Prompt</span>{{ sel.prompt }}</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;font-size:13px">
+            <sc-for list="{{ sel.facts }}" as="f"><div><span style="display:block;font-size:12px;color:var(--ink-500)">{{ f.k }}</span><b style="font-weight:600">{{ f.v }}</b></div></sc-for>
+          </div>
+          <div>
+            <span style="display:block;font-size:12px;font-weight:600;color:var(--ink-500);margin-bottom:8px">Updates</span>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ sel.log }}" as="l"><div style="display:flex;gap:10px;font-size:13px"><span style="width:8px;height:8px;border-radius:50%;background:var(--teal-600);margin-top:6px;flex:none"></span><span style="flex:1">{{ l.t }}</span><span style="color:var(--ink-500);white-space:nowrap">{{ l.d }}</span></div></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+            <button onClick="{{ delSel }}" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:8px;border:0;background:none;color:var(--danger-600);font-weight:600;cursor:pointer;margin-right:auto" style-hover="background:var(--danger-100)"><svg width="16" height="16"><use href="#i-trash"></use></svg>Delete</button>
+            <button onClick="{{ askCopilot }}" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--ink-300);background:#fff;font-weight:600;cursor:pointer" style-hover="background:var(--ink-50)"><svg width="16" height="16"><use href="#i-spark"></use></svg>Open in Copilot</button>
+            <button onClick="{{ dl }}" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;border:0;background:var(--teal-700);color:#fff;font-weight:600;cursor:pointer" style-hover="background:var(--teal-800)"><svg width="16" height="16"><use href="#i-download"></use></svg>Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { tab: 'image', q: '', sel: null };
+  componentDidMount() { this.u = HQ.sub(() => this.forceUpdate()); }
+  componentWillUnmount() { this.u && this.u(); }
+  data(t) {
+    const s = t.toLowerCase().replace(/\s+/g, '-');
+    return [
+      { id: 'a1', kind: 'image', name: 'Alumni testimonial card · Telugu', fmt: 'PNG', size: '1.4 MB', dims: '1080×1080', created: '2026-09-21', updated: '2026-10-02', thread: 'Forwardable cards for Warangal', prompt: 'WhatsApp-forwardable card in Telugu: Batch 3 alumnus quote, eligibility line, tagged QR to the Resolence page. No salary figures.', log: [['QR moved to bottom-right', '2026-10-02'], ['Created from alumni quote (consent on file)', '2026-09-21']] },
+      { id: 'a2', kind: 'image', name: 'Eligibility carousel · 5 slides', fmt: 'PNG', size: '2.2 MB', dims: '1080×1350', created: '2026-09-26', updated: '2026-09-27', thread: 'Can you apply?', prompt: '5-slide carousel: graduation years, degree, aggregate, schedule, how to register. English with Telugu captions.', log: [['Slide 3 reworded: 60% aggregate', '2026-09-27'], ['Created', '2026-09-26']] },
+      { id: 'a3', kind: 'image', name: 'Campus info-session poster · JNTUH', fmt: 'PNG', size: '1.1 MB', dims: '1080×1350', created: '2026-09-30', updated: '2026-10-01', thread: 'JNTUH info session', prompt: 'Event poster for a 45-minute info session with the JNTUH Students\' Forum on 4 Oct, tagged QR for registration.', log: [['Date and venue added', '2026-10-01'], ['Created', '2026-09-30']] },
+      { id: 'a4', kind: 'image', name: 'Stipend forwardable card', fmt: 'PNG', size: '760 KB', dims: '1080×1080', created: '2026-10-03', updated: '2026-10-03', thread: 'Forwardable cards for Warangal', prompt: 'Card: "No fee · ₹2,500 a month while you learn · Batch 4 starts 16 Nov". Telugu first, English second.', log: [['Created', '2026-10-03']] },
+      { id: 'v1', kind: 'video', name: 'Alumni testimonial cut · 45s', fmt: 'MP4', size: '22.6 MB', dims: '1080×1920', dur: '0:45', created: '2026-09-24', updated: '2026-09-29', thread: 'Alumni stories', prompt: 'Cut Sai Kiran Reddy\'s interview to 45 seconds: where he started, his capstone, who should apply. Burned-in Telugu subtitles.', log: [['Subtitles corrected', '2026-09-29'], ['Created', '2026-09-24']] },
+      { id: 'v2', kind: 'video', name: 'Syllabus walkthrough short · 60s', fmt: 'MP4', size: '28.1 MB', dims: '1080×1920', dur: '1:00', created: '2026-09-27', updated: '2026-09-27', thread: 'Can you apply?', prompt: 'One-minute short covering the 16 weeks of the syllabus, ending on the eligibility line and tracked link.', log: [['Created', '2026-09-27']] },
+      { id: 'v3', kind: 'video', name: 'Live Q&A highlight · 90s', fmt: 'MP4', size: '41.3 MB', dims: '1920×1080', dur: '1:30', created: '2026-10-05', updated: '2026-10-05', thread: 'Answering placement doubts', prompt: 'Highlight from the live Q&A answering "Is it really free?" and "Is there a weekend batch?". No placement-rate claims.', log: [['Created', '2026-10-05']] },
+      { id: 'r1', kind: 'report', name: 'Warangal campaign plan · v2', fmt: 'PDF', size: '290 KB', pages: 6, created: '2026-09-29', updated: '2026-09-29', thread: 'Why is Warangal engineering graduates behind?', prompt: 'Export the plan for Warangal engineering graduates: narratives, channels, sources and the frozen prediction. No contact details.', log: [['v2: shifted ₹40,000 to WhatsApp placement-cell cards', '2026-09-29'], ['v1 created', '2026-09-20']] },
+      { id: 'r2', kind: 'report', name: 'Weekly enrolment funnel · week 40', fmt: 'PDF', size: '1.3 MB', pages: 5, created: '2026-10-06', updated: '2026-10-06', thread: 'Weekly summary', prompt: 'Weekly funnel per campaign, cohort and district: reach, clicks, registrations, screening enrolments, unattributed. Counts only.', log: [['Resolence counts refreshed 08:00', '2026-10-06'], ['Created', '2026-10-06']] },
+      { id: 'r3', kind: 'report', name: 'Cost per enrolment vs ceiling', fmt: 'XLSX', size: '96 KB', pages: 2, created: '2026-10-04', updated: '2026-10-06', thread: 'Budget check', prompt: 'Compare spend per source with attributed enrolments and the ₹4,500 ceiling; flag sources above it.', log: [['Updated with Day 14 counts', '2026-10-06'], ['Created', '2026-10-04']] }
+    ].map(a => Object.assign({ file: s + '-' + a.id }, a));
+  }
+  look(a) {
+    if (a.kind === 'video') return { bg: 'var(--ink-800)', fg: '#fff', icon: '#i-play', ratio: '16/10' };
+    if (a.kind === 'report') return { bg: 'var(--ink-50)', fg: 'var(--ink-600)', icon: '#i-file', ratio: '16/10' };
+    return { bg: 'var(--teal-50)', fg: 'var(--teal-700)', icon: '#i-image', ratio: '16/10' };
+  }
+  renderVals() {
+    if (!window.HQ) return {};
+    const film = HQ.film(), st = this.state, all = this.data(film.title).filter(a => !(HQ.s.artDeleted || []).includes(film.id + ':' + a.id));
+    const ago = d => { const n = Math.round((new Date(HQ.TODAY) - new Date(d)) / 864e5); return n <= 0 ? 'today' : n === 1 ? 'yesterday' : n + ' days ago'; };
+    const meta = a => HQ.ds(a.created) + ' · ' + a.fmt + ' · ' + a.size;
+    const download = a => { const b = new Blob(['InfluenceIQ prototype placeholder for ' + a.name + '\nGenerated by Copilot · ' + a.thread + '\nPrompt: ' + a.prompt], { type: 'text/plain' }); const x = document.createElement('a'); x.href = URL.createObjectURL(b); x.download = a.file + '.txt'; document.body.appendChild(x); x.click(); x.remove(); HQ.toast('Downloading ' + a.name); };
+    const remove = a => { HQ.set(x => { x.artDeleted = (x.artDeleted || []).concat([film.id + ':' + a.id]); }); this.setState({ sel: null }); HQ.toast(a.name + ' deleted'); };
+    const tabsL = [['image', 'Images', '#i-image'], ['video', 'Video', '#i-play'], ['report', 'Report', '#i-file']];
+    const list = all.filter(a => a.kind === st.tab && a.name.toLowerCase().includes(st.q.toLowerCase()));
+    const sel = all.find(a => a.id === st.sel);
+    const selV = sel ? Object.assign({}, this.look(sel), { name: sel.name, meta: meta(sel), prompt: sel.prompt,
+      facts: [['Format', sel.fmt], ['Size', sel.size], sel.dims && ['Dimensions', sel.dims], sel.dur && ['Duration', sel.dur], sel.pages && ['Pages', sel.pages], sel.data && ['Key figure', sel.data], ['Created', HQ.ds(sel.created)], ['From thread', sel.thread]].filter(Boolean).map(([k, v]) => ({ k, v })),
+      log: sel.log.map(([t, d]) => ({ t, d: HQ.ds(d) })) }) : {};
+    return {
+      film: film.title, q: st.q, setQ: e => this.setState({ q: e.target.value }),
+      tabs: tabsL.map(([k, label, icon]) => ({ label, icon, n: all.filter(a => a.kind === k).length, go: () => this.setState({ tab: k }), bc: st.tab === k ? 'var(--teal-600)' : 'transparent', c: st.tab === k ? 'var(--teal-800)' : 'var(--ink-600)', fw: st.tab === k ? 600 : 500 })),
+      empty: !list.length,
+      items: list.map(a => { const L = this.look(a); return Object.assign({}, L, { name: a.name, meta: meta(a), dur: a.dur || '', isReport: a.kind === 'report', isMedia: a.kind !== 'report', dl: e => { e.stopPropagation(); download(a); }, del: e => { e.stopPropagation(); remove(a); }, open: () => this.setState({ sel: a.id }) }); }),
+      open: !!sel, sel: selV, close: () => this.setState({ sel: null }), stop: e => e.stopPropagation(),
+      askCopilot: () => { this.setState({ sel: null }); HQ.go('copilot'); },
+      delSel: () => remove(sel), dl: () => download(sel), dlOld: () => { const b = new Blob(['InfluenceIQ prototype placeholder for ' + sel.name + '\nGenerated by Copilot · ' + sel.thread + '\nPrompt: ' + sel.prompt], { type: 'text/plain' }); const x = document.createElement('a'); x.href = URL.createObjectURL(b); x.download = sel.file + '.txt'; document.body.appendChild(x); x.click(); x.remove(); HQ.toast('Downloading ' + sel.name); }
+    };
+  }
+}
+</script>
+</body>
+</html>

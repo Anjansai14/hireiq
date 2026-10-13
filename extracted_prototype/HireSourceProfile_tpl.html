@@ -1,0 +1,166 @@
+
+<helmet><script src="hire-data.js"></script></helmet>
+<div style="padding:24px 32px 48px;max-width:1240px;display:flex;flex-direction:column;gap:20px">
+  <button onClick="{{ back }}" style="border:0;background:none;padding:0;color:var(--ink-600);cursor:pointer;display:flex;align-items:center;gap:4px;font-size:13px;align-self:flex-start"><svg width="16" height="16"><use href="#i-left"></use></svg>{{ backLabel }}</button>
+  <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+    <span style="width:72px;height:72px;border-radius:50%;background:{{ c.avBg }};color:{{ c.avFg }};display:grid;place-items:center;font-weight:600;font-size:24px;flex:none">{{ c.initials }}</span>
+    <div style="flex:1;min-width:280px">
+      <h1 style="margin:0;font-size:28px;line-height:34px;font-weight:600;letter-spacing:-.015em;overflow-wrap:anywhere">{{ c.name }}</h1><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px"><sc-if value="{{ c.verified }}"><span title="Verified" style="color:var(--teal-700);display:flex"><svg width="20" height="20"><use href="#i-shield"></use></svg></span></sc-if><span style="display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;background:{{ c.st.bg }};color:{{ c.st.fg }};font-size:12px;font-weight:600">{{ c.status }}</span></div>
+      <div style="color:var(--ink-600);margin-top:4px">{{ c.handle }} · {{ c.platform }} · {{ c.type }} · {{ c.tier }}</div>
+      <div style="font-size:12px;line-height:18px;color:var(--ink-500);margin-top:4px"><svg width="12" height="12" style="vertical-align:-2px;margin-right:6px"><use href="#i-clock"></use></svg>Last updated {{ c.updated }} · next refresh {{ c.next }} · source {{ c.source }}</div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;position:relative">
+      <button onClick="{{ refresh }}" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--ink-300);background:#fff;font-weight:600;cursor:pointer" style-hover="background:var(--ink-50)"><svg width="16" height="16" style="animation:{{ refAnim }}"><use href="#i-refresh"></use></svg>{{ refLabel }}</button>
+      <button onClick="{{ toggleAdd }}" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:8px;border:0;background:var(--teal-700);color:#fff;font-weight:600;cursor:pointer" style-hover="background:var(--teal-800)"><svg width="16" height="16"><use href="#i-plus"></use></svg>Add to campaign</button>
+      <sc-if value="{{ addOpen }}"><div onClick="{{ toggleAdd }}" style="position:fixed;inset:0;z-index:40"></div><div style="position:absolute;right:0;top:46px;z-index:41;width:300px;background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-2);padding:6px">
+        <div style="padding:8px 10px;font-size:12px;font-weight:600;color:var(--ink-500)">Live campaigns</div>
+        <sc-if value="{{ blockedMsg }}"><div style="padding:8px 10px;font-size:12px;color:var(--danger-600)">{{ blockedMsg }}</div></sc-if>
+        <sc-for list="{{ camps }}" as="k"><button onClick="{{ k.add }}" style="width:100%;display:flex;flex-direction:column;align-items:flex-start;padding:8px 10px;border:0;border-radius:8px;background:none;cursor:pointer;text-align:left" style-hover="background:var(--ink-50)"><b style="font-weight:600">{{ k.name }}</b><span style="font-size:12px;color:var(--ink-500)">{{ k.meta }}</span></button></sc-for>
+        <sc-if value="{{ noCamps }}"><div style="padding:8px 10px;font-size:13px;color:var(--ink-500)">No live campaigns to add to.</div></sc-if>
+      </div></sc-if>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px"><sc-for list="{{ kpis }}" as="k" hint-placeholder-count="5"><div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;padding:14px 16px;box-shadow:var(--e-1)" title="{{ k.tip }}"><div style="display:block"><div style="font-size:10px;line-height:14px;font-weight:600;color:{{ k.sc }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ k.stamp }}</div><div style="font-size:12px;line-height:16px;color:var(--ink-600);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="{{ k.l }}">{{ k.l }}</div></div><div style="font-size:22px;line-height:28px;font-weight:600;margin-top:4px">{{ k.v }}</div></div></sc-for></div>
+  <div style="display:flex;gap:24px;border-bottom:1px solid var(--ink-100);overflow-x:auto;overflow-y:hidden"><sc-for list="{{ tabs }}" as="t" hint-placeholder-count="7"><button onClick="{{ t.go }}" style="border:0;background:none;padding:10px 0;margin-bottom:-1px;border-bottom:2px solid {{ t.bc }};color:{{ t.c }};font-weight:{{ t.fw }};cursor:pointer;display:flex;gap:6px;align-items:center"><sc-if value="{{ t.lock }}"><svg width="14" height="14"><use href="#i-lock"></use></svg></sc-if>{{ t.label }}</button></sc-for></div>
+
+  <sc-if value="{{ tOverview }}" hint-placeholder-val="{{ true }}">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:20px;align-items:start;animation:fadein .2s">
+    <div style="grid-column:1 / -1;background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1);overflow-x:auto">
+      <div style="padding:14px 20px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><b>Accounts across platforms</b><span style="font-size:12px;color:var(--ink-500)">{{ accSummary }}</span></div>
+      <div style="display:grid;grid-template-columns:110px minmax(180px,1.4fr) 100px 100px 70px 110px 110px 90px;min-width:900px;gap:12px;padding:0 20px;height:36px;align-items:center;background:var(--ink-50);font-size:12px;font-weight:600;color:var(--ink-600)"><span>Platform</span><span>Display name · handle</span><span style="text-align:right">Followers</span><span style="text-align:right">Median views</span><span style="text-align:right">ER</span><span>Verification</span><span>Updated</span><span></span></div>
+      <sc-for list="{{ accounts }}" as="a" hint-placeholder-count="4">
+        <div style="display:grid;grid-template-columns:110px minmax(180px,1.4fr) 100px 100px 70px 110px 110px 90px;min-width:900px;gap:12px;padding:0 20px;height:52px;align-items:center;border-top:1px solid var(--ink-100);font-size:13px">
+          <span style="display:flex;align-items:center;gap:6px;font-weight:600">{{ a.platform }}<sc-if value="{{ a.primary }}"><span style="height:18px;padding:0 6px;border-radius:4px;background:var(--teal-50);color:var(--teal-800);font-size:10px;font-weight:700;display:inline-flex;align-items:center">PRIMARY</span></sc-if></span>
+          <span style="min-width:0"><b style="font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.name }}</b><span style="font-size:12px;color:var(--ink-600)">{{ a.handle }}</span></span>
+          <span style="text-align:right;font-weight:600">{{ a.followers }}</span><span style="text-align:right">{{ a.mv }}</span><span style="text-align:right">{{ a.er }}</span>
+          <span style="display:flex;align-items:center;gap:4px;color:{{ a.vc }}"><sc-if value="{{ a.verified }}"><svg width="14" height="14"><use href="#i-shield"></use></svg></sc-if>{{ a.verif }}</span>
+          <span style="font-size:12px;color:var(--ink-600)">{{ a.updated }}</span>
+          <a href="{{ a.url }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;color:var(--teal-700);font-weight:600;font-size:12px">Open<svg width="12" height="12"><use href="#i-ext"></use></svg></a>
+        </div>
+      </sc-for>
+    </div>
+    <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1);overflow:hidden">
+      <div style="padding:14px 20px;display:flex;justify-content:space-between"><b>Profile fields</b><span style="font-size:12px;color:var(--ink-500)">Every field keeps its source and date</span></div>
+      <sc-for list="{{ fields }}" as="f" hint-placeholder-count="8"><div style="display:grid;grid-template-columns:minmax(90px,150px) minmax(110px,1fr) minmax(0,auto) 32px;gap:12px;padding:10px 20px;border-top:1px solid var(--ink-100);align-items:center;font-size:13px"><span style="color:var(--ink-500)">{{ f.l }}</span>
+        <sc-if value="{{ f.editSelect }}"><select value="{{ f.draft }}" onChange="{{ f.onPick }}" style="height:32px;padding:0 6px;border:1px solid var(--ink-300);border-radius:6px;background:#fff;width:100%"><sc-for list="{{ f.opts }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select></sc-if><sc-if value="{{ f.editText }}"><input value="{{ f.draft }}" onChange="{{ f.onDraft }}" onKeyDown="{{ f.onKey }}" style="height:32px;padding:0 8px;border:1px solid var(--ink-300);border-radius:6px"></sc-if><sc-if value="{{ f.notEditing }}"><span style="font-weight:500">{{ f.v }}</span></sc-if>
+        <span style="display:flex;flex-wrap:wrap;gap:2px 6px;align-items:center;min-width:0"><span style="display:inline-flex;height:20px;padding:0 6px;border-radius:4px;background:{{ f.t.bg }};color:{{ f.t.fg }};font-size:11px;font-weight:600;align-items:center">{{ f.src }}</span><span style="font-size:11px;color:var(--ink-500)">{{ f.date }}</span></span>
+        <sc-if value="{{ f.editable }}"><button onClick="{{ f.edit }}" aria-label="Edit" style="width:28px;height:28px;border:0;border-radius:6px;background:none;cursor:pointer;color:var(--ink-500);display:grid;place-items:center" style-hover="background:var(--ink-50)"><svg width="14" height="14"><use href="{{ f.icon }}"></use></svg></button></sc-if></div></sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1);padding:18px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;gap:8px;align-items:center"><svg width="16" height="16" style="color:var(--ink-600)"><use href="#i-lock"></use></svg><b style="flex:1">Contact details</b><span style="font-size:11px;color:var(--ink-500)">Every reveal is logged</span></div>
+        <sc-if value="{{ hidden }}"><sc-for list="{{ masked }}" as="m"><div style="display:flex;justify-content:space-between;padding:8px 12px;border-radius:8px;background:var(--ink-50);font-size:13px"><span style="color:var(--ink-500)">{{ m.l }}</span><span style="letter-spacing:2px">••••••••••</span></div></sc-for><button onClick="{{ reveal }}" style="height:36px;border-radius:8px;border:1px solid var(--ink-300);background:#fff;font-weight:600;cursor:pointer;display:flex;gap:8px;align-items:center;justify-content:center" style-hover="background:var(--ink-50)"><svg width="16" height="16"><use href="#i-eye"></use></svg>Reveal (Manager role)</button></sc-if>
+        <sc-if value="{{ shown }}"><sc-for list="{{ contact }}" as="m"><div style="display:flex;justify-content:space-between;gap:12px;padding:8px 12px;border-radius:8px;background:var(--ink-25);border:1px solid var(--ink-100);font-size:13px"><span style="color:var(--ink-500)">{{ m.l }}</span><b style="font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ m.v }}</b></div></sc-for><button onClick="{{ hide }}" style="height:36px;border-radius:8px;border:1px solid var(--ink-300);background:#fff;font-weight:600;cursor:pointer">Hide</button></sc-if>
+        <span style="font-size:12px;color:var(--ink-500)">Never included in exports or sent to AI agents.</span>
+      </div>
+      <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;padding:18px;box-shadow:var(--e-1)"><b style="display:block;margin-bottom:10px">Content language</b><sc-for list="{{ langs }}" as="m"><div style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0"><span style="width:80px;color:var(--ink-600)">{{ m.l }}</span><div style="flex:1;height:8px;border-radius:999px;background:var(--ink-50)"><div style="height:100%;width:{{ m.v }}%;background:var(--screen);border-radius:999px"></div></div><span style="width:34px;text-align:right">{{ m.v }}%</span></div></sc-for></div>
+      <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;padding:18px;box-shadow:var(--e-1)"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><b>Topic authority</b><span style="font-size:11px;color:var(--ink-500)">HAS_AUTHORITY_IN edges</span></div><sc-for list="{{ topics }}" as="m"><div style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0"><span style="width:110px;color:var(--ink-600)">{{ m.l }}</span><div style="flex:1;height:8px;border-radius:999px;background:var(--ink-50)"><div style="height:100%;width:{{ m.v }}%;background:{{ m.c }};border-radius:999px"></div></div><span style="width:34px;text-align:right">{{ m.v }}</span></div></sc-for></div>
+    </div>
+  </div>
+  </sc-if>
+
+
+
+  <sc-if value="{{ tContent }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><sc-for list="{{ platTabs }}" as="pt" hint-placeholder-count="5"><button onClick="{{ pt.go }}" style="height:34px;padding:0 12px;border-radius:8px;border:1px solid {{ pt.bc }};background:{{ pt.bg }};color:{{ pt.c }};font-weight:{{ pt.fw }};font-size:13px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-family:inherit" style-hover="border-color:var(--teal-600)">{{ pt.label }}<span style="font-size:11px;color:var(--ink-500);font-weight:600">{{ pt.n }}</span></button></sc-for></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:20px;align-items:start;animation:fadein .2s">
+    <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1);overflow-x:auto"><div style="padding:14px 20px"><b>Recent posts</b> <span style="font-size:12px;color:var(--ink-500)">{{ postsSub }}</span></div>
+      <sc-for list="{{ recent }}" as="p" hint-placeholder-count="6"><div style="display:grid;grid-template-columns:56px minmax(140px,1fr) 70px 50px 110px;min-width:480px;gap:12px;padding:10px 20px;border-top:1px solid var(--ink-100);align-items:center;font-size:13px"><span style="width:56px;height:36px;border-radius:6px;background:var(--ink-900);color:#fff;display:grid;place-items:center"><svg width="14" height="14"><use href="#i-play"></use></svg></span><span style="min-width:0"><b style="font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.title }}</b><span style="font-size:12px;color:var(--ink-500)">{{ p.platform }} · {{ p.format }} · {{ p.date }}</span></span><span style="text-align:right;font-weight:600">{{ p.views }}</span><span style="text-align:right;color:var(--ink-600)">{{ p.er }}</span><span style="text-align:right;font-size:12px;font-weight:600;color:{{ p.dc }}">{{ p.dLabel }}</span></div></sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;padding:18px 20px;box-shadow:var(--e-1)"><b style="display:block;margin-bottom:14px">{{ barsTitle }}</b><div style="display:flex;align-items:flex-end;gap:12px;height:160px"><sc-for list="{{ viewBars }}" as="s"><div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end"><span style="font-size:11px;color:var(--ink-600)">{{ s.v }}</span><div style="width:100%;height:{{ s.h }}%;background:{{ s.c }};border-radius:6px 6px 0 0"></div><span style="font-size:11px;color:var(--ink-500)">{{ s.m }}</span></div></sc-for></div><div style="font-size:12px;color:var(--ink-500);margin-top:8px">{{ barsNote }}</div></div>
+      <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;padding:18px;box-shadow:var(--e-1)"><b style="display:block;margin-bottom:10px">Content types <span style="font-size:11px;color:var(--info-800);font-weight:600">AI-inferred</span></b><div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ ctypes }}" as="t"><span style="display:inline-flex;height:28px;padding:0 10px;border-radius:8px;background:var(--ink-50);border:1px solid var(--ink-100);font-size:13px;align-items:center">{{ t }}</span></sc-for></div></div>
+      <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;padding:18px;box-shadow:var(--e-1)"><b style="display:block;margin-bottom:10px">Formats and tone</b><div style="font-size:13px;display:grid;grid-template-columns:80px 1fr;gap:6px"><span style="color:var(--ink-500)">Formats</span><span>{{ formats }}</span><span style="color:var(--ink-500)">Tone</span><span>{{ tone }}</span></div></div>
+    </div>
+  </div>
+  </sc-if>
+
+
+  <sc-if value="{{ tHistory }}" hint-placeholder-val="{{ false }}">
+  <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1);overflow-x:auto;animation:fadein .2s">
+    <div style="display:grid;grid-template-columns:minmax(140px,1fr) minmax(160px,1.2fr) 90px 110px 70px 100px 90px 130px 20px;min-width:1010px;gap:12px;padding:0 20px;height:40px;align-items:center;background:var(--ink-50);font-size:12px;font-weight:600;color:var(--ink-600)"><span>Course</span><span>Campaign</span><span>Date</span><span>Status</span><span style="text-align:right">Posts</span><span style="text-align:right">Fee</span><span style="text-align:right">Views</span><span>Sentiment</span><span></span></div>
+    <sc-if value="{{ noHistory }}"><div style="padding:36px;text-align:center;color:var(--ink-500)">No campaigns with this team yet.</div></sc-if>
+    <sc-for list="{{ history }}" as="h" hint-placeholder-count="3"><div onClick="{{ h.open }}" style="border-top:1px solid var(--ink-100);background:{{ h.bg }};cursor:pointer" style-hover="background:var(--ink-25)"><div style="display:grid;grid-template-columns:minmax(140px,1fr) minmax(160px,1.2fr) 90px 110px 70px 100px 90px 130px 20px;min-width:1010px;gap:12px;padding:0 20px;height:52px;align-items:center;font-size:13px"><b style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ h.film }}</b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ h.campaign }}</span><span>{{ h.date }}</span><span><span style="display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;background:{{ h.t.bg }};color:{{ h.t.fg }};font-size:12px;font-weight:600;white-space:nowrap">{{ h.status }}</span></span><span style="text-align:right;font-weight:600">{{ h.posts }}</span><span style="text-align:right">{{ h.fee }}</span><span style="text-align:right">{{ h.views }}</span><span style="display:flex;align-items:center;gap:6px;white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;background:{{ h.sc }};flex:none"></span>{{ h.sent }}</span><svg width="16" height="16" style="color:var(--ink-400)"><use href="#i-arrow"></use></svg></div><sc-if value="{{ h.note }}"><div style="padding:0 20px 10px;font-size:12px;color:var(--danger-800)">Reason: {{ h.note }}</div></sc-if></div></sc-for>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ tComm }}" hint-placeholder-val="{{ false }}">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px;align-items:start;animation:fadein .2s">
+    <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1);padding:20px;display:flex;flex-direction:column;gap:10px"><b>Current rate</b><div style="font-size:28px;font-weight:600">{{ comm.rate }} <span style="font-size:14px;color:var(--ink-500);font-weight:400">per post</span></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span style="display:inline-flex;height:22px;padding:0 8px;border-radius:999px;background:{{ comm.t.bg }};color:{{ comm.t.fg }};font-size:12px;font-weight:600;align-items:center">{{ comm.src }}</span><span style="font-size:12px;color:var(--ink-500)">{{ comm.srcNote }}</span></div><div style="padding-top:10px;border-top:1px solid var(--ink-100);font-size:13px">Rate card {{ comm.tier }}: <b>{{ comm.band }}</b></div></div>
+    <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1);overflow:hidden">
+      <div style="padding:14px 20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><b style="flex:1">Commercials</b><button onClick="{{ addComm }}" style="height:36px;padding:0 14px;border-radius:8px;border:0;background:var(--teal-700);color:#fff;font-size:13px;font-weight:600;cursor:pointer;display:flex;gap:6px;align-items:center" style-hover="background:var(--teal-800)"><svg width="14" height="14"><use href="#i-plus"></use></svg>Add commercial</button></div>
+      <sc-if value="{{ noComms }}"><div style="padding:24px 20px;border-top:1px solid var(--ink-100);font-size:13px;color:var(--ink-500)">No commercials yet. Add the first deal agreed with this source.</div></sc-if>
+      <sc-for list="{{ comms }}" as="o" hint-placeholder-count="2">
+        <div style="display:flex;gap:8px 16px;align-items:center;padding:12px 20px;border-top:1px solid var(--ink-100);font-size:13px;flex-wrap:wrap">
+          <div style="flex:1;min-width:180px"><b style="font-weight:600;display:block">{{ o.title }}</b><span style="font-size:12px;color:var(--ink-600)">{{ o.meta }}</span><span style="display:block;font-size:12px;color:var(--ink-500);margin-top:2px">Updated {{ o.updated }}</span></div>
+          <div style="text-align:right"><b style="display:block">{{ o.total }}</b><span style="font-size:12px;color:var(--ink-600)">{{ o.per }}</span></div>
+          <button onClick="{{ o.edit }}" aria-label="Edit commercial" style="width:32px;height:32px;border:0;border-radius:6px;background:none;cursor:pointer;color:var(--ink-500);display:grid;place-items:center" style-hover="background:var(--ink-50)"><svg width="14" height="14"><use href="#i-edit"></use></svg></button>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+
+
+  <sc-if value="{{ pdOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ pdClose }}" style="position:fixed;inset:0;background:rgba(16,36,43,.35);z-index:80"></div>
+  <aside style="position:fixed;top:0;right:0;bottom:0;width:560px;max-width:100%;background:#fff;box-shadow:var(--e-3);z-index:81;display:flex;flex-direction:column">
+    <div style="padding:18px 24px;border-bottom:1px solid var(--ink-100);display:flex;gap:12px;align-items:flex-start"><div style="flex:1;min-width:0"><b style="display:block;font-size:16px">{{ pd.campaign }}</b><span style="font-size:13px;color:var(--ink-600)">{{ pd.film }} · {{ pd.date }} · {{ pd.status }}</span></div><button onClick="{{ pdClose }}" aria-label="Close" style="width:32px;height:32px;border:0;border-radius:6px;background:none;cursor:pointer;color:var(--ink-500);display:grid;place-items:center" style-hover="background:var(--ink-100)"><svg width="16" height="16"><use href="#i-x"></use></svg></button></div>
+    <div style="flex:1;overflow:auto;padding:20px 24px;display:grid;align-content:start;gap:20px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px"><sc-for list="{{ pd.stats }}" as="s"><div style="padding:12px 14px;border:1px solid var(--ink-100);border-radius:10px"><span style="display:block;font-size:12px;color:var(--ink-600)">{{ s.l }}</span><b style="font-size:20px">{{ s.v }}</b></div></sc-for></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;font-size:13px"><b>Post sentiment</b><span style="color:var(--ink-600)">{{ pd.sentLabel }}</span></div>
+        <div style="display:flex;height:10px;border-radius:999px;overflow:hidden;background:var(--ink-100)"><div style="width:{{ pd.pos }}%;background:var(--success-600)"></div><div style="width:{{ pd.neu }}%;background:var(--ink-300)"></div><div style="width:{{ pd.neg }}%;background:var(--danger-600)"></div></div>
+        <div style="display:flex;gap:16px;font-size:12px;color:var(--ink-600);flex-wrap:wrap"><span>Positive {{ pd.pos }}%</span><span>Neutral {{ pd.neu }}%</span><span>Negative {{ pd.neg }}%</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <b style="font-size:14px">Posts in this campaign</b>
+        <sc-if value="{{ pd.noPosts }}"><div style="padding:16px;border:1px dashed var(--ink-300);border-radius:10px;font-size:13px;color:var(--ink-500)">No posts went live for this campaign.</div></sc-if>
+        <sc-for list="{{ pd.posts }}" as="p">
+          <div style="border:1px solid var(--ink-100);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <span style="width:64px;height:44px;border-radius:6px;background:var(--ink-900);color:#fff;display:grid;place-items:center;flex:none"><svg width="14" height="14"><use href="#i-play"></use></svg></span>
+              <div style="flex:1;min-width:0"><b style="display:block;font-size:13px">{{ p.title }}</b><span style="font-size:12px;color:var(--ink-600)">{{ p.platform }} · {{ p.format }} · {{ p.date }}</span></div>
+              <span style="display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;background:{{ p.sBg }};color:{{ p.sFg }};font-size:12px;font-weight:600;white-space:nowrap">{{ p.sent }}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;font-size:12px"><sc-for list="{{ p.m }}" as="x"><div><span style="display:block;color:var(--ink-500)">{{ x.l }}</span><b style="font-size:13px">{{ x.v }}</b></div></sc-for></div>
+            <div style="display:flex;gap:8px;align-items:center;font-size:12px;color:var(--ink-600);flex-wrap:wrap"><span style="font-weight:600;color:var(--teal-800)">{{ p.tag }}</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.url }}</span><a href="{{ p.url }}" target="_blank" rel="noopener" style="color:var(--teal-700);font-weight:600">Open post</a></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="padding-top:16px;border-top:1px solid var(--ink-100);display:flex;flex-direction:column;gap:4px;font-size:13px"><b style="font-size:14px">All posts for {{ pd.film }}</b><span style="color:var(--ink-600)">{{ pd.filmSummary }}</span></div>
+    </div>
+  </aside>
+  </sc-if>
+
+  <sc-if value="{{ cmOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ cmClose }}" style="position:fixed;inset:0;background:rgba(16,36,43,.35);z-index:80"></div>
+  <aside style="position:fixed;top:0;right:0;bottom:0;width:480px;max-width:100%;background:#fff;box-shadow:var(--e-3);z-index:81;display:flex;flex-direction:column">
+    <div style="padding:18px 24px;border-bottom:1px solid var(--ink-100);display:flex;gap:12px;align-items:center"><b style="flex:1;font-size:16px">{{ cmTitle }}</b><button onClick="{{ cmClose }}" aria-label="Close" style="width:32px;height:32px;border:0;border-radius:6px;background:none;cursor:pointer;color:var(--ink-500);display:grid;place-items:center" style-hover="background:var(--ink-100)"><svg width="16" height="16"><use href="#i-x"></use></svg></button></div>
+    <div style="flex:1;overflow:auto;padding:20px 24px;display:grid;align-content:start;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px;font-weight:600">Course</label><select value="{{ cm.film }}" onChange="{{ cm.setFilm }}" style="height:40px;padding:0 8px;border:1px solid var(--ink-300);border-radius:8px;background:#fff"><sc-for list="{{ cm.films }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px;font-weight:600">Campaign</label><input value="{{ cm.campaign }}" onChange="{{ cm.setCamp }}" placeholder="e.g. Post launch" style="height:40px;padding:0 12px;border:1px solid var(--ink-300);border-radius:8px"></div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px">
+        <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px;font-weight:600">Deal type</label><select value="{{ cm.dealType }}" onChange="{{ cm.setDeal }}" style="height:40px;padding:0 8px;border:1px solid var(--ink-300);border-radius:8px;background:#fff"><option>Paid</option><option>Barter</option><option>Paid + barter</option><option>Revenue share</option></select></div>
+        <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px;font-weight:600">Posts</label><input value="{{ cm.posts }}" onChange="{{ cm.setPosts }}" inputMode="numeric" style="height:40px;padding:0 12px;border:1px solid var(--ink-300);border-radius:8px"></div>
+        <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px;font-weight:600">Fee per post (₹)</label><input value="{{ cm.fee }}" onChange="{{ cm.setFee }}" inputMode="numeric" style="height:40px;padding:0 12px;border:1px solid var(--ink-300);border-radius:8px"></div>
+        <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px;font-weight:600">Total</label><div style="height:40px;padding:0 12px;border-radius:8px;background:var(--ink-50);display:flex;align-items:center;font-weight:600">{{ cm.total }}</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px;font-weight:600">Payment terms</label><select value="{{ cm.payment }}" onChange="{{ cm.setPay }}" style="height:40px;padding:0 8px;border:1px solid var(--ink-300);border-radius:8px;background:#fff"><option>50% advance, 50% on posting</option><option>100% on posting</option><option>100% advance</option><option>Net 30 after posting</option></select></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px;font-weight:600">Deliverables</label><input value="{{ cm.deliverables }}" onChange="{{ cm.setDel }}" placeholder="e.g. 2 reels + 3 stories" style="height:40px;padding:0 12px;border:1px solid var(--ink-300);border-radius:8px"></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px;font-weight:600">Notes</label><textarea value="{{ cm.notes }}" onChange="{{ cm.setNotes }}" placeholder="Usage rights, exclusivity, what was agreed" style="min-height:80px;padding:10px 12px;border:1px solid var(--ink-300);border-radius:8px;resize:vertical;font:inherit"></textarea></div>
+      <sc-if value="{{ cm.isEdit }}"><span style="font-size:12px;color:var(--ink-500)">Last updated {{ cm.updated }}. Saving stamps today's date.</span></sc-if>
+    </div>
+    <div style="padding:14px 24px;border-top:1px solid var(--ink-100);display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <sc-if value="{{ cm.isEdit }}"><button onClick="{{ cmDelete }}" style="height:40px;padding:0 14px;border-radius:8px;border:0;background:none;color:var(--danger-600);font-weight:600;cursor:pointer" style-hover="background:var(--danger-100)">Delete</button></sc-if>
+      <span style="flex:1;min-width:100px;font-size:13px;color:var(--danger-600)">{{ cmErr }}</span>
+      <button onClick="{{ cmClose }}" style="height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--ink-300);background:#fff;font-weight:600;cursor:pointer" style-hover="background:var(--ink-50)">Cancel</button>
+      <button onClick="{{ cmSave }}" style="height:40px;padding:0 16px;border-radius:8px;border:0;background:var(--teal-700);color:#fff;font-weight:600;cursor:pointer" style-hover="background:var(--teal-800)">Save</button>
+    </div>
+  </aside>
+  </sc-if>
+
+  <sc-if value="{{ tActivity }}" hint-placeholder-val="{{ false }}">
+  <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;padding:18px 20px;box-shadow:var(--e-1);animation:fadein .2s"><sc-for list="{{ activity }}" as="a" hint-placeholder-count="4"><div style="display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--ink-100);font-size:13px"><span style="width:90px;color:var(--ink-500)">{{ a.date }}</span><span>{{ a.text }}</span></div></sc-for></div>
+  </sc-if>
+</div>

@@ -1,0 +1,45 @@
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: hireiq
+      MYSQL_USER: hireiq
+      MYSQL_PASSWORD: hireiq
+    ports: ["3306:3306"]
+    volumes: [dbdata:/var/lib/mysql]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpass"]
+      interval: 5s
+      retries: 20
+
+  ai:
+    build: ./ai-service
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-claude-sonnet-5-5}
+      AI_SERVICE_KEY: ${AI_SERVICE_KEY:-change-me}
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}
+    ports: ["8001:8001"]
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    depends_on: [db, ai]
+    environment:
+      PORT: 4000
+      DB_HOST: db
+      DB_USER: hireiq
+      DB_PASSWORD: hireiq
+      DB_NAME: hireiq
+      JWT_SECRET: ${JWT_SECRET:-change-this-long-random-string}
+      TOKEN_ENC_KEY: ${TOKEN_ENC_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+      AI_SERVICE_URL: http://ai:8001
+      AI_SERVICE_KEY: ${AI_SERVICE_KEY:-change-me}
+      SEED_ON_START: "true"
+      ENABLE_JOBS: "true"
+    ports: ["4000:4000"]
+
+volumes:
+  dbdata:

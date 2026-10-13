@@ -1,0 +1,53 @@
+
+<helmet><script src="hire-data.js"></script></helmet>
+<div style="padding:28px 32px 48px;max-width:1240px;display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap">
+    <div style="flex:1;min-width:240px"><h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-.015em">Artifacts</h1><p style="margin:4px 0 0;color:var(--ink-600)">{{ film }} · everything Copilot has generated for this course</p></div>
+    <div style="position:relative;width:240px;max-width:100%"><svg width="16" height="16" style="position:absolute;left:12px;top:12px;color:var(--ink-500)"><use href="#i-search"></use></svg><input value="{{ q }}" onChange="{{ setQ }}" placeholder="Search artifacts" style="width:100%;height:40px;padding:0 12px 0 36px;border:1px solid var(--ink-300);border-radius:8px;background:#fff"></div>
+  </div>
+  <div style="display:flex;gap:24px;border-bottom:1px solid var(--ink-100);overflow-x:auto;overflow-y:hidden">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.go }}" style="display:inline-flex;align-items:center;gap:8px;border:0;background:none;padding:10px 0;margin-bottom:-1px;border-bottom:2px solid {{ t.bc }};color:{{ t.c }};font-weight:{{ t.fw }};cursor:pointer;white-space:nowrap"><svg width="16" height="16"><use href="{{ t.icon }}"></use></svg>{{ t.label }} <span style="color:var(--ink-500);font-weight:400">{{ t.n }}</span></button></sc-for>
+  </div>
+  <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}"><div style="padding:48px;text-align:center;color:var(--ink-500);background:#fff;border:1px solid var(--ink-100);border-radius:12px">Nothing here yet. Ask Copilot to generate one.</div></sc-if>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">
+    <sc-for list="{{ items }}" as="a" hint-placeholder-count="8">
+      <div onClick="{{ a.open }}" style="display:flex;flex-direction:column;text-align:left;padding:0;border:1px solid var(--ink-100);border-radius:12px;background:#fff;cursor:pointer;overflow:hidden;color:inherit" style-hover="border-color:var(--teal-600);box-shadow:var(--e-1)">
+        <div style="position:relative;aspect-ratio:{{ a.ratio }};background:{{ a.bg }};display:grid;place-items:center;color:{{ a.fg }}">
+          <sc-if value="{{ a.isReport }}"><div style="width:62%;height:78%;background:#fff;border-radius:4px;box-shadow:var(--e-1);padding:12px;display:flex;flex-direction:column;gap:6px"><span style="height:6px;width:70%;background:var(--ink-300);border-radius:2px"></span><span style="height:4px;width:100%;background:var(--ink-100);border-radius:2px"></span><span style="height:4px;width:90%;background:var(--ink-100);border-radius:2px"></span><span style="flex:1;display:flex;align-items:flex-end;gap:4px;padding-top:6px"><span style="flex:1;height:40%;background:var(--teal-100)"></span><span style="flex:1;height:70%;background:var(--teal-600)"></span><span style="flex:1;height:55%;background:var(--teal-100)"></span><span style="flex:1;height:90%;background:var(--teal-600)"></span></span></div></sc-if>
+          <sc-if value="{{ a.isMedia }}"><svg width="28" height="28"><use href="{{ a.icon }}"></use></svg></sc-if>
+          <sc-if value="{{ a.dur }}"><span style="position:absolute;right:8px;bottom:8px;height:20px;padding:0 6px;border-radius:4px;background:rgba(16,36,43,.75);color:#fff;font-size:11px;font-weight:600;display:inline-flex;align-items:center">{{ a.dur }}</span></sc-if>
+        </div>
+        <div style="padding:10px 8px 10px 14px;display:flex;gap:4px;align-items:center;min-width:0;border-top:1px solid var(--ink-100)">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px"><b style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.name }}</b><span style="font-size:12px;color:var(--ink-600);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.meta }}</span></div>
+          <button onClick="{{ a.dl }}" aria-label="Download" title="Download" style="width:32px;height:32px;flex:none;border:0;border-radius:6px;background:none;cursor:pointer;color:var(--ink-600);display:grid;place-items:center" style-hover="background:var(--ink-50);color:var(--teal-700)"><svg width="16" height="16"><use href="#i-download"></use></svg></button>
+          <button onClick="{{ a.del }}" aria-label="Delete" title="Delete" style="width:32px;height:32px;flex:none;border:0;border-radius:6px;background:none;cursor:pointer;color:var(--ink-600);display:grid;place-items:center" style-hover="background:var(--danger-100);color:var(--danger-600)"><svg width="16" height="16"><use href="#i-trash"></use></svg></button>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ close }}" style="position:fixed;inset:0;background:rgba(16,36,43,.45);display:grid;place-items:center;z-index:60;padding:24px">
+      <div onClick="{{ stop }}" style="width:640px;max-width:100%;max-height:90vh;overflow:auto;background:#fff;border-radius:16px;box-shadow:var(--e-3);display:flex;flex-direction:column">
+        <div style="aspect-ratio:{{ sel.ratio }};max-height:360px;background:{{ sel.bg }};color:{{ sel.fg }};display:grid;place-items:center;border-radius:16px 16px 0 0"><svg width="40" height="40"><use href="{{ sel.icon }}"></use></svg></div>
+        <div style="padding:20px 24px 24px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;gap:12px;align-items:flex-start"><div style="flex:1;min-width:0"><b style="font-size:18px;display:block">{{ sel.name }}</b><span style="font-size:13px;color:var(--ink-600)">{{ sel.meta }}</span></div><button onClick="{{ close }}" aria-label="Close" style="width:32px;height:32px;border:0;border-radius:6px;background:none;cursor:pointer;color:var(--ink-500);display:grid;place-items:center" style-hover="background:var(--ink-100)"><svg width="16" height="16"><use href="#i-x"></use></svg></button></div>
+          <div style="padding:12px 14px;background:var(--ink-50);border-radius:8px;font-size:13px;color:var(--ink-700)"><span style="display:block;font-size:12px;font-weight:600;color:var(--ink-500);margin-bottom:4px">Prompt</span>{{ sel.prompt }}</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;font-size:13px">
+            <sc-for list="{{ sel.facts }}" as="f"><div><span style="display:block;font-size:12px;color:var(--ink-500)">{{ f.k }}</span><b style="font-weight:600">{{ f.v }}</b></div></sc-for>
+          </div>
+          <div>
+            <span style="display:block;font-size:12px;font-weight:600;color:var(--ink-500);margin-bottom:8px">Updates</span>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ sel.log }}" as="l"><div style="display:flex;gap:10px;font-size:13px"><span style="width:8px;height:8px;border-radius:50%;background:var(--teal-600);margin-top:6px;flex:none"></span><span style="flex:1">{{ l.t }}</span><span style="color:var(--ink-500);white-space:nowrap">{{ l.d }}</span></div></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+            <button onClick="{{ delSel }}" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:8px;border:0;background:none;color:var(--danger-600);font-weight:600;cursor:pointer;margin-right:auto" style-hover="background:var(--danger-100)"><svg width="16" height="16"><use href="#i-trash"></use></svg>Delete</button>
+            <button onClick="{{ askCopilot }}" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--ink-300);background:#fff;font-weight:600;cursor:pointer" style-hover="background:var(--ink-50)"><svg width="16" height="16"><use href="#i-spark"></use></svg>Open in Copilot</button>
+            <button onClick="{{ dl }}" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;border:0;background:var(--teal-700);color:#fff;font-weight:600;cursor:pointer" style-hover="background:var(--teal-800)"><svg width="16" height="16"><use href="#i-download"></use></svg>Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>

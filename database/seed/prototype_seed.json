@@ -1,0 +1,6148 @@
+{
+ "creators": [
+  {
+   "id": "c1",
+   "name": "Tech Telugu Ravi",
+   "handle": "@techteluguravi",
+   "platform": "YouTube",
+   "type": "Digital creator",
+   "tier": "Macro",
+   "followers": 820000,
+   "mv": 182000,
+   "er": 4.6,
+   "langs": {
+    "Telugu": 82,
+    "English": 18
+   },
+   "markets": {
+    "Hyderabad": 34,
+    "Warangal": 18,
+    "Hanumakonda": 9,
+    "Karimnagar": 10,
+    "Khammam": 8,
+    "Nalgonda": 7,
+    "Nizamabad": 6
+   },
+   "content": [
+    "Career explainers",
+    "Course reviews"
+   ],
+   "tone": "Practical",
+   "formats": [
+    "Long video",
+    "Shorts"
+   ],
+   "topics": {
+    "AI/ML": 0.86,
+    "Career guidance": 0.9,
+    "Data engineering": 0.62,
+    "Software development": 0.7
+   },
+   "rate": 75000,
+   "rateSrc": "Observed",
+   "verif": "Verified",
+   "acct": "Creator",
+   "updated": "2026-09-18",
+   "next": "2026-10-18",
+   "status": "Enriched",
+   "flags": [],
+   "history": [
+    {
+     "film": "Applied AI Batch 3",
+     "campaign": "Alumni referral push",
+     "date": "2026-08-12",
+     "status": "Delivered",
+     "fee": 70000,
+     "rating": 4.5,
+     "views": 244000,
+     "enrols": 21
+    }
+   ],
+   "connected": false,
+   "lastPost": "2026-10-02",
+   "source": "Fetched",
+   "affiliation": "",
+   "consent": "Not required",
+   "consentDate": "",
+   "catchment": null,
+   "district": "Hyderabad",
+   "cohort": "Engineering graduates, 21–25",
+   "skills": [
+    "AI/ML",
+    "Career guidance",
+    "Data engineering"
+   ],
+   "attributed": 62,
+   "av": [
+    "#CFEDE4",
+    "#0F5C54"
+   ],
+   "initials": "TT",
+   "recent": [
+    {
+     "title": "Top 5 AI jobs for Telugu freshers",
+     "date": "2026-10-02",
+     "views": 113776,
+     "clicks": 7091,
+     "format": "Long video",
+     "er": 4.1
+    },
+    {
+     "title": "Is data engineering still worth it in 2026?",
+     "date": "2026-09-27",
+     "views": 142997,
+     "clicks": 6436,
+     "format": "Shorts",
+     "er": 5.9
+    },
+    {
+     "title": "My first ML project, explained in Telugu",
+     "date": "2026-09-20",
+     "views": 101889,
+     "clicks": 7509,
+     "format": "Long video",
+     "er": 3.8
+    },
+    {
+     "title": "Data Analyst Fast-track: what you actually learn",
+     "date": "2026-09-17",
+     "views": 297389,
+     "clicks": 8223,
+     "format": "Shorts",
+     "er": 4.5
+    },
+    {
+     "title": "Resume tips for B.Tech freshers",
+     "date": "2026-09-10",
+     "views": 111176,
+     "clicks": 6110,
+     "format": "Long video",
+     "er": 5
+    },
+    {
+     "title": "Free vs paid AI courses: honest comparison",
+     "date": "2026-09-05",
+     "views": 142740,
+     "clicks": 8259,
+     "format": "Shorts",
+     "er": 3.9
+    }
+   ],
+   "contact": {
+    "email": "techteluguravi@gmail.com",
+    "phone": "+91 9271697131",
+    "manager": "Self-managed"
+   },
+   "activity": [
+    {
+     "date": "2026-09-18",
+     "text": "Profile refreshed from YouTube Data API"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": 2.5,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 721600
+    },
+    {
+     "m": "Jun",
+     "f": 741280
+    },
+    {
+     "m": "Jul",
+     "f": 760960
+    },
+    {
+     "m": "Aug",
+     "f": 780640
+    },
+    {
+     "m": "Sep",
+     "f": 800320
+    },
+    {
+     "m": "Oct",
+     "f": 820000
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "name": "Coding with Sravani",
+   "handle": "@codingwithsravani",
+   "platform": "Instagram",
+   "type": "Micro-influencer",
+   "tier": "Mid",
+   "followers": 214000,
+   "mv": 64000,
+   "er": 7.8,
+   "langs": {
+    "Telugu": 64,
+    "English": 36
+   },
+   "markets": {
+    "Hyderabad": 58,
+    "Warangal": 9,
+    "Hanumakonda": 4,
+    "Karimnagar": 6,
+    "Khammam": 5,
+    "Nalgonda": 6,
+    "Nizamabad": 4
+   },
+   "content": [
+    "Coding reels",
+    "Study tips"
+   ],
+   "tone": "Friendly",
+   "formats": [
+    "Reels",
+    "Carousels"
+   ],
+   "topics": {
+    "Software development": 0.9,
+    "AI/ML": 0.72,
+    "Interview prep": 0.84
+   },
+   "rate": 28000,
+   "rateSrc": "Observed",
+   "verif": "Verified",
+   "acct": "Creator",
+   "updated": "2026-09-18",
+   "next": "2026-10-18",
+   "status": "Enriched",
+   "flags": [],
+   "history": [],
+   "connected": true,
+   "lastPost": "2026-10-05",
+   "source": "Fetched",
+   "affiliation": "",
+   "consent": "Not required",
+   "consentDate": "",
+   "catchment": null,
+   "district": "Hyderabad",
+   "cohort": "Final-year CSE students",
+   "skills": [
+    "Software development",
+    "AI/ML",
+    "Interview prep"
+   ],
+   "attributed": 35,
+   "av": [
+    "#E6EFF8",
+    "#1D4775"
+   ],
+   "initials": "Cw",
+   "recent": [
+    {
+     "title": "Day in my life as a data intern",
+     "date": "2026-10-05",
+     "views": 85556,
+     "clicks": 1993,
+     "format": "Reels",
+     "er": 7.8
+    },
+    {
+     "title": "Python in 30 days: week 2",
+     "date": "2026-09-28",
+     "views": 89063,
+     "clicks": 2998,
+     "format": "Carousels",
+     "er": 9.7
+    },
+    {
+     "title": "How I cracked my first tech interview",
+     "date": "2026-09-24",
+     "views": 92336,
+     "clicks": 2641,
+     "format": "Reels",
+     "er": 6.5
+    },
+    {
+     "title": "Java Full Stack review after week 1",
+     "date": "2026-09-20",
+     "views": 71615,
+     "clicks": 3000,
+     "format": "Carousels",
+     "er": 9.9
+    },
+    {
+     "title": "SQL questions every fresher gets",
+     "date": "2026-09-13",
+     "views": 80629,
+     "clicks": 1891,
+     "format": "Reels",
+     "er": 9.7
+    },
+    {
+     "title": "Notes I wish I had in 3rd year",
+     "date": "2026-09-10",
+     "views": 62960,
+     "clicks": 2820,
+     "format": "Carousels",
+     "er": 6.2
+    }
+   ],
+   "contact": {
+    "email": "codingwithsravani@gmail.com",
+    "phone": "+91 9712001115",
+    "manager": "Kiran (Talent manager)"
+   },
+   "activity": [
+    {
+     "date": "2026-09-18",
+     "text": "Profile refreshed from Meta Graph API"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": 3,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 188320
+    },
+    {
+     "m": "Jun",
+     "f": 193456
+    },
+    {
+     "m": "Jul",
+     "f": 198592
+    },
+    {
+     "m": "Aug",
+     "f": 203728
+    },
+    {
+     "m": "Sep",
+     "f": 208864
+    },
+    {
+     "m": "Oct",
+     "f": 214000
+    }
+   ]
+  },
+  {
+   "id": "c3",
+   "name": "KITS Warangal Placement Cell",
+   "handle": "KITS-W placement broadcast",
+   "platform": "WhatsApp",
+   "type": "Placement cell",
+   "tier": "Mid",
+   "followers": 4200,
+   "mv": null,
+   "er": null,
+   "langs": {
+    "Telugu": 55,
+    "English": 45
+   },
+   "markets": {
+    "Warangal": 72,
+    "Hanumakonda": 24,
+    "Karimnagar": 4
+   },
+   "content": [
+    "Drive notices",
+    "Eligibility updates"
+   ],
+   "tone": "Official",
+   "formats": [
+    "Broadcast message",
+    "Forwardable card"
+   ],
+   "topics": {
+    "Placements": 0.95,
+    "Career guidance": 0.7,
+    "AI/ML": 0.4
+   },
+   "rate": 0,
+   "rateSrc": "Partnership",
+   "verif": "Verified",
+   "acct": "Institution",
+   "updated": "2026-09-18",
+   "next": "2026-10-18",
+   "status": "Enriched",
+   "flags": [],
+   "history": [
+    {
+     "film": "Applied AI Batch 3",
+     "campaign": "Alumni referral push",
+     "date": "2026-08-14",
+     "status": "Delivered",
+     "fee": 0,
+     "rating": 4.8,
+     "views": null,
+     "enrols": 22
+    }
+   ],
+   "connected": false,
+   "lastPost": "2026-10-02",
+   "source": "Uploaded",
+   "affiliation": "KITS Warangal",
+   "consent": "Recorded",
+   "consentDate": "2026-08-02",
+   "catchment": 4200,
+   "district": "Warangal",
+   "cohort": "Engineering graduates, Warangal",
+   "skills": [
+    "Placements",
+    "Career guidance",
+    "AI/ML"
+   ],
+   "attributed": 65,
+   "consentBasis": "MoU with Training & Placement Officer, renewed Aug 2026",
+   "av": [
+    "#FBF1DD",
+    "#7A4F0F"
+   ],
+   "initials": "KW",
+   "recent": [
+    {
+     "title": "Campus drive: registrations open",
+     "date": "2026-09-30",
+     "views": null,
+     "clicks": 51,
+     "format": "Broadcast message",
+     "er": null
+    },
+    {
+     "title": "Eligibility for this month's drives",
+     "date": "2026-09-26",
+     "views": null,
+     "clicks": 90,
+     "format": "Forwardable card",
+     "er": null
+    },
+    {
+     "title": "Java Full Stack: applications open",
+     "date": "2026-09-20",
+     "views": null,
+     "clicks": 78,
+     "format": "Broadcast message",
+     "er": null
+    },
+    {
+     "title": "Mock interview slots",
+     "date": "2026-09-17",
+     "views": null,
+     "clicks": 54,
+     "format": "Forwardable card",
+     "er": null
+    },
+    {
+     "title": "Aptitude test practice set",
+     "date": "2026-09-12",
+     "views": null,
+     "clicks": 66,
+     "format": "Broadcast message",
+     "er": null
+    },
+    {
+     "title": "Offer letters: September batch",
+     "date": "2026-09-06",
+     "views": null,
+     "clicks": 57,
+     "format": "Forwardable card",
+     "er": null
+    }
+   ],
+   "contact": {
+    "email": "kits-wplacementbroadca@gmail.com",
+    "phone": "+91 9617618794",
+    "manager": "Training & Placement Officer"
+   },
+   "activity": [
+    {
+     "date": "2026-08-02",
+     "text": "Institution consent recorded: MoU with Training & Placement Officer, renewed Aug 2026"
+    },
+    {
+     "date": "2026-09-18",
+     "text": "Metrics updated from sheet upload"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": 3.1,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 3696
+    },
+    {
+     "m": "Jun",
+     "f": 3797
+    },
+    {
+     "m": "Jul",
+     "f": 3898
+    },
+    {
+     "m": "Aug",
+     "f": 3998
+    },
+    {
+     "m": "Sep",
+     "f": 4099
+    },
+    {
+     "m": "Oct",
+     "f": 4200
+    }
+   ]
+  },
+  {
+   "id": "c4",
+   "name": "Sai Kiran Reddy",
+   "handle": "linkedin.com/in/saikiran-ml",
+   "platform": "LinkedIn",
+   "type": "Alumnus",
+   "tier": "Micro",
+   "followers": 18400,
+   "mv": 6200,
+   "er": 5.4,
+   "langs": {
+    "English": 70,
+    "Telugu": 30
+   },
+   "markets": {
+    "Hyderabad": 46,
+    "Warangal": 30,
+    "Hanumakonda": 10,
+    "Karimnagar": 6,
+    "Khammam": 4,
+    "Nalgonda": 4
+   },
+   "content": [
+    "Career journey posts",
+    "Project write-ups"
+   ],
+   "tone": "Candid",
+   "formats": [
+    "Posts",
+    "Carousels"
+   ],
+   "topics": {
+    "AI/ML": 0.88,
+    "Career guidance": 0.8,
+    "Data engineering": 0.66
+   },
+   "rate": 15000,
+   "rateSrc": "Observed",
+   "verif": "Verified",
+   "acct": "Creator",
+   "updated": "2026-09-18",
+   "next": "2026-10-18",
+   "status": "Enriched",
+   "flags": [],
+   "history": [
+    {
+     "film": "Applied AI Batch 3",
+     "campaign": "Alumni referral push",
+     "date": "2026-08-13",
+     "status": "Delivered",
+     "fee": 12000,
+     "rating": 4.9,
+     "views": 24000,
+     "enrols": 13
+    }
+   ],
+   "connected": false,
+   "lastPost": "2026-10-02",
+   "source": "Uploaded",
+   "affiliation": "Applied AI Batch 2 alumnus · NIT Warangal 2023",
+   "consent": "Not required",
+   "consentDate": "",
+   "catchment": null,
+   "district": "Hyderabad",
+   "cohort": "Engineering graduates, Warangal",
+   "skills": [
+    "AI/ML",
+    "Career guidance",
+    "Data engineering"
+   ],
+   "attributed": 30,
+   "av": [
+    "#F3E9F6",
+    "#5E3070"
+   ],
+   "initials": "SK",
+   "recent": [
+    {
+     "title": "From Warangal to a data team in 9 months",
+     "date": "2026-09-30",
+     "views": 4660,
+     "clicks": 156,
+     "format": "Posts",
+     "er": 6.2
+    },
+    {
+     "title": "What Java Full Stack taught me",
+     "date": "2026-09-26",
+     "views": 5505,
+     "clicks": 137,
+     "format": "Carousels",
+     "er": 6.5
+    },
+    {
+     "title": "My salary journey is not the point: skills are",
+     "date": "2026-09-20",
+     "views": 9133,
+     "clicks": 255,
+     "format": "Posts",
+     "er": 3.9
+    },
+    {
+     "title": "Answering your questions about switching to AI",
+     "date": "2026-09-17",
+     "views": 7929,
+     "clicks": 241,
+     "format": "Carousels",
+     "er": 4.5
+    },
+    {
+     "title": "First 90 days on the job",
+     "date": "2026-09-11",
+     "views": 5047,
+     "clicks": 168,
+     "format": "Posts",
+     "er": 5.6
+    },
+    {
+     "title": "Projects that got me shortlisted",
+     "date": "2026-09-05",
+     "views": 3565,
+     "clicks": 255,
+     "format": "Carousels",
+     "er": 5.4
+    }
+   ],
+   "contact": {
+    "email": "linkedincominsaikiran-@gmail.com",
+    "phone": "+91 9200339326",
+    "manager": "Spotlight Talent"
+   },
+   "activity": [
+    {
+     "date": "2026-09-18",
+     "text": "Metrics updated from sheet upload"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": 3.3,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 16192
+    },
+    {
+     "m": "Jun",
+     "f": 16634
+    },
+    {
+     "m": "Jul",
+     "f": 17075
+    },
+    {
+     "m": "Aug",
+     "f": 17517
+    },
+    {
+     "m": "Sep",
+     "f": 17958
+    },
+    {
+     "m": "Oct",
+     "f": 18400
+    }
+   ]
+  },
+  {
+   "id": "c5",
+   "name": "Telangana Engineering Students",
+   "handle": "fb.com/groups/tgengineers",
+   "platform": "Facebook",
+   "type": "College network",
+   "tier": "Macro",
+   "followers": 342000,
+   "mv": 52000,
+   "er": 2.4,
+   "langs": {
+    "Telugu": 74,
+    "English": 26
+   },
+   "markets": {
+    "Hyderabad": 30,
+    "Warangal": 16,
+    "Hanumakonda": 8,
+    "Karimnagar": 14,
+    "Khammam": 12,
+    "Nalgonda": 12,
+    "Nizamabad": 8
+   },
+   "content": [
+    "Exam updates",
+    "Job posts"
+   ],
+   "tone": "Informative",
+   "formats": [
+    "Posts",
+    "Videos"
+   ],
+   "topics": {
+    "Placements": 0.72,
+    "Career guidance": 0.66,
+    "Software development": 0.4
+   },
+   "rate": 18000,
+   "rateSrc": "Observed",
+   "verif": "Verified",
+   "acct": "Institution",
+   "updated": "2026-09-18",
+   "next": "2026-10-18",
+   "status": "Enriched",
+   "flags": [],
+   "history": [],
+   "connected": false,
+   "lastPost": "2026-10-02",
+   "source": "Fetched",
+   "affiliation": "Student-run, 14 colleges",
+   "consent": "Recorded",
+   "consentDate": "2026-09-10",
+   "catchment": null,
+   "district": "Hyderabad",
+   "cohort": "Engineering students and graduates",
+   "skills": [
+    "Placements",
+    "Career guidance",
+    "Software development"
+   ],
+   "attributed": 6,
+   "consentBasis": "Admin agreement, group rules permit sponsored posts",
+   "av": [
+    "#FBE9E5",
+    "#8E3322"
+   ],
+   "initials": "TE",
+   "recent": [
+    {
+     "title": "Placement drive schedule: October",
+     "date": "2026-10-01",
+     "views": 67493,
+     "clicks": 2565,
+     "format": "Posts",
+     "er": 2.8
+    },
+    {
+     "title": "Hackathon results announced",
+     "date": "2026-09-25",
+     "views": 39393,
+     "clicks": 1137,
+     "format": "Videos",
+     "er": 2.8
+    },
+    {
+     "title": "Free workshop: GenAI basics",
+     "date": "2026-09-21",
+     "views": 62219,
+     "clicks": 2135,
+     "format": "Posts",
+     "er": 2.7
+    },
+    {
+     "title": "Cloud Foundations info session this Friday",
+     "date": "2026-09-16",
+     "views": 62585,
+     "clicks": 1389,
+     "format": "Videos",
+     "er": 2.7
+    },
+    {
+     "title": "Internship openings this month",
+     "date": "2026-09-12",
+     "views": 84202,
+     "clicks": 2161,
+     "format": "Posts",
+     "er": 1.8
+    },
+    {
+     "title": "Alumni talk: from campus to product team",
+     "date": "2026-09-07",
+     "views": 81417,
+     "clicks": 1286,
+     "format": "Videos",
+     "er": 2.3
+    }
+   ],
+   "contact": {
+    "email": "groupstgengineers@gmail.com",
+    "phone": "+91 9156817638",
+    "manager": "Training & Placement Officer"
+   },
+   "activity": [
+    {
+     "date": "2026-09-10",
+     "text": "Institution consent recorded: Admin agreement, group rules permit sponsored posts"
+    },
+    {
+     "date": "2026-09-18",
+     "text": "Profile refreshed from Meta Graph API"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": 0.5,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 300960
+    },
+    {
+     "m": "Jun",
+     "f": 309168
+    },
+    {
+     "m": "Jul",
+     "f": 317376
+    },
+    {
+     "m": "Aug",
+     "f": 325584
+    },
+    {
+     "m": "Sep",
+     "f": 333792
+    },
+    {
+     "m": "Oct",
+     "f": 342000
+    }
+   ]
+  },
+  {
+   "id": "c6",
+   "name": "Prof. Lakshmi Narayana",
+   "handle": "@proflnteaches",
+   "platform": "YouTube",
+   "type": "Trainer or mentor",
+   "tier": "Mid",
+   "followers": 64000,
+   "mv": 21000,
+   "er": 8.9,
+   "langs": {
+    "Telugu": 90,
+    "English": 10
+   },
+   "markets": {
+    "Warangal": 38,
+    "Hanumakonda": 22,
+    "Karimnagar": 14,
+    "Khammam": 10,
+    "Hyderabad": 10,
+    "Nalgonda": 6
+   },
+   "content": [
+    "ML lectures in Telugu",
+    "Doubt sessions"
+   ],
+   "tone": "Patient",
+   "formats": [
+    "Long video",
+    "Live"
+   ],
+   "topics": {
+    "AI/ML": 0.94,
+    "Data engineering": 0.7,
+    "Career guidance": 0.5
+   },
+   "rate": 30000,
+   "rateSrc": "Observed",
+   "verif": "Verified",
+   "acct": "Creator",
+   "updated": "2026-09-18",
+   "next": "2026-10-18",
+   "status": "Enriched",
+   "flags": [],
+   "history": [],
+   "connected": false,
+   "lastPost": "2026-10-01",
+   "source": "Fetched",
+   "affiliation": "Former faculty, KITS Warangal",
+   "consent": "Not required",
+   "consentDate": "",
+   "catchment": null,
+   "district": "Warangal",
+   "cohort": "Engineering graduates, Warangal",
+   "skills": [
+    "AI/ML",
+    "Data engineering",
+    "Career guidance"
+   ],
+   "attributed": 0,
+   "av": [
+    "#ECEDF8",
+    "#3A3E86"
+   ],
+   "initials": "PL",
+   "recent": [
+    {
+     "title": "Linear regression in Telugu",
+     "date": "2026-10-01",
+     "views": 30757,
+     "clicks": 767,
+     "format": "Long video",
+     "er": 7.6
+    },
+    {
+     "title": "Applied AI Batch 3: syllabus walk-through",
+     "date": "2026-09-25",
+     "views": 32616,
+     "clicks": 512,
+     "format": "Live",
+     "er": 7.5
+    },
+    {
+     "title": "Live doubt session: Python basics",
+     "date": "2026-09-20",
+     "views": 13445,
+     "clicks": 730,
+     "format": "Long video",
+     "er": 8.9
+    },
+    {
+     "title": "Statistics for ML, part 3",
+     "date": "2026-09-15",
+     "views": 21984,
+     "clicks": 431,
+     "format": "Live",
+     "er": 6.8
+    },
+    {
+     "title": "How to pick a capstone project",
+     "date": "2026-09-10",
+     "views": 21071,
+     "clicks": 733,
+     "format": "Long video",
+     "er": 8.8
+    },
+    {
+     "title": "Common mistakes in ML interviews",
+     "date": "2026-09-06",
+     "views": 30468,
+     "clicks": 996,
+     "format": "Live",
+     "er": 7.5
+    }
+   ],
+   "contact": {
+    "email": "proflnteaches@gmail.com",
+    "phone": "+91 9809854358",
+    "manager": "Kiran (Talent manager)"
+   },
+   "activity": [
+    {
+     "date": "2026-09-18",
+     "text": "Profile refreshed from YouTube Data API"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": 1.6,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 56320
+    },
+    {
+     "m": "Jun",
+     "f": 57856
+    },
+    {
+     "m": "Jul",
+     "f": 59392
+    },
+    {
+     "m": "Aug",
+     "f": 60928
+    },
+    {
+     "m": "Sep",
+     "f": 62464
+    },
+    {
+     "m": "Oct",
+     "f": 64000
+    }
+   ]
+  },
+  {
+   "id": "c7",
+   "name": "Hyderabad Tech Jobs",
+   "handle": "@hydtechjobs",
+   "platform": "Instagram",
+   "type": "Digital creator",
+   "tier": "Macro",
+   "followers": 486000,
+   "mv": 142000,
+   "er": 1.8,
+   "langs": {
+    "English": 58,
+    "Telugu": 42
+   },
+   "markets": {
+    "Hyderabad": 71,
+    "Warangal": 5,
+    "Hanumakonda": 2,
+    "Karimnagar": 4,
+    "Khammam": 4,
+    "Nalgonda": 6,
+    "Nizamabad": 4
+   },
+   "content": [
+    "Job alerts",
+    "Salary reels"
+   ],
+   "tone": "Hype",
+   "formats": [
+    "Reels",
+    "Stories"
+   ],
+   "topics": {
+    "Career guidance": 0.74,
+    "Placements": 0.62,
+    "Software development": 0.4
+   },
+   "rate": 60000,
+   "rateSrc": "Observed",
+   "verif": "Verified",
+   "acct": "Business",
+   "updated": "2026-09-18",
+   "next": "2026-10-18",
+   "status": "Enriched",
+   "flags": [],
+   "history": [],
+   "connected": false,
+   "lastPost": "2026-10-02",
+   "source": "Fetched",
+   "affiliation": "",
+   "consent": "Not required",
+   "consentDate": "",
+   "catchment": null,
+   "district": "Hyderabad",
+   "cohort": "Job seekers, Hyderabad",
+   "skills": [
+    "Career guidance",
+    "Placements",
+    "Software development"
+   ],
+   "attributed": 2,
+   "av": [
+    "#CFEDE4",
+    "#0F5C54"
+   ],
+   "initials": "HT",
+   "recent": [
+    {
+     "title": "Top 5 AI jobs for Telugu freshers",
+     "date": "2026-10-01",
+     "views": 117704,
+     "clicks": 4805,
+     "format": "Reels",
+     "er": 1.8
+    },
+    {
+     "title": "Is data engineering still worth it in 2026?",
+     "date": "2026-09-26",
+     "views": 107134,
+     "clicks": 3361,
+     "format": "Stories",
+     "er": 1.4
+    },
+    {
+     "title": "My first ML project, explained in Telugu",
+     "date": "2026-09-20",
+     "views": 124337,
+     "clicks": 5918,
+     "format": "Reels",
+     "er": 2.1
+    },
+    {
+     "title": "Java Full Stack: what you actually learn",
+     "date": "2026-09-15",
+     "views": 97706,
+     "clicks": 5529,
+     "format": "Stories",
+     "er": 2.2
+    },
+    {
+     "title": "Resume tips for B.Tech freshers",
+     "date": "2026-09-11",
+     "views": 232442,
+     "clicks": 3328,
+     "format": "Reels",
+     "er": 2
+    },
+    {
+     "title": "Free vs paid AI courses: honest comparison",
+     "date": "2026-09-07",
+     "views": 200868,
+     "clicks": 6277,
+     "format": "Stories",
+     "er": 1.6
+    }
+   ],
+   "contact": {
+    "email": "hydtechjobs@gmail.com",
+    "phone": "+91 9577591467",
+    "manager": "Self-managed"
+   },
+   "activity": [
+    {
+     "date": "2026-09-18",
+     "text": "Profile refreshed from Meta Graph API"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": 1.9,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 427680
+    },
+    {
+     "m": "Jun",
+     "f": 439344
+    },
+    {
+     "m": "Jul",
+     "f": 451008
+    },
+    {
+     "m": "Aug",
+     "f": 462672
+    },
+    {
+     "m": "Sep",
+     "f": 474336
+    },
+    {
+     "m": "Oct",
+     "f": 486000
+    }
+   ]
+  },
+  {
+   "id": "c8",
+   "name": "Warangal Youth Forum",
+   "handle": "WYF community broadcast",
+   "platform": "WhatsApp",
+   "type": "Community leader",
+   "tier": "Micro",
+   "followers": 2600,
+   "mv": null,
+   "er": null,
+   "langs": {
+    "Telugu": 92,
+    "English": 8
+   },
+   "markets": {
+    "Warangal": 64,
+    "Hanumakonda": 30,
+    "Khammam": 6
+   },
+   "content": [
+    "Event notices",
+    "Scheme updates"
+   ],
+   "tone": "Trusted",
+   "formats": [
+    "Broadcast message",
+    "Forwardable card"
+   ],
+   "topics": {
+    "Career guidance": 0.72,
+    "Placements": 0.6
+   },
+   "rate": 0,
+   "rateSrc": "Partnership",
+   "verif": "Verified",
+   "acct": "Creator",
+   "updated": "2026-09-18",
+   "next": "2026-10-18",
+   "status": "Enriched",
+   "flags": [],
+   "history": [],
+   "connected": false,
+   "lastPost": "2026-10-02",
+   "source": "Uploaded",
+   "affiliation": "Registered youth association",
+   "consent": "Not required",
+   "consentDate": "",
+   "catchment": 2600,
+   "district": "Warangal",
+   "cohort": "Graduates, Warangal district",
+   "skills": [
+    "Career guidance",
+    "Placements"
+   ],
+   "attributed": 0,
+   "av": [
+    "#E6EFF8",
+    "#1D4775"
+   ],
+   "initials": "WY",
+   "recent": [
+    {
+     "title": "Job mela at Hanumakonda this Sunday",
+     "date": "2026-09-30",
+     "views": null,
+     "clicks": 73,
+     "format": "Broadcast message",
+     "er": null
+    },
+    {
+     "title": "Free skilling programmes list",
+     "date": "2026-09-27",
+     "views": null,
+     "clicks": 32,
+     "format": "Forwardable card",
+     "er": null
+    },
+    {
+     "title": "Java Full Stack registration help desk",
+     "date": "2026-09-22",
+     "views": null,
+     "clicks": 71,
+     "format": "Broadcast message",
+     "er": null
+    },
+    {
+     "title": "Youth meet: careers after B.Tech",
+     "date": "2026-09-15",
+     "views": null,
+     "clicks": 76,
+     "format": "Forwardable card",
+     "er": null
+    },
+    {
+     "title": "Scholarship updates",
+     "date": "2026-09-12",
+     "views": null,
+     "clicks": 39,
+     "format": "Broadcast message",
+     "er": null
+    },
+    {
+     "title": "Local employers hiring now",
+     "date": "2026-09-05",
+     "views": null,
+     "clicks": 44,
+     "format": "Forwardable card",
+     "er": null
+    }
+   ],
+   "contact": {
+    "email": "wyfcommunitybroadcast@gmail.com",
+    "phone": "+91 9214982946",
+    "manager": "Spotlight Talent"
+   },
+   "activity": [
+    {
+     "date": "2026-09-18",
+     "text": "Metrics updated from sheet upload"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": 0.2,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 2288
+    },
+    {
+     "m": "Jun",
+     "f": 2350
+    },
+    {
+     "m": "Jul",
+     "f": 2413
+    },
+    {
+     "m": "Aug",
+     "f": 2475
+    },
+    {
+     "m": "Sep",
+     "f": 2538
+    },
+    {
+     "m": "Oct",
+     "f": 2600
+    }
+   ]
+  },
+  {
+   "id": "c9",
+   "name": "Career Guru Telugu",
+   "handle": "@careergurutelugu",
+   "platform": "YouTube",
+   "type": "Digital creator",
+   "tier": "Mega",
+   "followers": 1120000,
+   "mv": 240000,
+   "er": 3.2,
+   "langs": {
+    "Telugu": 88,
+    "English": 12
+   },
+   "markets": {
+    "Hyderabad": 28,
+    "Warangal": 12,
+    "Hanumakonda": 6,
+    "Karimnagar": 12,
+    "Khammam": 12,
+    "Nalgonda": 14,
+    "Nizamabad": 16
+   },
+   "content": [
+    "Career advice",
+    "Govt jobs"
+   ],
+   "tone": "Motivational",
+   "formats": [
+    "Long video",
+    "Shorts"
+   ],
+   "topics": {
+    "Career guidance": 0.92,
+    "Placements": 0.7,
+    "AI/ML": 0.46
+   },
+   "rate": 95000,
+   "rateSrc": "Observed",
+   "verif": "Verified",
+   "acct": "Creator",
+   "updated": "2026-09-18",
+   "next": "2026-10-18",
+   "status": "Enriched",
+   "flags": [],
+   "history": [],
+   "connected": false,
+   "lastPost": "2026-10-02",
+   "source": "Fetched",
+   "affiliation": "",
+   "consent": "Not required",
+   "consentDate": "",
+   "catchment": null,
+   "district": "Hyderabad",
+   "cohort": "Graduates, all Telangana",
+   "skills": [
+    "Career guidance",
+    "Placements",
+    "AI/ML"
+   ],
+   "attributed": 16,
+   "av": [
+    "#FBF1DD",
+    "#7A4F0F"
+   ],
+   "initials": "CG",
+   "recent": [
+    {
+     "title": "Top 5 AI jobs for Telugu freshers",
+     "date": "2026-10-01",
+     "views": 137314,
+     "clicks": 11308,
+     "format": "Long video",
+     "er": 2.8
+    },
+    {
+     "title": "Is data engineering still worth it in 2026?",
+     "date": "2026-09-25",
+     "views": 235125,
+     "clicks": 5311,
+     "format": "Shorts",
+     "er": 2.7
+    },
+    {
+     "title": "My first ML project, explained in Telugu",
+     "date": "2026-09-20",
+     "views": 294501,
+     "clicks": 5842,
+     "format": "Long video",
+     "er": 3.1
+    },
+    {
+     "title": "Applied AI Batch 3: what you actually learn",
+     "date": "2026-09-16",
+     "views": 218227,
+     "clicks": 7676,
+     "format": "Shorts",
+     "er": 3.8
+    },
+    {
+     "title": "Resume tips for B.Tech freshers",
+     "date": "2026-09-11",
+     "views": 257637,
+     "clicks": 7574,
+     "format": "Long video",
+     "er": 3.8
+    },
+    {
+     "title": "Free vs paid AI courses: honest comparison",
+     "date": "2026-09-06",
+     "views": 219188,
+     "clicks": 10987,
+     "format": "Shorts",
+     "er": 2.7
+    }
+   ],
+   "contact": {
+    "email": "careergurutelugu@gmail.com",
+    "phone": "+91 9617992652",
+    "manager": "Self-managed"
+   },
+   "activity": [
+    {
+     "date": "2026-09-18",
+     "text": "Profile refreshed from YouTube Data API"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": -0.1,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 985600
+    },
+    {
+     "m": "Jun",
+     "f": 1012480
+    },
+    {
+     "m": "Jul",
+     "f": 1039360
+    },
+    {
+     "m": "Aug",
+     "f": 1066240
+    },
+    {
+     "m": "Sep",
+     "f": 1093120
+    },
+    {
+     "m": "Oct",
+     "f": 1120000
+    }
+   ]
+  },
+  {
+   "id": "c10",
+   "name": "JNTUH Students' Forum",
+   "handle": "@jntuhstudentsforum",
+   "platform": "Instagram",
+   "type": "College network",
+   "tier": "Mid",
+   "followers": 96000,
+   "mv": 28000,
+   "er": 5.1,
+   "langs": {
+    "Telugu": 52,
+    "English": 48
+   },
+   "markets": {
+    "Hyderabad": 82,
+    "Nalgonda": 6,
+    "Khammam": 4,
+    "Karimnagar": 4,
+    "Warangal": 4
+   },
+   "content": [
+    "Campus news",
+    "Event reels"
+   ],
+   "tone": "Peer",
+   "formats": [
+    "Reels",
+    "Stories"
+   ],
+   "topics": {
+    "Placements": 0.8,
+    "Software development": 0.6,
+    "AI/ML": 0.55
+   },
+   "rate": 10000,
+   "rateSrc": "Observed",
+   "verif": "Verified",
+   "acct": "Institution",
+   "updated": "2026-09-18",
+   "next": "2026-10-18",
+   "status": "Enriched",
+   "flags": [],
+   "history": [],
+   "connected": false,
+   "lastPost": "2026-10-02",
+   "source": "Fetched",
+   "affiliation": "JNTU Hyderabad student body",
+   "consent": "Recorded",
+   "consentDate": "2026-09-20",
+   "catchment": null,
+   "district": "Hyderabad",
+   "cohort": "Final-year CSE students",
+   "skills": [
+    "Placements",
+    "Software development",
+    "AI/ML"
+   ],
+   "attributed": 12,
+   "consentBasis": "Letter from forum office-bearers, 20 Sep 2026",
+   "av": [
+    "#F3E9F6",
+    "#5E3070"
+   ],
+   "initials": "JS",
+   "recent": [
+    {
+     "title": "Placement drive schedule: October",
+     "date": "2026-09-30",
+     "views": 24591,
+     "clicks": 1361,
+     "format": "Reels",
+     "er": 4.1
+    },
+    {
+     "title": "Hackathon results announced",
+     "date": "2026-09-26",
+     "views": 15692,
+     "clicks": 1363,
+     "format": "Stories",
+     "er": 4.7
+    },
+    {
+     "title": "Free workshop: GenAI basics",
+     "date": "2026-09-21",
+     "views": 34510,
+     "clicks": 1353,
+     "format": "Reels",
+     "er": 4.2
+    },
+    {
+     "title": "Cloud Foundations info session this Friday",
+     "date": "2026-09-15",
+     "views": 27919,
+     "clicks": 608,
+     "format": "Stories",
+     "er": 4.8
+    },
+    {
+     "title": "Internship openings this month",
+     "date": "2026-09-12",
+     "views": 16949,
+     "clicks": 576,
+     "format": "Reels",
+     "er": 4.1
+    },
+    {
+     "title": "Alumni talk: from campus to product team",
+     "date": "2026-09-06",
+     "views": 39419,
+     "clicks": 1350,
+     "format": "Stories",
+     "er": 4.1
+    }
+   ],
+   "contact": {
+    "email": "jntuhstudentsforum@gmail.com",
+    "phone": "+91 9820534419",
+    "manager": "Training & Placement Officer"
+   },
+   "activity": [
+    {
+     "date": "2026-09-20",
+     "text": "Institution consent recorded: Letter from forum office-bearers, 20 Sep 2026"
+    },
+    {
+     "date": "2026-09-18",
+     "text": "Profile refreshed from Meta Graph API"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": 3.2,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 84480
+    },
+    {
+     "m": "Jun",
+     "f": 86784
+    },
+    {
+     "m": "Jul",
+     "f": 89088
+    },
+    {
+     "m": "Aug",
+     "f": 91392
+    },
+    {
+     "m": "Sep",
+     "f": 93696
+    },
+    {
+     "m": "Oct",
+     "f": 96000
+    }
+   ]
+  },
+  {
+   "id": "c11",
+   "name": "Placement Prep Telugu",
+   "handle": "@placementpreptelugu",
+   "platform": "Instagram",
+   "type": "Micro-influencer",
+   "tier": "Mid",
+   "followers": 132000,
+   "mv": 38000,
+   "er": 6,
+   "langs": {
+    "Telugu": 80,
+    "English": 20
+   },
+   "markets": {
+    "Hyderabad": 40,
+    "Warangal": 18,
+    "Karimnagar": 14,
+    "Khammam": 10,
+    "Nalgonda": 10,
+    "Nizamabad": 8
+   },
+   "content": [
+    "Aptitude reels"
+   ],
+   "tone": "Energetic",
+   "formats": [
+    "Reels"
+   ],
+   "topics": {
+    "Interview prep": 0.9,
+    "Placements": 0.82
+   },
+   "rate": 18000,
+   "rateSrc": "Observed",
+   "verif": "Verified",
+   "acct": "Creator",
+   "updated": "2026-09-18",
+   "next": "2026-10-18",
+   "status": "Enriched",
+   "flags": [],
+   "history": [
+    {
+     "film": "Data Analyst Fast-track",
+     "campaign": "Launch",
+     "date": "2026-04-02",
+     "status": "Backed out",
+     "note": "Pulled out 2 days before post date"
+    },
+    {
+     "film": "Cloud Foundations",
+     "campaign": "Batch 1",
+     "date": "2026-06-10",
+     "status": "Delivered",
+     "fee": 16000,
+     "rating": 3.6,
+     "views": 52000,
+     "enrols": 4
+    },
+    {
+     "film": "Applied AI Batch 3",
+     "campaign": "Alumni referral push",
+     "date": "2026-08-10",
+     "status": "Backed out",
+     "note": "Signed exclusive with a competing bootcamp"
+    }
+   ],
+   "connected": false,
+   "lastPost": "2026-10-02",
+   "source": "Fetched",
+   "affiliation": "",
+   "consent": "Not required",
+   "consentDate": "",
+   "catchment": null,
+   "district": "Hyderabad",
+   "cohort": "",
+   "skills": [
+    "Interview prep",
+    "Placements"
+   ],
+   "attributed": 0,
+   "av": [
+    "#FBE9E5",
+    "#8E3322"
+   ],
+   "initials": "PP",
+   "recent": [
+    {
+     "title": "Day in my life as a data intern",
+     "date": "2026-10-01",
+     "views": 41187,
+     "clicks": 1760,
+     "format": "Reels",
+     "er": 7
+    },
+    {
+     "title": "Python in 30 days: week 2",
+     "date": "2026-09-25",
+     "views": 30606,
+     "clicks": 962,
+     "format": "Reels",
+     "er": 7
+    },
+    {
+     "title": "How I cracked my first tech interview",
+     "date": "2026-09-21",
+     "views": 44571,
+     "clicks": 873,
+     "format": "Reels",
+     "er": 6
+    },
+    {
+     "title": "Data Analyst Fast-track review after week 1",
+     "date": "2026-09-16",
+     "views": 43467,
+     "clicks": 1040,
+     "format": "Reels",
+     "er": 5.4
+    },
+    {
+     "title": "SQL questions every fresher gets",
+     "date": "2026-09-11",
+     "views": 45248,
+     "clicks": 1379,
+     "format": "Reels",
+     "er": 7.4
+    },
+    {
+     "title": "Notes I wish I had in 3rd year",
+     "date": "2026-09-05",
+     "views": 58137,
+     "clicks": 789,
+     "format": "Reels",
+     "er": 6.6
+    }
+   ],
+   "contact": {
+    "email": "placementpreptelugu@gmail.com",
+    "phone": "+91 9357548184",
+    "manager": "Self-managed"
+   },
+   "activity": [
+    {
+     "date": "2026-09-18",
+     "text": "Profile refreshed from Meta Graph API"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": 0.6,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 116160
+    },
+    {
+     "m": "Jun",
+     "f": 119328
+    },
+    {
+     "m": "Jul",
+     "f": 122496
+    },
+    {
+     "m": "Aug",
+     "f": 125664
+    },
+    {
+     "m": "Sep",
+     "f": 128832
+    },
+    {
+     "m": "Oct",
+     "f": 132000
+    }
+   ]
+  },
+  {
+   "id": "c12",
+   "name": "SNIST Placement Cell",
+   "handle": "linkedin.com/school/snist-tpo",
+   "platform": "LinkedIn",
+   "type": "Placement cell",
+   "tier": "Micro",
+   "followers": 8900,
+   "mv": 2400,
+   "er": 3,
+   "langs": {
+    "English": 86,
+    "Telugu": 14
+   },
+   "markets": {
+    "Hyderabad": 88,
+    "Nalgonda": 12
+   },
+   "content": [
+    "Drive notices"
+   ],
+   "tone": "Official",
+   "formats": [
+    "Posts"
+   ],
+   "topics": {
+    "Placements": 0.9,
+    "Software development": 0.5
+   },
+   "rate": 0,
+   "rateSrc": "Partnership",
+   "verif": "Verified",
+   "acct": "Institution",
+   "updated": "2026-09-18",
+   "next": "2026-10-18",
+   "status": "Enriched",
+   "flags": [],
+   "history": [],
+   "connected": false,
+   "lastPost": "2026-10-02",
+   "source": "Uploaded",
+   "affiliation": "Sreenidhi Institute of Science and Technology",
+   "consent": "Missing",
+   "consentDate": "",
+   "catchment": 3100,
+   "district": "Hyderabad",
+   "cohort": "Final-year students, Hyderabad",
+   "skills": [
+    "Placements",
+    "Software development"
+   ],
+   "attributed": 0,
+   "consentBasis": "",
+   "av": [
+    "#ECEDF8",
+    "#3A3E86"
+   ],
+   "initials": "SP",
+   "recent": [
+    {
+     "title": "Campus drive: registrations open",
+     "date": "2026-10-01",
+     "views": 1364,
+     "clicks": 88,
+     "format": "Posts",
+     "er": 3.5
+    },
+    {
+     "title": "Eligibility for this month's drives",
+     "date": "2026-09-26",
+     "views": 1885,
+     "clicks": 94,
+     "format": "Posts",
+     "er": 2.8
+    },
+    {
+     "title": "Data Analyst Fast-track: applications open",
+     "date": "2026-09-22",
+     "views": 2133,
+     "clicks": 77,
+     "format": "Posts",
+     "er": 2.3
+    },
+    {
+     "title": "Mock interview slots",
+     "date": "2026-09-16",
+     "views": 1971,
+     "clicks": 58,
+     "format": "Posts",
+     "er": 3.8
+    },
+    {
+     "title": "Aptitude test practice set",
+     "date": "2026-09-10",
+     "views": 1712,
+     "clicks": 85,
+     "format": "Posts",
+     "er": 3.5
+    },
+    {
+     "title": "Offer letters: September batch",
+     "date": "2026-09-07",
+     "views": 2728,
+     "clicks": 89,
+     "format": "Posts",
+     "er": 2.6
+    }
+   ],
+   "contact": {
+    "email": "linkedincomschoolsnist@gmail.com",
+    "phone": "+91 9893189821",
+    "manager": "Training & Placement Officer"
+   },
+   "activity": [
+    {
+     "date": "2026-09-18",
+     "text": "Metrics updated from sheet upload"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": 0.7,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 7832
+    },
+    {
+     "m": "Jun",
+     "f": 8046
+    },
+    {
+     "m": "Jul",
+     "f": 8259
+    },
+    {
+     "m": "Aug",
+     "f": 8473
+    },
+    {
+     "m": "Sep",
+     "f": 8686
+    },
+    {
+     "m": "Oct",
+     "f": 8900
+    }
+   ]
+  },
+  {
+   "id": "c13",
+   "name": "Data Science Diaries Telugu",
+   "handle": "@dsdiariestelugu",
+   "platform": "YouTube",
+   "type": "Micro-influencer",
+   "tier": "Micro",
+   "followers": 42000,
+   "mv": 11000,
+   "er": 7.4,
+   "langs": {
+    "Telugu": 84,
+    "English": 16
+   },
+   "markets": {
+    "Hyderabad": 36,
+    "Warangal": 22,
+    "Khammam": 14,
+    "Nalgonda": 14,
+    "Karimnagar": 14
+   },
+   "content": [
+    "Data science tutorials"
+   ],
+   "tone": "Calm",
+   "formats": [
+    "Long video"
+   ],
+   "topics": {
+    "Data engineering": 0.86,
+    "AI/ML": 0.8
+   },
+   "rate": 9000,
+   "rateSrc": "Illustrative",
+   "verif": "Verified",
+   "acct": "Creator",
+   "updated": "2026-06-20",
+   "next": "Overdue",
+   "status": "Partial",
+   "flags": [],
+   "history": [],
+   "connected": false,
+   "lastPost": "2026-10-02",
+   "source": "Fetched",
+   "affiliation": "",
+   "consent": "Not required",
+   "consentDate": "",
+   "catchment": null,
+   "district": "Hyderabad",
+   "cohort": "Engineering graduates",
+   "skills": [
+    "Data engineering",
+    "AI/ML"
+   ],
+   "attributed": 0,
+   "partialNote": "Audience geography unavailable (channel did not connect YouTube Analytics)",
+   "av": [
+    "#CFEDE4",
+    "#0F5C54"
+   ],
+   "initials": "DS",
+   "recent": [
+    {
+     "title": "Day in my life as a data intern",
+     "date": "2026-10-02",
+     "views": 6854,
+     "clicks": 297,
+     "format": "Long video",
+     "er": 9.1
+    },
+    {
+     "title": "Python in 30 days: week 2",
+     "date": "2026-09-26",
+     "views": 12401,
+     "clicks": 331,
+     "format": "Long video",
+     "er": 9.2
+    },
+    {
+     "title": "How I cracked my first tech interview",
+     "date": "2026-09-21",
+     "views": 14793,
+     "clicks": 400,
+     "format": "Long video",
+     "er": 6.6
+    },
+    {
+     "title": "Applied AI Batch 2 review after week 1",
+     "date": "2026-09-17",
+     "views": 12239,
+     "clicks": 235,
+     "format": "Long video",
+     "er": 7.1
+    },
+    {
+     "title": "SQL questions every fresher gets",
+     "date": "2026-09-10",
+     "views": 7669,
+     "clicks": 289,
+     "format": "Long video",
+     "er": 7.9
+    },
+    {
+     "title": "Notes I wish I had in 3rd year",
+     "date": "2026-09-07",
+     "views": 14897,
+     "clicks": 312,
+     "format": "Long video",
+     "er": 8.3
+    }
+   ],
+   "contact": {
+    "email": "dsdiariestelugu@gmail.com",
+    "phone": "+91 9398586377",
+    "manager": "Self-managed"
+   },
+   "activity": [
+    {
+     "date": "2026-06-20",
+     "text": "Profile refreshed from YouTube Data API"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": 0.1,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 36960
+    },
+    {
+     "m": "Jun",
+     "f": 37968
+    },
+    {
+     "m": "Jul",
+     "f": 38976
+    },
+    {
+     "m": "Aug",
+     "f": 39984
+    },
+    {
+     "m": "Sep",
+     "f": 40992
+    },
+    {
+     "m": "Oct",
+     "f": 42000
+    }
+   ]
+  },
+  {
+   "id": "c14",
+   "name": "Khammam Graduates Network",
+   "handle": "fb.com/groups/khammamgrads",
+   "platform": "Facebook",
+   "type": "Community leader",
+   "tier": "Micro",
+   "followers": 28000,
+   "mv": 6400,
+   "er": 4.2,
+   "langs": {
+    "Telugu": 94,
+    "English": 6
+   },
+   "markets": {
+    "Khammam": 78,
+    "Nalgonda": 14,
+    "Warangal": 8
+   },
+   "content": [
+    "Job melas",
+    "Scheme updates"
+   ],
+   "tone": "Trusted",
+   "formats": [
+    "Posts"
+   ],
+   "topics": {
+    "Career guidance": 0.8,
+    "Placements": 0.66
+   },
+   "rate": 6000,
+   "rateSrc": "Observed",
+   "verif": "Verified",
+   "acct": "Group",
+   "updated": "2026-09-18",
+   "next": "2026-10-18",
+   "status": "Enriched",
+   "flags": [],
+   "history": [],
+   "connected": false,
+   "lastPost": "2026-10-02",
+   "source": "Fetched",
+   "affiliation": "Moderated by Khammam youth volunteers",
+   "consent": "Not required",
+   "consentDate": "",
+   "catchment": null,
+   "district": "Khammam",
+   "cohort": "BSc and B.Tech graduates, Khammam",
+   "skills": [
+    "Career guidance",
+    "Placements"
+   ],
+   "attributed": 0,
+   "av": [
+    "#E6EFF8",
+    "#1D4775"
+   ],
+   "initials": "KG",
+   "recent": [
+    {
+     "title": "Job mela at Hanumakonda this Sunday",
+     "date": "2026-09-30",
+     "views": 5813,
+     "clicks": 185,
+     "format": "Posts",
+     "er": 5.3
+    },
+    {
+     "title": "Free skilling programmes list",
+     "date": "2026-09-27",
+     "views": 5358,
+     "clicks": 253,
+     "format": "Posts",
+     "er": 5.4
+    },
+    {
+     "title": "Applied AI Batch 2 registration help desk",
+     "date": "2026-09-21",
+     "views": 4031,
+     "clicks": 309,
+     "format": "Posts",
+     "er": 3.2
+    },
+    {
+     "title": "Youth meet: careers after B.Tech",
+     "date": "2026-09-16",
+     "views": 6514,
+     "clicks": 202,
+     "format": "Posts",
+     "er": 3.4
+    },
+    {
+     "title": "Scholarship updates",
+     "date": "2026-09-12",
+     "views": 10514,
+     "clicks": 237,
+     "format": "Posts",
+     "er": 4.7
+    },
+    {
+     "title": "Local employers hiring now",
+     "date": "2026-09-05",
+     "views": 10237,
+     "clicks": 151,
+     "format": "Posts",
+     "er": 3.8
+    }
+   ],
+   "contact": {
+    "email": "groupskhammamgrads@gmail.com",
+    "phone": "+91 9730392278",
+    "manager": "Kiran (Talent manager)"
+   },
+   "activity": [
+    {
+     "date": "2026-09-18",
+     "text": "Profile refreshed from Meta Graph API"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": 2.6,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 24640
+    },
+    {
+     "m": "Jun",
+     "f": 25312
+    },
+    {
+     "m": "Jul",
+     "f": 25984
+    },
+    {
+     "m": "Aug",
+     "f": 26656
+    },
+    {
+     "m": "Sep",
+     "f": 27328
+    },
+    {
+     "m": "Oct",
+     "f": 28000
+    }
+   ]
+  },
+  {
+   "id": "c15",
+   "name": "Ananya Builds AI",
+   "handle": "@ananyabuildsai",
+   "platform": "Instagram",
+   "type": "Micro-influencer",
+   "tier": "Micro",
+   "followers": 19800,
+   "mv": 5200,
+   "er": 9.1,
+   "langs": {
+    "English": 62,
+    "Telugu": 38
+   },
+   "markets": {
+    "Hyderabad": 66,
+    "Warangal": 12,
+    "Nalgonda": 10,
+    "Khammam": 12
+   },
+   "content": [
+    "GenAI project reels"
+   ],
+   "tone": "Curious",
+   "formats": [
+    "Reels"
+   ],
+   "topics": {
+    "AI/ML": 0.92,
+    "Software development": 0.6
+   },
+   "rate": 7000,
+   "rateSrc": "Illustrative",
+   "verif": "Verified",
+   "acct": "Creator",
+   "updated": "2026-08-30",
+   "next": "2026-10-18",
+   "status": "Failed",
+   "flags": [],
+   "history": [],
+   "connected": false,
+   "lastPost": "2026-10-02",
+   "source": "Fetched",
+   "affiliation": "",
+   "consent": "Not required",
+   "consentDate": "",
+   "catchment": null,
+   "district": "Hyderabad",
+   "cohort": "Final-year CSE students",
+   "skills": [
+    "AI/ML",
+    "Software development"
+   ],
+   "attributed": 0,
+   "failNote": "Last refresh failed: Meta token expiring. Retry scheduled.",
+   "av": [
+    "#FBF1DD",
+    "#7A4F0F"
+   ],
+   "initials": "AB",
+   "recent": [
+    {
+     "title": "Day in my life as a data intern",
+     "date": "2026-10-02",
+     "views": 5258,
+     "clicks": 223,
+     "format": "Reels",
+     "er": 8.3
+    },
+    {
+     "title": "Python in 30 days: week 2",
+     "date": "2026-09-27",
+     "views": 4426,
+     "clicks": 215,
+     "format": "Reels",
+     "er": 9.8
+    },
+    {
+     "title": "How I cracked my first tech interview",
+     "date": "2026-09-20",
+     "views": 5618,
+     "clicks": 133,
+     "format": "Reels",
+     "er": 8.7
+    },
+    {
+     "title": "Cloud Foundations review after week 1",
+     "date": "2026-09-17",
+     "views": 6284,
+     "clicks": 182,
+     "format": "Reels",
+     "er": 9.3
+    },
+    {
+     "title": "SQL questions every fresher gets",
+     "date": "2026-09-10",
+     "views": 7015,
+     "clicks": 133,
+     "format": "Reels",
+     "er": 10.2
+    },
+    {
+     "title": "Notes I wish I had in 3rd year",
+     "date": "2026-09-06",
+     "views": 7830,
+     "clicks": 199,
+     "format": "Reels",
+     "er": 9.7
+    }
+   ],
+   "contact": {
+    "email": "ananyabuildsai@gmail.com",
+    "phone": "+91 9349135518",
+    "manager": "Self-managed"
+   },
+   "activity": [
+    {
+     "date": "2026-08-30",
+     "text": "Profile refreshed from Meta Graph API"
+    },
+    {
+     "date": "2026-07-04",
+     "text": "Imported from source-roster-jul.xlsx by Divya K"
+    }
+   ],
+   "growth": 1.9,
+   "snapshots": [
+    {
+     "m": "May",
+     "f": 17424
+    },
+    {
+     "m": "Jun",
+     "f": 17899
+    },
+    {
+     "m": "Jul",
+     "f": 18374
+    },
+    {
+     "m": "Aug",
+     "f": 18850
+    },
+    {
+     "m": "Sep",
+     "f": 19325
+    },
+    {
+     "m": "Oct",
+     "f": 19800
+    }
+   ]
+  }
+ ],
+ "campaigns": [
+  {
+   "id": "k1",
+   "filmId": "f1",
+   "name": "Warangal engineering graduates",
+   "asset": "Engineering graduates, Warangal",
+   "cohort": "Engineering graduates 2023–2026, technology aspirants",
+   "qual": "B.Tech / B.E.",
+   "skillBg": "CSE, IT, ECE",
+   "band": "21–26 years · 0–2 years experience",
+   "objective": "Getting onboarded",
+   "kpi": "Screening enrolments",
+   "target": 120,
+   "ceiling": 4500,
+   "markets": [
+    "Warangal",
+    "Hanumakonda"
+   ],
+   "languages": [
+    "Telugu",
+    "English"
+   ],
+   "start": "2026-09-22",
+   "end": "2026-10-26",
+   "budget": 800000,
+   "status": "Live",
+   "version": 2,
+   "created": "2026-09-20",
+   "owner": "Anika Rao",
+   "hashtags": [
+    "#AppliedAIBatch4"
+   ],
+   "freeText": "Lead with alumni. No salary figures anywhere.",
+   "unattributed": 7,
+   "narratives": [
+    {
+     "id": "n1",
+     "cls": "Career outcome",
+     "title": "From Warangal campus to a data team",
+     "who": "Engineering graduates 2023–2026, Warangal and Hanumakonda",
+     "why": "Batch 3 alumni posts drove 2.3× the enrolment rate of creator posts (Observed, 46 enrolments)",
+     "risk": "Low: uses alumni stories, no salary figures",
+     "tone": "Grounded, aspirational",
+     "hook": "\"9 months ago I was where you are.\"",
+     "score": 88,
+     "role": "Primary"
+    },
+    {
+     "id": "n2",
+     "cls": "Skill relevance",
+     "title": "The exact skills Hyderabad teams hire for",
+     "who": "Graduates comparing paid bootcamps",
+     "why": "Syllabus maps to 7 of the 10 most-listed skills in Hyderabad data roles (Inferred)",
+     "risk": "Low",
+     "tone": "Practical",
+     "hook": "\"Python, SQL, ML ops. In Telugu, in 16 weeks.\"",
+     "score": 76,
+     "role": "Supporting"
+    },
+    {
+     "id": "n3",
+     "cls": "Institutional endorsement",
+     "title": "Recommended by your placement cell",
+     "who": "Final-year and recent graduates of partner colleges",
+     "why": "Placement-cell broadcasts converted at 2.2% click-to-enrolment on Batch 3 (Observed)",
+     "risk": "Medium: needs consent record for each institution (RR-H06)",
+     "tone": "Official, reassuring",
+     "hook": "\"Your T&P office has partnered with this programme.\"",
+     "score": 72,
+     "role": "Supporting"
+    }
+   ],
+   "channels": [
+    {
+     "name": "WhatsApp",
+     "role": "Conversion",
+     "share": 30,
+     "reason": "Placement cells and youth forums broadcast to verified graduate lists; tracked clicks only",
+     "meas": "Tracked link only"
+    },
+    {
+     "name": "YouTube",
+     "role": "Anchor",
+     "share": 35,
+     "reason": "Programme channel plus Telugu career explainers carry the syllabus walkthrough",
+     "meas": "Measurable now"
+    },
+    {
+     "name": "Instagram",
+     "role": "Amplifier",
+     "share": 15,
+     "reason": "Reach among 21–24 graduates; weaker on conversion",
+     "meas": "Measurable now"
+    },
+    {
+     "name": "LinkedIn",
+     "role": "Community",
+     "share": 10,
+     "reason": "Alumni stories reach recent graduates already job hunting",
+     "meas": "Manual only"
+    },
+    {
+     "name": "Facebook",
+     "role": "Amplifier",
+     "share": 10,
+     "reason": "Student groups across 14 colleges",
+     "meas": "Measurable now"
+    }
+   ],
+   "pred": {
+    "views": [
+     1100000,
+     1600000
+    ],
+    "reach": [
+     620000,
+     880000
+    ],
+    "eng": [
+     38000,
+     61000
+    ],
+    "clicks": [
+     17000,
+     26000
+    ],
+    "regs": [
+     1900,
+     2900
+    ],
+    "enrols": [
+     105,
+     160
+    ],
+    "cpi": [
+     3400,
+     5100
+    ],
+    "pos": 65,
+    "conf": "Medium",
+    "basis": "Source medians over last 10 posts, Batch 3 enrolment rates for this cohort, 4 comparable campaigns"
+   },
+   "bandNow": [
+    78,
+    118
+   ],
+   "checkpoints": [
+    {
+     "label": "72 hours",
+     "date": "2026-09-25",
+     "verdict": "On track",
+     "note": "21 enrolments vs band 14–30"
+    },
+    {
+     "label": "Day 7",
+     "date": "2026-09-29",
+     "verdict": "On track",
+     "note": "44 enrolments vs band 38–66"
+    },
+    {
+     "label": "Day 14",
+     "date": "2026-10-06",
+     "verdict": "Behind",
+     "note": "63 enrolments vs band 78–118"
+    },
+    {
+     "label": "Close",
+     "date": "2026-10-26",
+     "verdict": null
+    }
+   ],
+   "diagnosis": {
+    "verdict": "Behind",
+    "gap": "15 enrolments below the low end of the expected band (78–118); clicks are inside their band",
+    "when": "2026-10-06T09:00",
+    "causes": [
+     {
+      "label": "Message and programme mismatch (RR-H05)",
+      "detail": "Hyderabad Tech Jobs: 6,100 clicks but 2 enrolments (0.03%). Its audience is 71% Hyderabad; the cohort is Warangal",
+      "share": 41
+     },
+     {
+      "label": "Adoption gap",
+      "detail": "Prof. Lakshmi Narayana and Warangal Youth Forum are confirmed but past their post dates",
+      "share": 33
+     },
+     {
+      "label": "Placement doubt",
+      "detail": "22% of comments on job-alert content doubt placement outcomes; Scepticism threshold is 15%",
+      "share": 16
+     },
+     {
+      "label": "Facebook registration drop-off",
+      "detail": "Group post: 2,900 clicks, 8% registration rate vs 12% campaign average",
+      "share": 10
+     }
+    ]
+   },
+   "alerts": [
+    {
+     "kind": "Message mismatch",
+     "rule": "RR-H05",
+     "text": "Hyderabad Tech Jobs: click-through healthy (1.5%) but enrolment rate 0.5% of registrations, below the 4% floor. Treat as message and programme mismatch, not channel failure.",
+     "level": "warning"
+    },
+    {
+     "kind": "Scepticism",
+     "rule": "Scepticism",
+     "text": "Placement-doubt share at 22% of comments on Instagram (threshold 15%). Consider an alumni testimonial or live Q&A.",
+     "level": "warning"
+    }
+   ],
+   "moves": [
+    {
+     "id": "m1",
+     "type": "Chase posting",
+     "title": "Get Prof. Lakshmi Narayana and Warangal Youth Forum live by 9 Oct",
+     "impact": "+14 to 24 enrolments",
+     "cost": 0,
+     "costLabel": "₹0 (already committed)",
+     "why": "Both are trust anchors for this cohort. Content for the professor is in review; the forum broadcast only needs the tracked card.",
+     "status": "Open"
+    },
+    {
+     "id": "m2",
+     "type": "Reallocate budget",
+     "title": "Move ₹60,000 from Hyderabad Tech Jobs reel 2 to a campus session at KITS Warangal",
+     "impact": "+10 to 18 enrolments",
+     "cost": 0,
+     "costLabel": "₹0 (reallocation)",
+     "why": "Reel 2 is not yet made. Placement-cell sources convert at 1.4% click-to-enrolment against 0.03% for this creator.",
+     "status": "Open"
+    },
+    {
+     "id": "m3",
+     "type": "Alumni testimonial",
+     "title": "Add a second Sai Kiran Reddy post answering placement doubts",
+     "impact": "+5 to 9 enrolments; placement-doubt share −6 pts",
+     "cost": 15000,
+     "costLabel": "₹15,000",
+     "why": "His first post has the highest enrolment rate on the campaign (7%) and directly addresses the Scepticism theme.",
+     "status": "Open"
+    },
+    {
+     "id": "m4",
+     "type": "Live Q&A",
+     "title": "Run a live Q&A with Batch 3 alumni on the programme's YouTube",
+     "impact": "+6 to 12 enrolments",
+     "cost": 8000,
+     "costLabel": "₹8,000",
+     "why": "Eligibility and schedule are the top two question themes; a live Q&A answers both at once.",
+     "status": "Open"
+    }
+   ],
+   "versions": [
+    {
+     "v": 1,
+     "date": "2026-09-20",
+     "by": "Anika Rao",
+     "note": "Campaign created. Prediction frozen (v1)."
+    },
+    {
+     "v": 2,
+     "date": "2026-09-29",
+     "by": "Vikram Shetty",
+     "note": "Accepted move: shifted ₹40,000 from Instagram to WhatsApp placement-cell cards."
+    }
+   ],
+   "ccs": [
+    {
+     "id": "cc50038863",
+     "campId": "k1",
+     "creatorId": "c1",
+     "narrative": "n2",
+     "channel": "YouTube",
+     "status": "Live",
+     "deal": {
+      "rate": 75000,
+      "posts": 2,
+      "type": "Paid",
+      "del": "1 long video + 1 Short",
+      "start": "2026-09-22",
+      "end": "2026-10-06",
+      "terms": "Disclosure #ad in first line. Tracked link pinned in comments."
+     },
+     "posts": [
+      {
+       "id": "p50013922",
+       "title": "Applied AI Batch 4: honest review of the syllabus",
+       "format": "Long video",
+       "date": "2026-09-23",
+       "views": 286000,
+       "sent": [
+        71,
+        21,
+        8
+       ],
+       "intent": 410,
+       "clicks": 5200,
+       "regs": 520,
+       "enrols": 18,
+       "lastFetch": "2026-10-06T08:40",
+       "fetch": "OK",
+       "likes": 11314,
+       "comments": 724,
+       "shares": null,
+       "saves": null,
+       "url": "https://youtube.com/watch?v=50013922Hq"
+      },
+      {
+       "id": "p50029198",
+       "title": "3 skills Hyderabad data teams hire for",
+       "format": "Short",
+       "date": "2026-09-30",
+       "views": 148000,
+       "sent": [
+        66,
+        26,
+        8
+       ],
+       "intent": 120,
+       "clicks": 2100,
+       "regs": 180,
+       "enrols": 6,
+       "lastFetch": "2026-10-06T08:40",
+       "fetch": "OK",
+       "likes": 5855,
+       "comments": 374,
+       "shares": null,
+       "saves": null,
+       "url": "https://youtube.com/watch?v=50029198Hq"
+      }
+     ],
+     "content": [
+      {
+       "id": "ci50333457",
+       "title": "Long video 1: The exact skills Hyderabad teams hire for",
+       "format": "Long video",
+       "lang": "Telugu",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k1-c1-1",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      },
+      {
+       "id": "ci5034768",
+       "title": "Shorts 2: The exact skills Hyderabad teams hire for",
+       "format": "Shorts",
+       "lang": "Telugu",
+       "hook": "Show the week-by-week syllabus in 10 seconds, then the eligibility line.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k1-c1-2",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-09-28",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Deal recorded: ₹75,000 × 2 posts"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      },
+      {
+       "date": "2026-09-23",
+       "text": "First post live → status Live"
+      }
+     ],
+     "predViews": [
+      225680,
+      527800
+     ],
+     "predEnrols": [
+      16,
+      37
+     ]
+    },
+    {
+     "id": "cc50066786",
+     "campId": "k1",
+     "creatorId": "c3",
+     "narrative": "n3",
+     "channel": "WhatsApp",
+     "status": "Delivered",
+     "deal": {
+      "rate": 0,
+      "posts": 2,
+      "type": "Partnership",
+      "del": "2 broadcast messages + forwardable card",
+      "start": "2026-09-22",
+      "end": "2026-09-30",
+      "terms": "Consent on file (MoU Aug 2026). No fee."
+     },
+     "posts": [
+      {
+       "id": "p50045198",
+       "title": "Placement cell notice: Applied AI Batch 4",
+       "format": "Broadcast message",
+       "date": "2026-09-23",
+       "views": null,
+       "sent": null,
+       "intent": 0,
+       "clicks": 1240,
+       "regs": 310,
+       "enrols": 17,
+       "lastFetch": "2026-10-06T08:40",
+       "fetch": "OK",
+       "likes": 0,
+       "comments": 0,
+       "shares": null,
+       "saves": null,
+       "clicksOnly": true,
+       "url": "WhatsApp broadcast · tracked link only"
+      },
+      {
+       "id": "p50056598",
+       "title": "Reminder: screening closes 20 Oct",
+       "format": "Forwardable card",
+       "date": "2026-09-30",
+       "views": null,
+       "sent": null,
+       "intent": 0,
+       "clicks": 610,
+       "regs": 140,
+       "enrols": 7,
+       "lastFetch": "2026-10-06T08:40",
+       "fetch": "OK",
+       "likes": 0,
+       "comments": 0,
+       "shares": null,
+       "saves": null,
+       "clicksOnly": true,
+       "url": "WhatsApp broadcast · tracked link only"
+      }
+     ],
+     "content": [
+      {
+       "id": "ci50358969",
+       "title": "Broadcast message 1: Recommended by your placement cell",
+       "format": "Broadcast message",
+       "lang": "Telugu",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k1-c3-1",
+       "disclosure": false,
+       "status": "Approved",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Not required",
+        "link": "Pass"
+       }
+      },
+      {
+       "id": "ci50361197",
+       "title": "Forwardable card 2: Recommended by your placement cell",
+       "format": "Forwardable card",
+       "lang": "Telugu",
+       "hook": "Show the week-by-week syllabus in 10 seconds, then the eligibility line.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k1-c3-2",
+       "disclosure": false,
+       "status": "Approved",
+       "due": "2026-09-28",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Not required",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Consent recorded: MoU with Training & Placement Officer, renewed Aug 2026"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Partnership recorded at zero fee"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      },
+      {
+       "date": "2026-09-23",
+       "text": "First post live → status Live"
+      }
+     ],
+     "predViews": [
+      2604,
+      6090
+     ],
+     "predEnrols": [
+      16,
+      39
+     ]
+    },
+    {
+     "id": "cc50085886",
+     "campId": "k1",
+     "creatorId": "c4",
+     "narrative": "n1",
+     "channel": "LinkedIn",
+     "status": "Live",
+     "deal": {
+      "rate": 15000,
+      "posts": 2,
+      "type": "Paid",
+      "del": "2 posts",
+      "start": "2026-09-24",
+      "end": "2026-10-08",
+      "terms": "No salary figures. Disclosure in first line."
+     },
+     "posts": [
+      {
+       "id": "p50079387",
+       "title": "From Warangal to a data team in 9 months",
+       "format": "Posts",
+       "date": "2026-09-25",
+       "views": 21000,
+       "sent": [
+        82,
+        14,
+        4
+       ],
+       "intent": 96,
+       "clicks": 640,
+       "regs": 128,
+       "enrols": 9,
+       "lastFetch": "2026-10-06T08:40",
+       "fetch": "OK",
+       "manual": true,
+       "likes": 975,
+       "comments": 62,
+       "shares": null,
+       "saves": null,
+       "url": "https://linkedin.com/posts/50079387"
+      }
+     ],
+     "content": [
+      {
+       "id": "ci50373381",
+       "title": "Posts 1: From Warangal campus to a data team",
+       "format": "Posts",
+       "lang": "English",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k1-c4-1",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      },
+      {
+       "id": "ci50387129",
+       "title": "Carousels 2: From Warangal campus to a data team",
+       "format": "Carousels",
+       "lang": "English",
+       "hook": "Show the week-by-week syllabus in 10 seconds, then the eligibility line.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k1-c4-2",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-09-28",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Deal recorded: ₹15,000 × 2 posts"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      },
+      {
+       "date": "2026-09-25",
+       "text": "First post live → status Live"
+      }
+     ],
+     "predViews": [
+      7688,
+      17980
+     ],
+     "predEnrols": [
+      8,
+      18
+     ]
+    },
+    {
+     "id": "cc50104299",
+     "campId": "k1",
+     "creatorId": "c5",
+     "narrative": "n2",
+     "channel": "Facebook",
+     "status": "Live",
+     "deal": {
+      "rate": 18000,
+      "posts": 1,
+      "type": "Paid",
+      "del": "1 group post",
+      "start": "2026-09-24",
+      "end": "2026-09-30",
+      "terms": "Admin pins for 48 hours."
+     },
+     "posts": [
+      {
+       "id": "p5009630",
+       "title": "Free AI programme with stipend for 2023–26 graduates",
+       "format": "Posts",
+       "date": "2026-09-25",
+       "views": 192000,
+       "sent": [
+        58,
+        30,
+        12
+       ],
+       "intent": 140,
+       "clicks": 2900,
+       "regs": 240,
+       "enrols": 4,
+       "lastFetch": "2026-10-06T08:40",
+       "fetch": "OK",
+       "likes": 3963,
+       "comments": 253,
+       "shares": null,
+       "saves": null,
+       "url": "https://facebook.com/groups/5009630"
+      }
+     ],
+     "content": [
+      {
+       "id": "ci50395375",
+       "title": "Posts 1: The exact skills Hyderabad teams hire for",
+       "format": "Posts",
+       "lang": "Telugu",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k1-c5-1",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Consent recorded: Admin agreement, group rules permit sponsored posts"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Deal recorded: ₹18,000 × 1 posts"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      },
+      {
+       "date": "2026-09-25",
+       "text": "First post live → status Live"
+      }
+     ],
+     "predViews": [
+      32240,
+      75400
+     ],
+     "predEnrols": [
+      2,
+      5
+     ]
+    },
+    {
+     "id": "cc50127578",
+     "campId": "k1",
+     "creatorId": "c7",
+     "narrative": "n2",
+     "channel": "Instagram",
+     "status": "Live",
+     "deal": {
+      "rate": 60000,
+      "posts": 2,
+      "type": "Paid",
+      "del": "2 reels",
+      "start": "2026-09-24",
+      "end": "2026-10-08",
+      "terms": "No salary or job guarantee."
+     },
+     "posts": [
+      {
+       "id": "p50116657",
+       "title": "Hyderabad companies hiring AI freshers",
+       "format": "Reels",
+       "date": "2026-09-26",
+       "views": 410000,
+       "sent": [
+        48,
+        32,
+        20
+       ],
+       "intent": 60,
+       "clicks": 6100,
+       "regs": 410,
+       "enrols": 2,
+       "lastFetch": "2026-10-06T08:40",
+       "fetch": "OK",
+       "likes": 6347,
+       "comments": 406,
+       "shares": null,
+       "saves": null,
+       "url": "https://instagram.com/reel/50116657Hz"
+      }
+     ],
+     "content": [
+      {
+       "id": "ci50401146",
+       "title": "Reels 1: The exact skills Hyderabad teams hire for",
+       "format": "Reels",
+       "lang": "English",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k1-c7-1",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      },
+      {
+       "id": "ci50417998",
+       "title": "Stories 2: The exact skills Hyderabad teams hire for",
+       "format": "Stories",
+       "lang": "English",
+       "hook": "Show the week-by-week syllabus in 10 seconds, then the eligibility line.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k1-c7-2",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-09-28",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Deal recorded: ₹60,000 × 2 posts"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      },
+      {
+       "date": "2026-09-26",
+       "text": "First post live → status Live"
+      }
+     ],
+     "predViews": [
+      176080,
+      411800
+     ],
+     "predEnrols": [
+      2,
+      5
+     ]
+    },
+    {
+     "id": "cc50136932",
+     "campId": "k1",
+     "creatorId": "c6",
+     "narrative": "n1",
+     "channel": "YouTube",
+     "status": "Content in review",
+     "deal": {
+      "rate": 30000,
+      "posts": 2,
+      "type": "Paid",
+      "del": "1 lecture + 1 live Q&A",
+      "start": "2026-09-30",
+      "end": "2026-10-04",
+      "terms": "Syllabus walkthrough only."
+     },
+     "posts": [],
+     "content": [
+      {
+       "id": "ci50423409",
+       "title": "Long video 1: From Warangal campus to a data team",
+       "format": "Long video",
+       "lang": "Telugu",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k1-c6-1",
+       "disclosure": true,
+       "status": "In review",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      },
+      {
+       "id": "ci50434618",
+       "title": "Live 2: From Warangal campus to a data team",
+       "format": "Live",
+       "lang": "Telugu",
+       "hook": "Show the week-by-week syllabus in 10 seconds, then the eligibility line.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k1-c6-2",
+       "disclosure": true,
+       "status": "In review",
+       "due": "2026-09-28",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Deal recorded: ₹30,000 × 2 posts"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      }
+     ],
+     "predViews": [
+      26040,
+      60900
+     ],
+     "predEnrols": [
+      2,
+      5
+     ],
+     "late": true
+    },
+    {
+     "id": "cc50143549",
+     "campId": "k1",
+     "creatorId": "c8",
+     "narrative": "n3",
+     "channel": "WhatsApp",
+     "status": "Confirmed",
+     "deal": {
+      "rate": 0,
+      "posts": 1,
+      "type": "Partnership",
+      "del": "1 broadcast + help desk at job mela",
+      "start": "2026-09-30",
+      "end": "2026-10-03",
+      "terms": "No fee."
+     },
+     "posts": [],
+     "content": [
+      {
+       "id": "ci50449300",
+       "title": "Broadcast message 1: Recommended by your placement cell",
+       "format": "Broadcast message",
+       "lang": "Telugu",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k1-c8-1",
+       "disclosure": false,
+       "status": "Draft",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Not required",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Partnership recorded at zero fee"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      }
+     ],
+     "predViews": [
+      806,
+      1885
+     ],
+     "predEnrols": [
+      2,
+      5
+     ],
+     "late": true
+    },
+    {
+     "id": "cc50159536",
+     "campId": "k1",
+     "creatorId": "c9",
+     "narrative": "n2",
+     "channel": "YouTube",
+     "status": "Negotiating",
+     "deal": {
+      "rate": 95000,
+      "posts": 1,
+      "type": "Paid",
+      "del": "1 video",
+      "start": "2026-10-08",
+      "end": "2026-10-14",
+      "terms": "Proposed"
+     },
+     "posts": [],
+     "content": [
+      {
+       "id": "ci50455458",
+       "title": "Long video 1: The exact skills Hyderabad teams hire for",
+       "format": "Long video",
+       "lang": "Telugu",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k1-c9-1",
+       "disclosure": true,
+       "status": "Draft",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      }
+     ],
+     "predViews": [
+      148800,
+      348000
+     ],
+     "predEnrols": [
+      4,
+      10
+     ]
+    },
+    {
+     "id": "cc50166704",
+     "campId": "k1",
+     "creatorId": "c14",
+     "narrative": "n3",
+     "channel": "Facebook",
+     "status": "Declined",
+     "deal": null,
+     "posts": [],
+     "content": [],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-23",
+       "text": "Status → Declined: Group rules do not allow sponsored posts"
+      }
+     ],
+     "predViews": [
+      3968,
+      9280
+     ],
+     "predEnrols": [
+      2,
+      5
+     ],
+     "reason": "Group rules do not allow sponsored posts"
+    }
+   ],
+   "comments": [
+    {
+     "cr": "c1",
+     "text": "Stipend nijamga istara? Eligibility enti?",
+     "lang": "Telugu (romanised)",
+     "tr": "Is the stipend really given? What is the eligibility?",
+     "sent": "Neutral",
+     "theme": "Eligibility",
+     "intent": false
+    },
+    {
+     "cr": "c1",
+     "text": "Register chesa, screening date eppudu?",
+     "lang": "Telugu (romanised)",
+     "tr": "I registered. When is the screening date?",
+     "sent": "Positive",
+     "theme": "Intent to apply",
+     "intent": true
+    },
+    {
+     "cr": "c7",
+     "text": "Job guarantee unda leda? Lekapothe waste",
+     "lang": "Telugu (romanised)",
+     "tr": "Is there a job guarantee or not? Otherwise it is a waste",
+     "sent": "Negative",
+     "theme": "Placement doubt",
+     "intent": false
+    },
+    {
+     "cr": "c7",
+     "text": "Hyderabad lo matrame na classes?",
+     "lang": "Telugu (romanised)",
+     "tr": "Are classes only in Hyderabad?",
+     "sent": "Neutral",
+     "theme": "Location",
+     "intent": false
+    },
+    {
+     "cr": "c5",
+     "text": "2022 pass out ki eligible aa?",
+     "lang": "Telugu (romanised)",
+     "tr": "Is a 2022 pass-out eligible?",
+     "sent": "Neutral",
+     "theme": "Eligibility",
+     "intent": false
+    },
+    {
+     "cr": "c4",
+     "text": "Your story is exactly my situation. Applying today.",
+     "lang": "English",
+     "tr": "",
+     "sent": "Positive",
+     "theme": "Intent to apply",
+     "intent": true
+    },
+    {
+     "cr": "c7",
+     "text": "These paid courses never place anyone",
+     "lang": "English",
+     "tr": "",
+     "sent": "Negative",
+     "theme": "Placement doubt",
+     "intent": false
+    },
+    {
+     "cr": "c1",
+     "text": "Weekend batch untunda? Nenu job chestunna",
+     "lang": "Telugu (romanised)",
+     "tr": "Is there a weekend batch? I am working",
+     "sent": "Neutral",
+     "theme": "Schedule",
+     "intent": false
+    },
+    {
+     "cr": "c2",
+     "text": "Classes Telugu lo na English lo na?",
+     "lang": "Telugu (romanised)",
+     "tr": "Are classes in Telugu or English?",
+     "sent": "Neutral",
+     "theme": "Language",
+     "intent": false
+    },
+    {
+     "cr": "c2",
+     "text": "Done! Registered with the link 🙌",
+     "lang": "English",
+     "tr": "",
+     "sent": "Positive",
+     "theme": "Intent to apply",
+     "intent": true
+    },
+    {
+     "cr": "c9",
+     "text": "Fee emi ledu ante doubt ga undi",
+     "lang": "Telugu (romanised)",
+     "tr": "No fee at all makes me doubtful",
+     "sent": "Negative",
+     "theme": "Fees",
+     "intent": false
+    }
+   ]
+  },
+  {
+   "id": "k2",
+   "filmId": "f1",
+   "name": "Hyderabad final-year CSE students",
+   "asset": "Final-year CSE students, Hyderabad",
+   "cohort": "Final-year CSE and IT students, graduating 2027",
+   "qual": "B.Tech (final year)",
+   "skillBg": "CSE, IT",
+   "band": "20–23 years · Fresher",
+   "objective": "Getting onboarded",
+   "kpi": "Screening enrolments",
+   "target": 90,
+   "ceiling": 4000,
+   "markets": [
+    "Hyderabad"
+   ],
+   "languages": [
+    "Telugu",
+    "English"
+   ],
+   "start": "2026-09-29",
+   "end": "2026-10-31",
+   "budget": 600000,
+   "status": "Live",
+   "version": 1,
+   "created": "2026-09-27",
+   "owner": "Anika Rao",
+   "hashtags": [
+    "#AppliedAIBatch4"
+   ],
+   "freeText": "Answer the timing question up front.",
+   "unattributed": 4,
+   "narratives": [
+    {
+     "id": "n4",
+     "cls": "Speed to employment",
+     "title": "Job-ready before your final semester ends",
+     "who": "Final-year CSE and IT students, Hyderabad",
+     "why": "Final-year comments ask most about timing (38% of questions on Batch 3, Observed)",
+     "risk": "Low: no job guarantee wording",
+     "tone": "Energetic",
+     "hook": "\"Finish college with a portfolio, not just a degree.\"",
+     "score": 90,
+     "role": "Primary"
+    },
+    {
+     "id": "n5",
+     "cls": "Scepticism",
+     "title": "Will this actually help me get a job?",
+     "who": "Students wary of paid bootcamps",
+     "why": "Placement-doubt share is 18% in Hyderabad comments (Inferred)",
+     "risk": "Medium: answers must avoid placement-rate claims (RR-H03)",
+     "tone": "Direct, honest",
+     "hook": "\"No fees. No promises. Here is what you build.\"",
+     "score": 69,
+     "role": "Supporting"
+    }
+   ],
+   "channels": [
+    {
+     "name": "Instagram",
+     "role": "Anchor",
+     "share": 55,
+     "reason": "Final-year students spend most time on Reels; college forums post here",
+     "meas": "Measurable now"
+    },
+    {
+     "name": "YouTube",
+     "role": "Amplifier",
+     "share": 35,
+     "reason": "Long-form honest reviews handle scepticism",
+     "meas": "Measurable now"
+    },
+    {
+     "name": "Campus events",
+     "role": "Conversion",
+     "share": 10,
+     "reason": "Info sessions with tagged QR codes",
+     "meas": "Manual only"
+    }
+   ],
+   "pred": {
+    "views": [
+     520000,
+     820000
+    ],
+    "reach": [
+     310000,
+     480000
+    ],
+    "eng": [
+     30000,
+     52000
+    ],
+    "clicks": [
+     9000,
+     15000
+    ],
+    "regs": [
+     900,
+     1500
+    ],
+    "enrols": [
+     70,
+     115
+    ],
+    "cpi": [
+     2900,
+     4600
+    ],
+    "pos": 75,
+    "conf": "Medium",
+    "basis": "Source medians, Batch 3 rates for a similar cohort, 3 comparable campaigns"
+   },
+   "bandNow": [
+    34,
+    58
+   ],
+   "checkpoints": [
+    {
+     "label": "72 hours",
+     "date": "2026-10-02",
+     "verdict": "Ahead",
+     "note": "28 enrolments vs band 12–24"
+    },
+    {
+     "label": "Day 7",
+     "date": "2026-10-06",
+     "verdict": "Ahead",
+     "note": "63 enrolments vs band 34–58"
+    },
+    {
+     "label": "Day 14",
+     "date": "2026-10-13",
+     "verdict": null
+    },
+    {
+     "label": "Close",
+     "date": "2026-10-31",
+     "verdict": null
+    }
+   ],
+   "diagnosis": {
+    "verdict": "Ahead",
+    "gap": "5 enrolments above the high end of the expected band",
+    "when": "2026-10-06T09:00",
+    "causes": [
+     {
+      "label": "Coding with Sravani over-delivered",
+      "detail": "2 reels, 35 enrolments, 2.5× her predicted median",
+      "share": 58
+     },
+     {
+      "label": "Campus info session",
+      "detail": "JNTUH forum session on 4 Oct converted 6% of clicks to enrolments",
+      "share": 42
+     }
+    ]
+   },
+   "alerts": [],
+   "moves": [
+    {
+     "id": "m5",
+     "type": "Campus session",
+     "title": "Repeat the info session at CBIT and Vasavi with the JNTUH forum",
+     "impact": "+12 to 20 enrolments",
+     "cost": 20000,
+     "costLabel": "₹20,000",
+     "why": "The 4 Oct session is the highest-converting item on the campaign.",
+     "status": "Open"
+    }
+   ],
+   "versions": [
+    {
+     "v": 1,
+     "date": "2026-09-27",
+     "by": "Anika Rao",
+     "note": "Campaign created. Prediction frozen (v1)."
+    }
+   ],
+   "ccs": [
+    {
+     "id": "cc50191794",
+     "campId": "k2",
+     "creatorId": "c2",
+     "narrative": "n4",
+     "channel": "Instagram",
+     "status": "Live",
+     "deal": {
+      "rate": 28000,
+      "posts": 3,
+      "type": "Paid",
+      "del": "3 reels",
+      "start": "2026-09-29",
+      "end": "2026-10-12",
+      "terms": "Original audio. Disclosure in caption."
+     },
+     "posts": [
+      {
+       "id": "p50178849",
+       "title": "Week 1 of Applied AI: what we build",
+       "format": "Reels",
+       "date": "2026-09-30",
+       "views": 188000,
+       "sent": [
+        84,
+        13,
+        3
+       ],
+       "intent": 380,
+       "clicks": 3900,
+       "regs": 460,
+       "enrols": 21,
+       "lastFetch": "2026-10-06T08:40",
+       "fetch": "OK",
+       "likes": 12611,
+       "comments": 807,
+       "shares": 880,
+       "saves": 587,
+       "url": "https://instagram.com/reel/50178849Hz"
+      },
+      {
+       "id": "p50182189",
+       "title": "Final-year? Do this before placements",
+       "format": "Reels",
+       "date": "2026-10-03",
+       "views": 142000,
+       "sent": [
+        86,
+        11,
+        3
+       ],
+       "intent": 290,
+       "clicks": 2600,
+       "regs": 300,
+       "enrols": 14,
+       "lastFetch": "2026-10-06T08:40",
+       "fetch": "OK",
+       "likes": 9525,
+       "comments": 609,
+       "shares": 665,
+       "saves": 443,
+       "url": "https://instagram.com/reel/50182189Hz"
+      }
+     ],
+     "content": [
+      {
+       "id": "ci50462154",
+       "title": "Reels 1: Job-ready before your final semester ends",
+       "format": "Reels",
+       "lang": "Telugu",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k2-c2-1",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      },
+      {
+       "id": "ci50478486",
+       "title": "Carousels 2: Job-ready before your final semester ends",
+       "format": "Carousels",
+       "lang": "Telugu",
+       "hook": "Show the week-by-week syllabus in 10 seconds, then the eligibility line.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k2-c2-2",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-09-28",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      },
+      {
+       "id": "ci50485862",
+       "title": "Reels 3: Job-ready before your final semester ends",
+       "format": "Reels",
+       "lang": "Telugu",
+       "hook": "Show the week-by-week syllabus in 10 seconds, then the eligibility line.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k2-c2-3",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-10-02",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Deal recorded: ₹28,000 × 3 posts"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      },
+      {
+       "date": "2026-09-30",
+       "text": "First post live → status Live"
+      }
+     ],
+     "predViews": [
+      119040,
+      278400
+     ],
+     "predEnrols": [
+      9,
+      21
+     ]
+    },
+    {
+     "id": "cc50212701",
+     "campId": "k2",
+     "creatorId": "c10",
+     "narrative": "n4",
+     "channel": "Instagram",
+     "status": "Live",
+     "deal": {
+      "rate": 10000,
+      "posts": 2,
+      "type": "Paid",
+      "del": "2 stories + 1 reel",
+      "start": "2026-09-29",
+      "end": "2026-10-10",
+      "terms": "Consent letter on file."
+     },
+     "posts": [
+      {
+       "id": "p50201507",
+       "title": "Info session at JNTUH, 4 Oct",
+       "format": "Reels",
+       "date": "2026-10-01",
+       "views": 54000,
+       "sent": [
+        80,
+        16,
+        4
+       ],
+       "intent": 140,
+       "clicks": 1400,
+       "regs": 190,
+       "enrols": 12,
+       "lastFetch": "2026-10-06T08:40",
+       "fetch": "OK",
+       "likes": 2368,
+       "comments": 151,
+       "shares": null,
+       "saves": null,
+       "url": "https://instagram.com/reel/50201507Hz"
+      }
+     ],
+     "content": [
+      {
+       "id": "ci50494631",
+       "title": "Reels 1: Job-ready before your final semester ends",
+       "format": "Reels",
+       "lang": "Telugu",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k2-c10-1",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      },
+      {
+       "id": "ci50501152",
+       "title": "Stories 2: Job-ready before your final semester ends",
+       "format": "Stories",
+       "lang": "Telugu",
+       "hook": "Show the week-by-week syllabus in 10 seconds, then the eligibility line.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k2-c10-2",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-09-28",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Consent recorded: Letter from forum office-bearers, 20 Sep 2026"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Deal recorded: ₹10,000 × 2 posts"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      },
+      {
+       "date": "2026-10-01",
+       "text": "First post live → status Live"
+      }
+     ],
+     "predViews": [
+      34720,
+      81200
+     ],
+     "predEnrols": [
+      3,
+      7
+     ]
+    },
+    {
+     "id": "cc50238252",
+     "campId": "k2",
+     "creatorId": "c9",
+     "narrative": "n5",
+     "channel": "YouTube",
+     "status": "Live",
+     "deal": {
+      "rate": 95000,
+      "posts": 1,
+      "type": "Paid",
+      "del": "1 video",
+      "start": "2026-09-29",
+      "end": "2026-10-05",
+      "terms": "No placement-rate claims."
+     },
+     "posts": [
+      {
+       "id": "p50225777",
+       "title": "Free AI course with stipend: is it worth it?",
+       "format": "Long video",
+       "date": "2026-09-30",
+       "views": 312000,
+       "sent": [
+        69,
+        22,
+        9
+       ],
+       "intent": 260,
+       "clicks": 4800,
+       "regs": 410,
+       "enrols": 16,
+       "lastFetch": "2026-10-06T08:40",
+       "fetch": "OK",
+       "likes": 8586,
+       "comments": 549,
+       "shares": null,
+       "saves": null,
+       "url": "https://youtube.com/watch?v=50225777Hq"
+      }
+     ],
+     "content": [
+      {
+       "id": "ci50515886",
+       "title": "Long video 1: Will this actually help me get a job?",
+       "format": "Long video",
+       "lang": "Telugu",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k2-c9-1",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Deal recorded: ₹95,000 × 1 posts"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      },
+      {
+       "date": "2026-09-30",
+       "text": "First post live → status Live"
+      }
+     ],
+     "predViews": [
+      148800,
+      348000
+     ],
+     "predEnrols": [
+      4,
+      10
+     ]
+    },
+    {
+     "id": "cc50242264",
+     "campId": "k2",
+     "creatorId": "c13",
+     "narrative": "n4",
+     "channel": "YouTube",
+     "status": "Confirmed",
+     "deal": {
+      "rate": 9000,
+      "posts": 1,
+      "type": "Paid",
+      "del": "1 tutorial",
+      "start": "2026-10-07",
+      "end": "2026-10-12",
+      "terms": ""
+     },
+     "posts": [],
+     "content": [
+      {
+       "id": "ci50528144",
+       "title": "Long video 1: Job-ready before your final semester ends",
+       "format": "Long video",
+       "lang": "Telugu",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k2-c13-1",
+       "disclosure": true,
+       "status": "Draft",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Deal recorded: ₹9,000 × 1 posts"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      }
+     ],
+     "predViews": [
+      6820,
+      15950
+     ],
+     "predEnrols": [
+      2,
+      5
+     ]
+    },
+    {
+     "id": "cc50258781",
+     "campId": "k2",
+     "creatorId": "c15",
+     "narrative": "n4",
+     "channel": "Instagram",
+     "status": "Content in review",
+     "deal": {
+      "rate": 7000,
+      "posts": 1,
+      "type": "Paid",
+      "del": "1 project reel",
+      "start": "2026-10-06",
+      "end": "2026-10-10",
+      "terms": ""
+     },
+     "posts": [],
+     "content": [
+      {
+       "id": "ci5053353",
+       "title": "Reels 1: Job-ready before your final semester ends",
+       "format": "Reels",
+       "lang": "English",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k2-c15-1",
+       "disclosure": true,
+       "status": "In review",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Deal recorded: ₹7,000 × 1 posts"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      }
+     ],
+     "predViews": [
+      3224,
+      7540
+     ],
+     "predEnrols": [
+      2,
+      5
+     ]
+    }
+   ],
+   "comments": [
+    {
+     "cr": "c2",
+     "text": "Classes Telugu lo na English lo na?",
+     "lang": "Telugu (romanised)",
+     "tr": "Are classes in Telugu or English?",
+     "sent": "Neutral",
+     "theme": "Language",
+     "intent": false
+    },
+    {
+     "cr": "c2",
+     "text": "Done! Registered with the link 🙌",
+     "lang": "English",
+     "tr": "",
+     "sent": "Positive",
+     "theme": "Intent to apply",
+     "intent": true
+    },
+    {
+     "cr": "c9",
+     "text": "Fee emi ledu ante doubt ga undi",
+     "lang": "Telugu (romanised)",
+     "tr": "No fee at all makes me doubtful",
+     "sent": "Negative",
+     "theme": "Fees",
+     "intent": false
+    }
+   ]
+  },
+  {
+   "id": "k3",
+   "filmId": "f1",
+   "batch": "Batch 3",
+   "name": "Batch 3 alumni referral push",
+   "asset": "Engineering graduates, Warangal",
+   "cohort": "Engineering graduates 2022–2025",
+   "qual": "B.Tech / B.E.",
+   "skillBg": "CSE, IT, ECE",
+   "band": "21–26 years",
+   "objective": "Getting onboarded",
+   "kpi": "Screening enrolments",
+   "target": 50,
+   "ceiling": 5000,
+   "markets": [
+    "Warangal",
+    "Hanumakonda",
+    "Hyderabad"
+   ],
+   "languages": [
+    "Telugu",
+    "English"
+   ],
+   "start": "2026-08-10",
+   "end": "2026-08-31",
+   "budget": 300000,
+   "status": "Closed",
+   "version": 1,
+   "created": "2026-08-08",
+   "owner": "Anika Rao",
+   "hashtags": [
+    "#AppliedAIBatch3"
+   ],
+   "unattributed": 3,
+   "narratives": [
+    {
+     "id": "n6",
+     "cls": "Career outcome",
+     "title": "Hear it from Batch 2",
+     "who": "Engineering graduates, Warangal",
+     "why": "",
+     "risk": "Low",
+     "tone": "Candid",
+     "hook": "",
+     "score": 80,
+     "role": "Primary"
+    }
+   ],
+   "channels": [
+    {
+     "name": "WhatsApp",
+     "role": "Conversion",
+     "share": 40,
+     "reason": "",
+     "meas": "Tracked link only"
+    },
+    {
+     "name": "YouTube",
+     "role": "Anchor",
+     "share": 40,
+     "reason": "",
+     "meas": "Measurable now"
+    },
+    {
+     "name": "LinkedIn",
+     "role": "Community",
+     "share": 20,
+     "reason": "",
+     "meas": "Manual only"
+    }
+   ],
+   "pred": {
+    "views": [
+     220000,
+     380000
+    ],
+    "reach": [
+     140000,
+     240000
+    ],
+    "eng": [
+     12000,
+     22000
+    ],
+    "clicks": [
+     4400,
+     7600
+    ],
+    "regs": [
+     560,
+     940
+    ],
+    "enrols": [
+     38,
+     64
+    ],
+    "cpi": [
+     1300,
+     2200
+    ],
+    "pos": 70,
+    "conf": "Low",
+    "basis": "2 comparable campaigns"
+   },
+   "bandNow": [
+    38,
+    64
+   ],
+   "checkpoints": [
+    {
+     "label": "72 hours",
+     "date": "2026-08-13",
+     "verdict": "On track"
+    },
+    {
+     "label": "Day 7",
+     "date": "2026-08-17",
+     "verdict": "On track"
+    },
+    {
+     "label": "Day 14",
+     "date": "2026-08-24",
+     "verdict": "Ahead"
+    },
+    {
+     "label": "Close",
+     "date": "2026-08-31",
+     "verdict": "On track"
+    }
+   ],
+   "diagnosis": {
+    "verdict": "On track",
+    "gap": "Final 46 enrolments, inside the frozen range (38–64)",
+    "when": "2026-08-31T18:00",
+    "causes": []
+   },
+   "alerts": [],
+   "moves": [],
+   "versions": [
+    {
+     "v": 1,
+     "date": "2026-08-08",
+     "by": "Anika Rao",
+     "note": "Campaign created. Prediction frozen (v1)."
+    },
+    {
+     "v": 1,
+     "date": "2026-09-02",
+     "by": "Anika Rao",
+     "note": "Campaign closed. Results written to Creator Bank, rate card and playbook."
+    }
+   ],
+   "lessons": [
+    "Placement-cell broadcasts converted 1.7% of clicks to enrolments, 5× the YouTube creator rate for this cohort.",
+    "Alumni posts on LinkedIn had the highest enrolment rate per click; book two alumni next batch.",
+    "Book a backup micro-influencer: one backed out 48 hours before posting."
+   ],
+   "ccs": [
+    {
+     "id": "cc50276907",
+     "campId": "k3",
+     "creatorId": "c4",
+     "narrative": "n6",
+     "channel": "LinkedIn",
+     "status": "Delivered",
+     "deal": {
+      "rate": 12000,
+      "posts": 1,
+      "type": "Paid",
+      "del": "1 post",
+      "start": "2026-08-10",
+      "end": "2026-08-14",
+      "terms": ""
+     },
+     "posts": [
+      {
+       "id": "p50264994",
+       "title": "Why I joined Applied AI Batch 2",
+       "format": "Posts",
+       "date": "2026-08-13",
+       "views": 24000,
+       "sent": [
+        84,
+        13,
+        3
+       ],
+       "intent": 88,
+       "clicks": 720,
+       "regs": 140,
+       "enrols": 13,
+       "lastFetch": "2026-09-07T06:00",
+       "fetch": "OK",
+       "manual": true,
+       "likes": 1115,
+       "comments": 71,
+       "shares": null,
+       "saves": null,
+       "url": "https://linkedin.com/posts/50264994"
+      }
+     ],
+     "content": [
+      {
+       "id": "ci50544413",
+       "title": "Posts 1: Hear it from Batch 2",
+       "format": "Posts",
+       "lang": "English",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k3-c4-1",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Deal recorded: ₹12,000 × 1 posts"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      },
+      {
+       "date": "2026-08-13",
+       "text": "First post live → status Live"
+      }
+     ],
+     "predViews": [
+      3844,
+      8990
+     ],
+     "predEnrols": [
+      8,
+      18
+     ],
+     "rating": 4.9
+    },
+    {
+     "id": "cc5029827",
+     "campId": "k3",
+     "creatorId": "c3",
+     "narrative": "n6",
+     "channel": "WhatsApp",
+     "status": "Delivered",
+     "deal": {
+      "rate": 0,
+      "posts": 1,
+      "type": "Partnership",
+      "del": "1 broadcast",
+      "start": "2026-08-10",
+      "end": "2026-08-15",
+      "terms": "Consent on file."
+     },
+     "posts": [
+      {
+       "id": "p50283055",
+       "title": "Batch 3: registrations open",
+       "format": "Broadcast message",
+       "date": "2026-08-14",
+       "views": null,
+       "sent": null,
+       "intent": 0,
+       "clicks": 1320,
+       "regs": 330,
+       "enrols": 22,
+       "lastFetch": "2026-09-07T06:00",
+       "fetch": "OK",
+       "likes": 0,
+       "comments": 0,
+       "shares": null,
+       "saves": null,
+       "clicksOnly": true,
+       "url": "WhatsApp broadcast · tracked link only"
+      }
+     ],
+     "content": [
+      {
+       "id": "ci50554075",
+       "title": "Broadcast message 1: Hear it from Batch 2",
+       "format": "Broadcast message",
+       "lang": "Telugu",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k3-c3-1",
+       "disclosure": false,
+       "status": "Approved",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Not required",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Consent recorded: MoU with Training & Placement Officer, renewed Aug 2026"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Partnership recorded at zero fee"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      },
+      {
+       "date": "2026-08-14",
+       "text": "First post live → status Live"
+      }
+     ],
+     "predViews": [
+      1302,
+      3045
+     ],
+     "predEnrols": [
+      16,
+      39
+     ],
+     "rating": 4.8
+    },
+    {
+     "id": "cc50311523",
+     "campId": "k3",
+     "creatorId": "c1",
+     "narrative": "n6",
+     "channel": "YouTube",
+     "status": "Delivered",
+     "deal": {
+      "rate": 70000,
+      "posts": 1,
+      "type": "Paid",
+      "del": "1 video",
+      "start": "2026-08-10",
+      "end": "2026-08-16",
+      "terms": ""
+     },
+     "posts": [
+      {
+       "id": "p50309778",
+       "title": "Alumni review: Applied AI Batch 2",
+       "format": "Long video",
+       "date": "2026-08-12",
+       "views": 244000,
+       "sent": [
+        72,
+        22,
+        6
+       ],
+       "intent": 220,
+       "clicks": 3600,
+       "regs": 300,
+       "enrols": 11,
+       "lastFetch": "2026-09-07T06:00",
+       "fetch": "OK",
+       "likes": 9653,
+       "comments": 617,
+       "shares": null,
+       "saves": null,
+       "url": "https://youtube.com/watch?v=50309778Hq"
+      }
+     ],
+     "content": [
+      {
+       "id": "ci50569457",
+       "title": "Long video 1: Hear it from Batch 2",
+       "format": "Long video",
+       "lang": "Telugu",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k3-c1-1",
+       "disclosure": true,
+       "status": "Approved",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Deal recorded: ₹70,000 × 1 posts"
+      },
+      {
+       "date": "2026-09-22",
+       "text": "Status → Confirmed"
+      },
+      {
+       "date": "2026-08-12",
+       "text": "First post live → status Live"
+      }
+     ],
+     "predViews": [
+      112840,
+      263900
+     ],
+     "predEnrols": [
+      16,
+      37
+     ],
+     "rating": 4.5
+    },
+    {
+     "id": "cc50323492",
+     "campId": "k3",
+     "creatorId": "c11",
+     "narrative": "n6",
+     "channel": "Instagram",
+     "status": "Backed out",
+     "deal": {
+      "rate": 18000,
+      "posts": 1,
+      "type": "Paid",
+      "del": "1 reel",
+      "start": "2026-08-10",
+      "end": "2026-08-12",
+      "terms": ""
+     },
+     "posts": [],
+     "content": [
+      {
+       "id": "ci50576852",
+       "title": "Reels 1: Hear it from Batch 2",
+       "format": "Reels",
+       "lang": "Telugu",
+       "hook": "\"B.Tech ayyaka next enti?\" (What after B.Tech?) Open on a real Batch 3 learner's capstone demo.",
+       "beats": [
+        "Hook in the first 2 seconds",
+        "What the programme teaches (from the syllabus only)",
+        "Who is eligible and when the batch starts",
+        "Call to action: register through the link"
+       ],
+       "caption": "Applied AI & ML Programme Batch 4 registrations open. Free for eligible graduates, ₹2,500/month stipend. Link lo register cheyyandi. #AppliedAIBatch4 #ad",
+       "tags": [
+        "#AppliedAIBatch4",
+        "#TelanganaSkills",
+        "#ad"
+       ],
+       "cta": "Register for screening",
+       "link": "resolence.in/r/applied-ai-b4?t=hq-k3-c11-1",
+       "disclosure": true,
+       "status": "Draft",
+       "due": "2026-09-24",
+       "checks": {
+        "spoiler": "Pass",
+        "claims": "Pass",
+        "disclosure": "Pass",
+        "link": "Pass"
+       }
+      }
+     ],
+     "log": [
+      {
+       "date": "2026-09-20",
+       "text": "Added to campaign (Identified)"
+      },
+      {
+       "date": "2026-09-21",
+       "text": "Status → Approached"
+      },
+      {
+       "date": "2026-09-23",
+       "text": "Status → Backed out: Signed exclusive with a competing bootcamp"
+      }
+     ],
+     "predViews": [
+      23560,
+      55100
+     ],
+     "predEnrols": [
+      2,
+      5
+     ],
+     "reason": "Signed exclusive with a competing bootcamp"
+    }
+   ],
+   "comments": []
+  },
+  {
+   "id": "k4",
+   "filmId": "f1",
+   "name": "Nalgonda and Khammam graduates",
+   "asset": "Graduates, Nalgonda and Khammam",
+   "cohort": "",
+   "objective": "Getting onboarded",
+   "kpi": "Screening enrolments",
+   "target": 60,
+   "ceiling": 4500,
+   "qual": "B.Tech / B.E.",
+   "skillBg": [
+    "CSE",
+    "IT",
+    "ECE"
+   ],
+   "ageBand": "21–26 years",
+   "expBand": "0–2 years experience",
+   "markets": [
+    "Nalgonda",
+    "Khammam"
+   ],
+   "languages": [
+    "Telugu"
+   ],
+   "start": "2026-10-20",
+   "end": "2026-11-12",
+   "budget": 400000,
+   "status": "Draft",
+   "version": 0,
+   "created": "2026-10-04",
+   "owner": "Anika Rao",
+   "hashtags": [],
+   "freeText": "",
+   "narratives": [],
+   "channels": [],
+   "ccs": [],
+   "comments": [],
+   "checkpoints": [],
+   "moves": [],
+   "alerts": [],
+   "versions": [],
+   "wiz": {
+    "step": 0,
+    "done": [],
+    "answers": {
+     "q1": "Speed to employment",
+     "q2": "Include partner institutions",
+     "q3": "No"
+    },
+    "focus": "Balanced",
+    "qsShown": true,
+    "needs": []
+   }
+  }
+ ],
+ "courses": [
+  {
+   "id": "f1",
+   "title": "Applied AI & ML Programme",
+   "batch": "Batch 4",
+   "language": "Telugu",
+   "release": "2026-11-16",
+   "studio": "Nexa Skills Foundation",
+   "poster": null,
+   "target": 300,
+   "ceiling": 4500,
+   "form": {
+    "title": "Applied AI & ML Programme",
+    "link": "nexaskills.org/applied-ai",
+    "domain": "AI/ML",
+    "level": "Intermediate",
+    "eligibility": "B.Tech/B.E. or MCA, graduated 2022–2026, 60% aggregate",
+    "duration": "16 weeks",
+    "mode": "Hybrid",
+    "locations": [
+     "Warangal",
+     "Hanumakonda",
+     "Hyderabad"
+    ],
+    "batchName": "Batch 4",
+    "batchStart": "2026-11-16",
+    "batchEnd": "2027-03-07",
+    "screenClose": "2026-10-31",
+    "target": "300",
+    "ceiling": "4500",
+    "regLink": "resolence.in/r/applied-ai-b4",
+    "budget": "18,00,000",
+    "fee": "No fee",
+    "stipend": "₹2,500/month",
+    "benefits": "Capstone with partner employers, mentor hours, certificate",
+    "outcome": "85% placement rate (Batch 3)",
+    "langs": [
+     "Telugu",
+     "English"
+    ],
+    "provider": "Nexa Skills Foundation",
+    "competing": "TASK AI Bootcamp, two private bootcamps in Hyderabad",
+    "past": "Batch 3: 46 enrolments from 50 target",
+    "src": {}
+   },
+   "brief": [
+    {
+     "key": "title",
+     "label": "Course name",
+     "tier": "req",
+     "value": "Applied AI & ML Programme",
+     "source": "Entered",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "link",
+     "label": "Course link",
+     "tier": "req",
+     "value": "nexaskills.org/applied-ai",
+     "source": "Entered",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "domain",
+     "label": "Domain and level",
+     "tier": "req",
+     "value": "AI/ML · Intermediate",
+     "source": "course-page · nexaskills.org",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "eligibility",
+     "label": "Eligibility",
+     "tier": "req",
+     "value": "B.Tech/B.E. or MCA, graduated 2022–2026, 60% aggregate",
+     "source": "syllabus.pdf · p.1",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "duration",
+     "label": "Duration and mode",
+     "tier": "req",
+     "value": "16 weeks · Hybrid (3 days in centre)",
+     "source": "brochure.pdf · p.2",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "locations",
+     "label": "Delivery locations",
+     "tier": "req",
+     "value": "Warangal (Hanumakonda centre), Hyderabad (Madhapur centre)",
+     "source": "brochure.pdf · p.2",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "batch",
+     "label": "Batch dates",
+     "tier": "req",
+     "value": "16 Nov 2026 – 7 Mar 2027 · screening closes 31 Oct",
+     "source": "Edited",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "target",
+     "label": "Enrolment target and cost ceiling",
+     "tier": "req",
+     "value": "300 screening enrolments · ₹4,500 per enrolment",
+     "source": "Edited",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "regLink",
+     "label": "Registration link (Resolence)",
+     "tier": "req",
+     "value": "resolence.in/r/applied-ai-b4",
+     "source": "Entered",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "budget",
+     "label": "Budget",
+     "tier": "strong",
+     "value": "₹18,00,000",
+     "source": "Edited",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "fee",
+     "label": "Fee and stipend",
+     "tier": "strong",
+     "value": "No fee · ₹2,500/month stipend",
+     "source": "brochure.pdf · p.3",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "benefits",
+     "label": "Benefits",
+     "tier": "strong",
+     "value": "Capstone with partner employers, mentor hours, certificate",
+     "source": "brochure.pdf · p.3",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "outcome",
+     "label": "Outcome promise",
+     "tier": "strong",
+     "value": "\"85% placement rate\" (Batch 3)",
+     "source": "brochure.pdf · p.4",
+     "status": "Unconfirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "langs",
+     "label": "Languages of instruction",
+     "tier": "strong",
+     "value": "Telugu and English",
+     "source": "syllabus.pdf · p.1",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "provider",
+     "label": "Provider",
+     "tier": "opt",
+     "value": "Nexa Skills Foundation",
+     "source": "Entered",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "competing",
+     "label": "Competing programmes",
+     "tier": "opt",
+     "value": "TASK AI Bootcamp, two private bootcamps in Hyderabad",
+     "source": "AI-inferred",
+     "status": "Unconfirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "past",
+     "label": "Past batch results",
+     "tier": "opt",
+     "value": "Batch 3: 46 enrolments from 50 target",
+     "source": "Edited",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    }
+   ],
+   "claims": [
+    {
+     "text": "85% placement rate",
+     "src": "brochure.pdf · p.4",
+     "status": "Awaiting evidence"
+    }
+   ],
+   "flags": [
+    {
+     "type": "Outcome claims",
+     "status": "Under review",
+     "note": "Brochure states an 85% placement rate. Held as a claim awaiting Observed evidence (RR-H03); content may not use it until evidence is attached."
+    },
+    {
+     "type": "Institution endorsement",
+     "status": "Cleared",
+     "note": "Consent recorded for KITS Warangal, JNTUH Students' Forum and the Telangana Engineering Students group. SNIST consent missing."
+    },
+    {
+     "type": "Paid promotion",
+     "status": "Cleared",
+     "note": "All paid items carry #ad and platform disclosure tags."
+    }
+   ],
+   "reads": [
+    {
+     "key": "public",
+     "title": "Cohort demand and aspirations",
+     "status": "Ready",
+     "date": "2026-09-18",
+     "items": [
+      {
+       "t": "Searches for \"AI course in Telugu\" up 64% year on year in Telangana",
+       "stamp": "Inferred",
+       "src": "Web results · Google Trends"
+      },
+      {
+       "t": "Warangal graduates ask most about stipend and hybrid schedule",
+       "stamp": "Observed",
+       "src": "Batch 3 comment themes"
+      },
+      {
+       "t": "Recent graduates want a portfolio project more than a certificate",
+       "stamp": "Inferred",
+       "src": "Programme research"
+      },
+      {
+       "t": "Hyderabad data roles list Python, SQL and ML ops most often",
+       "stamp": "Inferred",
+       "src": "Web results · job boards"
+      }
+     ]
+    },
+    {
+     "key": "audience",
+     "title": "Competing programmes and employers",
+     "status": "Stale",
+     "staleNote": "Delivery locations changed (Hyderabad centre added) on 28 Sep",
+     "date": "2026-09-18",
+     "items": [
+      {
+       "t": "TASK AI Bootcamp opens registrations 20 Oct for the same cohort",
+       "stamp": "Observed",
+       "src": "Web results · TASK site"
+      },
+      {
+       "t": "Two Hyderabad bootcamps charge ₹45,000–₹80,000 with placement claims",
+       "stamp": "Inferred",
+       "src": "Web results"
+      },
+      {
+       "t": "Warangal IT park employers hire 30–50 freshers a quarter",
+       "stamp": "Inferred",
+       "src": "Web results · news"
+      }
+     ]
+    },
+    {
+     "key": "risk",
+     "title": "What could go wrong",
+     "status": "Ready",
+     "date": "2026-09-18",
+     "items": [
+      {
+       "t": "The 85% placement claim cannot be used without Observed evidence",
+       "stamp": "Observed",
+       "src": "Governance flag"
+      },
+      {
+       "t": "Placement doubt rises when job-alert creators promote the course",
+       "stamp": "Inferred",
+       "src": "Batch 3 comments"
+      },
+      {
+       "t": "WhatsApp forwards can strip the tracked link",
+       "stamp": "Inferred",
+       "src": "Attribution risk R5"
+      },
+      {
+       "t": "Late enrolment records make a healthy campaign look Behind",
+       "stamp": "Predicted",
+       "src": "RM-09 lag model"
+      }
+     ]
+    }
+   ],
+   "watch": [
+    {
+     "id": "w1",
+     "handle": "Nexa Skills Official",
+     "platform": "YouTube",
+     "kind": "Programme channel",
+     "state": "Active"
+    },
+    {
+     "id": "w2",
+     "handle": "@nexaskills",
+     "platform": "Instagram",
+     "kind": "Programme account",
+     "state": "Active"
+    },
+    {
+     "id": "w3",
+     "handle": "#AppliedAIBatch4",
+     "platform": "Instagram",
+     "kind": "Hashtag",
+     "state": "Active"
+    },
+    {
+     "id": "w4",
+     "handle": "Nexa Skills Foundation",
+     "platform": "LinkedIn",
+     "kind": "Programme page",
+     "state": "Upload only"
+    },
+    {
+     "id": "w5",
+     "handle": "#AppliedAIBatch4",
+     "platform": "X",
+     "kind": "Hashtag",
+     "state": "Unsupported"
+    }
+   ],
+   "activity": [
+    {
+     "t": "2026-10-06T08:40",
+     "text": "Resolence counts received: 11 new enrolments across 2 campaigns",
+     "kind": "fetch"
+    },
+    {
+     "t": "2026-10-06T09:00",
+     "text": "Day 14 checkpoint: Warangal engineering graduates is Behind",
+     "kind": "alert"
+    },
+    {
+     "t": "2026-10-05T19:20",
+     "text": "Coding with Sravani posted \"Final-year? Do this before placements\"",
+     "kind": "post"
+    },
+    {
+     "t": "2026-10-04T16:00",
+     "text": "JNTUH info session: 64 attendees, 12 enrolments via tagged QR",
+     "kind": "post"
+    },
+    {
+     "t": "2026-10-03T11:10",
+     "text": "Partnership recorded: Warangal Youth Forum, zero fee",
+     "kind": "deal"
+    }
+   ]
+  },
+  {
+   "id": "f2",
+   "title": "Advanced Manufacturing Technician",
+   "batch": "Batch 1",
+   "language": "Telugu",
+   "release": "2027-01-11",
+   "studio": "Nexa Skills Foundation",
+   "poster": null,
+   "target": 0,
+   "ceiling": 0,
+   "form": {
+    "title": "Advanced Manufacturing Technician",
+    "link": "nexaskills.org/amt",
+    "domain": "Manufacturing",
+    "level": "Foundation",
+    "eligibility": "ITI or diploma (mechanical, electrical, fitter), passed 2021–2026",
+    "duration": "12 weeks",
+    "mode": "In centre",
+    "locations": [
+     "Nizamabad"
+    ],
+    "batchName": "Batch 1",
+    "batchStart": "2027-01-11",
+    "batchEnd": "2027-04-05",
+    "screenClose": "",
+    "target": "",
+    "ceiling": "",
+    "regLink": "",
+    "budget": "6,00,000",
+    "fee": "No fee",
+    "stipend": "₹3,000/month",
+    "benefits": "",
+    "outcome": "",
+    "langs": [
+     "Telugu"
+    ],
+    "provider": "Nexa Skills Foundation",
+    "competing": "",
+    "past": "",
+    "src": {
+     "eligibility": "amt-brochure.pdf",
+     "duration": "amt-brochure.pdf",
+     "mode": "amt-brochure.pdf",
+     "fee": "amt-brochure.pdf",
+     "stipend": "amt-brochure.pdf"
+    }
+   },
+   "brief": [
+    {
+     "key": "title",
+     "label": "Course name",
+     "tier": "req",
+     "value": "Advanced Manufacturing Technician",
+     "source": "Entered",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "link",
+     "label": "Course link",
+     "tier": "req",
+     "value": "nexaskills.org/amt",
+     "source": "Entered",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "domain",
+     "label": "Domain and level",
+     "tier": "req",
+     "value": "Manufacturing · Foundation",
+     "source": "course-page · nexaskills.org",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "eligibility",
+     "label": "Eligibility",
+     "tier": "req",
+     "value": "ITI or diploma (mechanical, electrical, fitter), passed 2021–2026",
+     "source": "From file",
+     "status": "Unconfirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "duration",
+     "label": "Duration and mode",
+     "tier": "req",
+     "value": "12 weeks · In centre",
+     "source": "From file",
+     "status": "Unconfirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "locations",
+     "label": "Delivery locations",
+     "tier": "req",
+     "value": "Nizamabad (Armoor centre)",
+     "source": "Entered",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "batch",
+     "label": "Batch dates",
+     "tier": "req",
+     "value": "11 Jan 2027 – 5 Apr 2027",
+     "source": "Entered",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "target",
+     "label": "Enrolment target and cost ceiling",
+     "tier": "req",
+     "value": "",
+     "source": "",
+     "status": "Missing",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "regLink",
+     "label": "Registration link (Resolence)",
+     "tier": "req",
+     "value": "",
+     "source": "",
+     "status": "Missing",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "budget",
+     "label": "Budget",
+     "tier": "strong",
+     "value": "₹6,00,000",
+     "source": "Edited",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "fee",
+     "label": "Fee and stipend",
+     "tier": "strong",
+     "value": "No fee · ₹3,000/month stipend",
+     "source": "From file",
+     "status": "Unconfirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "benefits",
+     "label": "Benefits",
+     "tier": "strong",
+     "value": "Apprenticeship with local employers",
+     "source": "",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "outcome",
+     "label": "Outcome promise",
+     "tier": "strong",
+     "value": "",
+     "source": "",
+     "status": "Missing",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "langs",
+     "label": "Languages of instruction",
+     "tier": "strong",
+     "value": "Telugu",
+     "source": "Entered",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "provider",
+     "label": "Provider",
+     "tier": "opt",
+     "value": "Nexa Skills Foundation",
+     "source": "Entered",
+     "status": "Confirmed",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "competing",
+     "label": "Competing programmes",
+     "tier": "opt",
+     "value": "",
+     "source": "",
+     "status": "Missing",
+     "date": "2026-09-12"
+    },
+    {
+     "key": "past",
+     "label": "Past batch results",
+     "tier": "opt",
+     "value": "",
+     "source": "",
+     "status": "Missing",
+     "date": "2026-09-12"
+    }
+   ],
+   "claims": [],
+   "flags": [
+    {
+     "type": "Outcome claims",
+     "status": "Cleared",
+     "note": "No outcome claims found."
+    },
+    {
+     "type": "Institution endorsement",
+     "status": "Under review",
+     "note": "Partnership with Govt ITI Nizamabad awaiting signed consent."
+    },
+    {
+     "type": "Paid promotion",
+     "status": "Cleared",
+     "note": ""
+    }
+   ],
+   "reads": [
+    {
+     "key": "public",
+     "title": "Cohort demand and aspirations",
+     "status": "Waiting",
+     "date": "",
+     "items": []
+    },
+    {
+     "key": "audience",
+     "title": "Competing programmes and employers",
+     "status": "Waiting",
+     "date": "",
+     "items": []
+    },
+    {
+     "key": "risk",
+     "title": "What could go wrong",
+     "status": "Waiting",
+     "date": "",
+     "items": []
+    }
+   ],
+   "watch": [],
+   "activity": [
+    {
+     "t": "2026-10-02T10:00",
+     "text": "Course created by Anika Rao",
+     "kind": "deal"
+    }
+   ]
+  }
+ ],
+ "files": [
+  {
+   "id": "fl1",
+   "filmId": "f1",
+   "name": "brochure.pdf",
+   "size": "3.1 MB",
+   "lane": "Brief material",
+   "date": "2026-09-10",
+   "by": "Anika Rao",
+   "status": "Extracted"
+  },
+  {
+   "id": "fl2",
+   "filmId": "f1",
+   "name": "syllabus.pdf",
+   "size": "640 KB",
+   "lane": "Brief material",
+   "date": "2026-09-10",
+   "by": "Anika Rao",
+   "status": "Extracted"
+  },
+  {
+   "id": "fl3",
+   "filmId": "f1",
+   "name": "alumni-testimonial-card-te.png",
+   "size": "1.4 MB",
+   "lane": "Brand assets",
+   "date": "2026-09-21",
+   "by": "Copilot",
+   "status": "Generated",
+   "prompt": "WhatsApp-forwardable card in Telugu: Batch 3 alumnus quote, eligibility line, tracked QR"
+  },
+  {
+   "id": "fl4",
+   "filmId": "f1",
+   "name": "eligibility-carousel-en.png",
+   "size": "2.2 MB",
+   "lane": "Brand assets",
+   "date": "2026-09-26",
+   "by": "Copilot",
+   "status": "Generated",
+   "prompt": "5-slide carousel: who is eligible, stipend, schedule, centres, how to register"
+  },
+  {
+   "id": "fl5",
+   "filmId": "f1",
+   "name": "resolence-counts-2026-10-05.csv",
+   "size": "8 KB",
+   "lane": "Metrics exports",
+   "date": "2026-10-05",
+   "by": "Divya K",
+   "status": "Imported"
+  },
+  {
+   "id": "fl6",
+   "filmId": "f1",
+   "name": "warangal-campaign-plan-v2.pdf",
+   "size": "290 KB",
+   "lane": "Exports",
+   "date": "2026-09-29",
+   "by": "Vikram Shetty",
+   "status": "Generated"
+  },
+  {
+   "id": "fl7",
+   "filmId": "f2",
+   "name": "amt-brochure.pdf",
+   "size": "2.4 MB",
+   "lane": "Brief material",
+   "date": "2026-10-02",
+   "by": "Anika Rao",
+   "status": "Extracted"
+  }
+ ],
+ "rateTiers": [
+  {
+   "id": "t0",
+   "tier": "Institutional",
+   "range": "Placement cells, college networks",
+   "lo": 0,
+   "hi": 0,
+   "prov": "Observed",
+   "bookings": 6,
+   "films": 2
+  },
+  {
+   "id": "t1",
+   "tier": "Nano",
+   "range": "1K–10K",
+   "lo": 2000,
+   "hi": 6000,
+   "prov": "Illustrative",
+   "bookings": 1,
+   "films": 1
+  },
+  {
+   "id": "t2",
+   "tier": "Micro",
+   "range": "10K–100K",
+   "lo": 7000,
+   "hi": 16000,
+   "prov": "Observed",
+   "bookings": 6,
+   "films": 3
+  },
+  {
+   "id": "t3",
+   "tier": "Mid",
+   "range": "100K–500K",
+   "lo": 18000,
+   "hi": 40000,
+   "prov": "Observed",
+   "bookings": 8,
+   "films": 3
+  },
+  {
+   "id": "t4",
+   "tier": "Macro",
+   "range": "500K–1M",
+   "lo": 55000,
+   "hi": 90000,
+   "prov": "Observed",
+   "bookings": 4,
+   "films": 2
+  },
+  {
+   "id": "t5",
+   "tier": "Mega",
+   "range": "1M+",
+   "lo": 90000,
+   "hi": 150000,
+   "prov": "Illustrative",
+   "bookings": 2,
+   "films": 1
+  }
+ ],
+ "rateObs": [
+  {
+   "date": "2026-10-03",
+   "creator": "c8",
+   "film": "Applied AI & ML Programme",
+   "rate": 0,
+   "posts": 1,
+   "tier": "Institutional"
+  },
+  {
+   "date": "2026-09-27",
+   "creator": "c2",
+   "film": "Applied AI & ML Programme",
+   "rate": 28000,
+   "posts": 3,
+   "tier": "Mid"
+  },
+  {
+   "date": "2026-09-27",
+   "creator": "c9",
+   "film": "Applied AI & ML Programme",
+   "rate": 95000,
+   "posts": 1,
+   "tier": "Mega"
+  },
+  {
+   "date": "2026-09-22",
+   "creator": "c1",
+   "film": "Applied AI & ML Programme",
+   "rate": 75000,
+   "posts": 2,
+   "tier": "Macro"
+  },
+  {
+   "date": "2026-09-22",
+   "creator": "c7",
+   "film": "Applied AI & ML Programme",
+   "rate": 60000,
+   "posts": 2,
+   "tier": "Macro"
+  },
+  {
+   "date": "2026-09-22",
+   "creator": "c4",
+   "film": "Applied AI & ML Programme",
+   "rate": 15000,
+   "posts": 2,
+   "tier": "Micro"
+  }
+ ],
+ "connectors": [
+  {
+   "id": "yt",
+   "name": "YouTube Data API",
+   "kind": "API key",
+   "status": "Connected",
+   "detail": "Key ending ••••3Hq9 · Quota today 4,120 of 10,000 units",
+   "last": "2026-10-06T08:40",
+   "quota": 41
+  },
+  {
+   "id": "yta",
+   "name": "YouTube Analytics",
+   "kind": "OAuth",
+   "status": "Connected",
+   "detail": "Nexa Skills Official (programme channel)",
+   "last": "2026-10-06T06:00"
+  },
+  {
+   "id": "meta",
+   "name": "Meta (Instagram + Facebook)",
+   "kind": "OAuth",
+   "status": "Expiring",
+   "detail": "Business account @nexaskills · token expires 12 Oct 2026 (6 days)",
+   "last": "2026-10-06T08:38"
+  },
+  {
+   "id": "res",
+   "name": "Resolence (enrolment records)",
+   "kind": "Connector",
+   "status": "Connected",
+   "detail": "Registration and enrolment counts per tag · daily at 08:00 · manual upload fallback",
+   "last": "2026-10-06T08:00"
+  },
+  {
+   "id": "li",
+   "name": "LinkedIn",
+   "kind": "Upload",
+   "status": "Upload only",
+   "detail": "Sheet upload and manual metrics in v1"
+  },
+  {
+   "id": "x",
+   "name": "X",
+   "kind": "Paid API",
+   "status": "Unsupported",
+   "detail": "Not supported in v1"
+  }
+ ],
+ "threads": [
+  {
+   "id": "th1",
+   "title": "Why is Warangal engineering graduates behind?",
+   "scope": "Warangal engineering graduates",
+   "date": "2026-10-06",
+   "messages": [
+    {
+     "role": "user",
+     "text": "Why is Warangal engineering graduates behind?"
+    },
+    {
+     "role": "ai",
+     "text": "At the Day 14 checkpoint the campaign had 63 screening enrolments against an expected band of 78–118, while clicks are inside their band. The largest cause (41%) is a message and programme mismatch: Hyderabad Tech Jobs produced 6,100 clicks but only 2 enrolments, and 71% of its audience is in Hyderabad, not Warangal. Two confirmed trust-anchor sources have not posted yet.",
+     "sources": [
+      "Diagnosis · 6 Oct 09:00",
+      "Frozen prediction v1",
+      "Resolence counts · 6 Oct 08:00"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "th2",
+   "title": "Telugu caption for the eligibility card",
+   "scope": "Applied AI & ML Programme",
+   "date": "2026-10-04",
+   "messages": [
+    {
+     "role": "user",
+     "text": "Draft a Telugu caption for the eligibility carousel"
+    },
+    {
+     "role": "ai",
+     "text": "\"2022–2026 లో B.Tech పూర్తి చేశారా? Applied AI Batch 4 కి ఫీజు లేదు, నెలకు ₹2,500 స్టైపెండ్. లింక్ ద్వారా రిజిస్టర్ చేయండి. #AppliedAIBatch4 #ad\" (Finished B.Tech in 2022–2026? No fee, ₹2,500 a month stipend. Register through the link.)",
+     "sources": [
+      "Course brief: Eligibility, Fee and stipend"
+     ]
+    }
+   ]
+  }
+ ],
+ "team": [
+  {
+   "name": "Anika Rao",
+   "role": "Manager",
+   "title": "Campaign manager",
+   "email": "anika.rao@peopletech.com"
+  },
+  {
+   "name": "Vikram Shetty",
+   "role": "Admin",
+   "title": "Programme head",
+   "email": "vikram.s@peopletech.com"
+  },
+  {
+   "name": "Divya K",
+   "role": "Manager",
+   "title": "Partnerships executive",
+   "email": "divya.k@peopletech.com"
+  },
+  {
+   "name": "Meera Iyer",
+   "role": "Fairness reviewer",
+   "title": "Fairness reviewer",
+   "email": "meera.i@peopletech.com"
+  },
+  {
+   "name": "Provider viewer",
+   "role": "Viewer",
+   "title": "Nexa Skills Foundation",
+   "email": "reports@nexaskills.org"
+  }
+ ],
+ "lookups": {
+  "districts": [
+   "Warangal",
+   "Hanumakonda",
+   "Hyderabad",
+   "Karimnagar",
+   "Khammam",
+   "Nalgonda",
+   "Nizamabad"
+  ],
+  "sourceTypes": [
+   "Micro-influencer",
+   "College network",
+   "Placement cell",
+   "Alumnus",
+   "Trainer or mentor",
+   "Community leader",
+   "Digital creator"
+  ],
+  "institutional": [
+   "College network",
+   "Placement cell"
+  ],
+  "skills": [
+   "AI/ML",
+   "Data engineering",
+   "Software development",
+   "Career guidance",
+   "Placements",
+   "Manufacturing",
+   "Interview prep"
+  ],
+  "statuses": [
+   "Identified",
+   "Approached",
+   "Negotiating",
+   "Confirmed",
+   "Content in review",
+   "Live",
+   "Delivered",
+   "Declined",
+   "Backed out"
+  ],
+  "committed": [
+   "Confirmed",
+   "Content in review",
+   "Live",
+   "Delivered"
+  ]
+ }
+}
