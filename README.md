@@ -1,3 +1,4 @@
+..... HEAD
 # Hire IQ — Influence IQ skilling & hiring module
 
 Plan cohort micro-campaigns that drive **screening enrolments** for skilling programmes: pick the
@@ -105,3 +106,6 @@ Set it to `null` for real dates.
 * Connect Resolence (daily API pull at the hook in `jobs/scheduler.js`, or CSV upload at `POST /api/metrics/resolence`).
 * Add YouTube / Meta credentials for Agent A3 and post metrics; LinkedIn and WhatsApp stay manual/upload in v1.
 * Agent A2 should be given web-search results (search API) for fresh competitor reads.
+=======
+# hireiq
+>>>>>>> ad0147cc3c62e325a8bf802f75654d52607e690a
