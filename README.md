@@ -7,15 +7,18 @@ Built from the Hire IQ prototype. React + Node.js + MySQL + a Python service wit
 
 ```
 hireiq/
-├── docs/
+├── docs/                    architecture, API endpoints, agent design, reports & screenshots
 │   ├── ARCHITECTURE.md      system design, flows, governance, data sources, deployment
 │   ├── AGENTS.md            the 12 agents + Copilot, formulas, inputs/outputs
-│   └── API.md               every REST endpoint
-├── database/
+│   ├── API.md               every REST endpoint
+│   ├── HIRE_IQ_SOURCE_ANALYSIS.md
+│   ├── HIRE_IQ_VERIFICATION_REPORT.md
+│   └── screenshots/         UI screens and visual reference captures
+├── database/                MySQL schema & seed data
 │   ├── schema.sql           MySQL 8 schema (38 tables, commented)
 │   └── seed/
-│       ├── config_seed.json      ALL options, thresholds, rules, channel priors (DB-driven, nothing hard-coded)
-│       ├── prototype_seed.json   courses, Creator Bank, campaigns, posts… exported from the prototype
+│       ├── config_seed.json      ALL options, thresholds, rules, channel priors (DB-driven)
+│       ├── prototype_seed.json   courses, Creator Bank, campaigns, posts
 │       └── sample_brochure.txt   used by "Use sample brochure"
 ├── ai-service/              Python FastAPI · stateless agents
 │   ├── app/main.py          /v1/agents/{a1..a12,cop}, /v1/governance/screen
@@ -24,14 +27,18 @@ hireiq/
 │   ├── app/agents/          a01_brief_extractor … a12_diagnosis, copilot
 │   └── tests/test_agents.py
 ├── backend/                 Node.js Express API
-│   ├── src/routes/          auth, courses, campaigns (wizard + live), sources, misc (lookups, settings, files, metrics, copilot, agents)
-│   ├── src/services/        settings (DB config), repo, stats, wizardService, campaignService, courseService, copilotService, alerts, ai
+│   ├── src/models/          domain models (Campaign, Course, Source, Governance, RateCard)
+│   ├── src/routes/          auth, courses, campaigns, sources, lookups, settings, files, metrics
+│   ├── src/services/        settings, repo, stats, wizardService, campaignService, copilotService
 │   ├── src/jobs/            daily attribution, checkpoints, monthly Creator Bank refresh
 │   └── scripts/             seed.js, smoke.js (29-step end-to-end test), start.sh
 ├── frontend/                React (Vite)
-│   └── src/pages/           Login, Dashboard, Brief, Campaigns, Wizard (6 steps), CampaignDetail, Influencer,
-│                            CreatorBank, SourceProfile, Copilot, Artifacts, Settings
-└── docker-compose.yml
+│   ├── src/screens/         Login, Dashboard, CourseBrief, Campaigns, CampaignWizard,
+│   │                        CampaignDetail, SourceDetail, CreatorBank, SourceProfile, Copilot, Artifacts, Settings
+│   ├── src/components/      shared UI, layout, Shell navigation
+│   └── src/hooks/           useHQ state & API hooks
+├── scripts/                 automation scripts (run_app.ps1, inspect, tools)
+└── docker-compose.yml       multi-container orchestration (db, ai, api/web)
 ```
 
 ## Run with Docker

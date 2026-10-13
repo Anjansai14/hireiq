@@ -1,55 +1,57 @@
 import React from 'react';
 import { useHQ } from './hooks/useHQ';
 import Shell from './components/layout/Shell';
-import Login from './pages/Login/Login';
-import Dashboard from './pages/Dashboard/Dashboard';
-import CourseBrief from './pages/CourseBrief/CourseBrief';
-import NewCourseModal from './pages/Courses/NewCourseModal';
-import Campaigns from './pages/Campaigns/Campaigns';
-import CampaignWizard from './pages/CampaignWizard/CampaignWizard';
-import CampaignDetail from './pages/CampaignDetail/CampaignDetail';
-import SourceDetail from './pages/SourceDetail/SourceDetail';
-import CreatorBank from './pages/CreatorBank/CreatorBank';
-import SourceProfile from './pages/SourceProfile/SourceProfile';
-import Copilot from './pages/Copilot/Copilot';
-import Artifacts from './pages/Artifacts/Artifacts';
-import Settings from './pages/Settings/Settings';
+import {
+  LoginScreen,
+  DashboardScreen,
+  CourseBriefScreen,
+  NewCourseModal,
+  CampaignsScreen,
+  CampaignWizardScreen,
+  CampaignDetailScreen,
+  SourceDetailScreen,
+  CreatorBankScreen,
+  SourceProfileScreen,
+  CopilotScreen,
+  ArtifactsScreen,
+  SettingsScreen
+} from './screens';
 
 export default function App() {
   const { HQ, s } = useHQ();
   const route = s.route || { name: 'dashboard' };
 
   if (!s.user || !s.module) {
-    return <Login />;
+    return <LoginScreen />;
   }
 
   // Active view inside Shell
   const renderPage = () => {
     switch (route.name) {
       case 'dashboard':
-        return <Dashboard />;
+        return <DashboardScreen />;
       case 'brief':
-        return <CourseBrief />;
+        return <CourseBriefScreen />;
       case 'campaigns':
-        return <Campaigns />;
+        return <CampaignsScreen />;
       case 'wizard':
-        return <CampaignWizard />;
+        return <CampaignWizardScreen />;
       case 'campaign':
-        return <CampaignDetail />;
+        return <CampaignDetailScreen />;
       case 'influencer':
-        return <SourceDetail />;
+        return <SourceDetailScreen />;
       case 'creators':
-        return <CreatorBank />;
+        return <CreatorBankScreen />;
       case 'creator':
-        return <SourceProfile />;
+        return <SourceProfileScreen />;
       case 'copilot':
-        return <Copilot mode="page" />;
+        return <CopilotScreen mode="page" />;
       case 'files':
-        return <Artifacts />;
+        return <ArtifactsScreen />;
       case 'settings':
-        return <Settings />;
+        return <SettingsScreen />;
       default:
-        return <Dashboard />;
+        return <DashboardScreen />;
     }
   };
 
