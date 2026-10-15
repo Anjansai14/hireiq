@@ -1,4 +1,6 @@
+const path = require('path');
 require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 module.exports = {
   port: Number(process.env.PORT || 4000),
@@ -16,4 +18,5 @@ module.exports = {
   corsOrigin: (process.env.CORS_ORIGIN || '*').split(','),
   uploadDir: process.env.UPLOAD_DIR || './uploads',
   enableJobs: process.env.ENABLE_JOBS !== 'false',
+  youtubeApiKey: process.env.YOUTUBE_API_KEY || '',
 };

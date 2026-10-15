@@ -682,6 +682,16 @@ class RelationalStore {
       newRow[col] = val !== undefined ? val : null;
     });
 
+    // Handle source_snapshots unique key (source_id, month)
+    if (table === 'source_snapshots' && newRow.source_id && newRow.month) {
+      const existingIdx = rows.findIndex(r => r.source_id === newRow.source_id && r.month === newRow.month);
+      if (existingIdx >= 0) {
+        rows[existingIdx] = { ...rows[existingIdx], ...newRow };
+        this.save();
+        return { affectedRows: 1, insertId: rows[existingIdx].id || 1 };
+      }
+    }
+
     if (!newRow.id) {
       // auto-increment or id assignment
       const maxId = rows.reduce((max, r) => (typeof r.id === 'number' && r.id > max ? r.id : max), 0);
@@ -985,6 +995,30 @@ class RelationalStore {
   buildWhereFilter(whereClause, params) {
     if (!whereClause || !whereClause.trim()) {
       return () => true;
+    }
+
+    // Special case for sources duplicate lookup queries
+    if (/affiliation.*handle.*channelId/i.test(whereClause) || /LOWER\(handle\).*affiliation/i.test(whereClause)) {
+      return (row) => {
+        if (/platform\s*=\s*'YouTube'/i.test(whereClause) && row.platform !== 'YouTube') return false;
+        if (/affiliation\s*=\s*\?\s*OR\s*handle\s*=\s*\?/i.test(whereClause)) {
+          const [affil, handle, chId] = params;
+          const contactObj = typeof row.contact === 'string' ? JSON.parse(row.contact || '{}') : (row.contact || {});
+          const rowChId = contactObj.channelId;
+          const matchTarget = (row.affiliation && row.affiliation === affil) ||
+            (row.handle && row.handle.toLowerCase() === handle.toLowerCase()) ||
+            (rowChId && rowChId === chId);
+          return matchTarget;
+        }
+        if (/platform\s*=\s*\?\s*AND/i.test(whereClause)) {
+          const [platform, handle, affilOrUrl] = params;
+          if (row.platform !== platform) return false;
+          if (row.handle && row.handle.toLowerCase() === handle.toLowerCase()) return true;
+          if (affilOrUrl && row.affiliation && row.affiliation === affilOrUrl) return true;
+          return false;
+        }
+        return true;
+      };
     }
 
     let pIdx = 0;

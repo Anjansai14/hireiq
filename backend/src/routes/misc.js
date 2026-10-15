@@ -12,6 +12,7 @@ const copilot = require('../services/copilotService');
 const campaigns = require('../services/campaignService');
 const { requireRole } = require('../middleware/auth');
 const { ah, uid, encrypt, HttpError } = require('../utils/helpers');
+const youtube = require('../services/youtubeService');
 
 const upload = multer({ dest: config.uploadDir, limits: { fileSize: 50 * 1024 * 1024 } });
 
@@ -52,8 +53,12 @@ set.post('/connectors/:id/disconnect', requireRole('Admin'), ah(async (req, res)
   res.json({ ok: true });
 }));
 set.post('/connectors/:id/test', ah(async (req, res) => {
+  if (req.params.id === 'yt') {
+    const result = await youtube.testConnection(req.body?.token);
+    return res.json(result);
+  }
   const c = await db.one('SELECT * FROM connectors WHERE id = ?', [req.params.id]);
-  res.json({ ok: c && ['Connected', 'Expiring'].includes(c.status), status: c?.status });
+  res.json({ ok: c && ['Connected', 'Expiring'].includes(c.status), status: c?.status, message: `${c?.name || req.params.id}: status is ${c?.status || 'Unknown'}` });
 }));
 set.get('/ratecard', ah(async (req, res) => {
   const tiers = await db.query('SELECT * FROM rate_tiers ORDER BY sort_order');

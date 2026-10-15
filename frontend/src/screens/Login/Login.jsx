@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useHQ } from '../../hooks/useHQ';
 import { Icon } from '../../components/icons/Icons';
+import { api } from '../../lib/api';
 
 export default function Login() {
   const { HQ, s } = useHQ();
   const [email, setEmail] = useState('anika.rao@peopletech.com');
-  const [pw, setPw] = useState('password123');
+  const [pw, setPw] = useState('Hireiq@123');
   const [pw2, setPw2] = useState('');
   const [fullName, setFullName] = useState('');
   const [mode, setMode] = useState('signin');
@@ -18,32 +19,40 @@ export default function Login() {
   const isUser = !!s.user;
   const isModule = isUser && !s.module;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (loading) return;
-    if (!/^\S+@\S+\.\S+$/.test(email)) return setLoginErr('Enter a valid work email address.');
+    const cleanEmail = String(email || '').trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(cleanEmail)) return setLoginErr('Enter a valid work email address.');
     if (mode === 'signup' && !fullName.trim()) return setLoginErr('Enter your full name.');
-    if (pw.length < 6) return setLoginErr(mode === 'signup' ? 'Use a password of at least 6 characters.' : 'Email or password is incorrect. Passwords have at least 6 characters.');
-    if (mode === 'signup' && pw !== pw2) return setLoginErr('Passwords do not match.');
+    if (pw.length < 6) return setLoginErr('Email or password is incorrect. Passwords have at least 6 characters.');
+    if (mode === 'signup') {
+      if (pw !== pw2) return setLoginErr('Passwords do not match.');
+      return setLoginErr('User registration is managed by your administrator. Please sign in with your provisioned account.');
+    }
 
     setLoading(true);
     setLoginErr('');
     setForgotSent(false);
 
-    setTimeout(() => {
+    try {
+      const res = await api.post('/auth/login', { email: cleanEmail, password: pw });
+      if (res?.token) {
+        api.token.set(res.token);
+      }
       HQ.set(z => {
-        z.user = {
-          name: mode === 'signup' ? fullName.trim() : 'Anika Rao',
-          email,
-          role: 'Manager',
-          title: 'Campaign manager'
-        };
+        z.user = res.user;
         z.module = 'hire';
         z.route = { name: 'dashboard' };
       });
+      const firstName = (res.user?.name || 'there').split(' ')[0];
+      HQ.toast(`Welcome back, ${firstName}!`);
+    } catch (err) {
+      const msg = err.body?.error || err.message || 'Login failed. Please check your credentials or backend server.';
+      setLoginErr(msg);
+    } finally {
       setLoading(false);
-      HQ.toast(`Welcome back, ${mode === 'signup' ? fullName.trim().split(' ')[0] : 'Anika'}!`);
-    }, 600);
+    }
   };
 
   // If already logged in and at module chooser
@@ -137,7 +146,10 @@ export default function Login() {
         </div>
 
         <button
-          onClick={() => HQ.set(z => { z.user = null; })}
+          onClick={() => {
+            api.token.set(null);
+            HQ.set(z => { z.user = null; });
+          }}
           style={{ border: 0, background: 'none', color: 'var(--ink-500)', cursor: 'pointer', display: 'flex', gap: '6px', alignItems: 'center' }}
         >
           <Icon name="i-logout" size={16} /> Sign out
@@ -291,19 +303,21 @@ export default function Login() {
 
           <button
             type="submit"
+            disabled={loading}
             style={{
               height: '48px',
               border: 0,
               borderRadius: '8px',
-              background: 'var(--teal-700)',
+              background: loading ? 'var(--ink-400)' : 'var(--teal-700)',
               color: '#fff',
               fontWeight: 600,
               fontSize: '16px',
-              cursor: 'pointer',
+              cursor: loading ? 'not-allowed' : 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '10px'
+              gap: '10px',
+              opacity: loading ? 0.75 : 1
             }}
           >
             {loading && <span style={{ width: '18px', height: '18px', borderRadius: '50%', border: '2px solid rgba(255,255,255,.35)', borderTopColor: '#fff', animation: 'spin .8s linear infinite' }}></span>}
@@ -327,7 +341,7 @@ export default function Login() {
           </p>
 
           <p style={{ margin: 0, fontSize: '12px', color: 'var(--ink-500)' }}>
-            Prototype: any email and a password of 6+ characters works.
+            Seeded accounts: anika.rao@peopletech.com · vikram.shetty@peopletech.com · Password: Hireiq@123
           </p>
         </form>
       </div>

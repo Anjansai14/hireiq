@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useHQ } from '../../hooks/useHQ';
 import { Icon } from '../../components/icons/Icons';
+import { api } from '../../lib/api';
 
 export default function SourceProfile() {
   const { HQ, s } = useHQ();
@@ -18,6 +19,25 @@ export default function SourceProfile() {
     cmErr: '',
     cPlat: null
   });
+
+  useEffect(() => {
+    if (r.id) {
+      api.get(`/sources/${r.id}`)
+        .then((data) => {
+          if (data && data.id) {
+            HQ.set((z) => {
+              const idx = z.creators.findIndex((c) => c.id === r.id);
+              if (idx >= 0) {
+                z.creators[idx] = { ...z.creators[idx], ...data };
+              } else {
+                z.creators.push(data);
+              }
+            });
+          }
+        })
+        .catch(() => {});
+    }
+  }, [r.id]);
 
   if (!cr) {
     return (
@@ -49,14 +69,23 @@ export default function SourceProfile() {
     });
   };
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     if (state.refreshing) return;
     setState(prev => ({ ...prev, refreshing: true }));
-    setTimeout(() => {
-      updC({ updated: HQ.TODAY, next: HQ.addDays(HQ.TODAY, 31) }, 'Manual refresh: profile re-fetched from ' + cr.platform);
+    try {
+      const updated = await api.post(`/sources/${cr.id}/refresh`, {});
+      if (updated) {
+        HQ.set(z => {
+          const idx = z.creators.findIndex(q => q.id === cr.id);
+          if (idx >= 0) z.creators[idx] = { ...z.creators[idx], ...updated };
+        });
+        HQ.toast(`${cr.name} refreshed successfully with latest YouTube Data API v3 data`);
+      }
+    } catch (err) {
+      HQ.toast(`Refresh failed: ${err.body?.error || err.message}`, 'error');
+    } finally {
       setState(prev => ({ ...prev, refreshing: false }));
-      HQ.toast(`${cr.name} refreshed`);
-    }, 1200);
+    }
   };
 
   // Field editing
@@ -232,7 +261,17 @@ export default function SourceProfile() {
   const platPosts = {};
   accounts.forEach((a, ai) => {
     const list = a.primary
-      ? (cr.recent || []).map(p => ({ title: p.title, format: p.format, dateRaw: p.date, v: p.views != null ? p.views : (p.clicks || 0), er: p.er || 0 }))
+      ? (cr.recent || []).map(p => ({
+          title: p.title,
+          format: p.format || 'Long video',
+          dateRaw: p.date,
+          v: p.views != null ? p.views : (p.clicks || 0),
+          er: p.er || 0,
+          url: p.url,
+          thumbnail: p.thumbnail,
+          likes: p.likes,
+          comments: p.comments
+        }))
       : Array.from({ length: 6 }, (_, i) => ({
           title: TT[(i + ai * 3) % TT.length],
           format: FM[a.platform][i % FM[a.platform].length],
@@ -261,9 +300,17 @@ export default function SourceProfile() {
 
       {/* Header */}
       <div style={{ display: 'flex', gap: '18px', alignItems: 'center', flexWrap: 'wrap' }}>
-        <span style={{ width: '72px', height: '72px', borderRadius: '50%', background: avColors[0], color: avColors[1], display: 'grid', placeItems: 'center', fontWeight: 600, fontSize: '24px', flex: 'none' }}>
-          {cr.initials || (cr.name ? cr.name[0] : 'S')}
-        </span>
+        {cr.contact?.avatar ? (
+          <img
+            src={cr.contact.avatar}
+            alt={cr.name}
+            style={{ width: '72px', height: '72px', borderRadius: '50%', objectFit: 'cover', flex: 'none', border: '2px solid var(--ink-100)' }}
+          />
+        ) : (
+          <span style={{ width: '72px', height: '72px', borderRadius: '50%', background: avColors[0], color: avColors[1], display: 'grid', placeItems: 'center', fontWeight: 600, fontSize: '24px', flex: 'none' }}>
+            {cr.initials || (cr.name ? cr.name[0] : 'S')}
+          </span>
+        )}
         <div style={{ flex: 1, minWidth: '280px' }}>
           <h1 style={{ margin: 0, fontSize: '28px', lineHeight: '34px', fontWeight: 600, letterSpacing: '-.015em', overflowWrap: 'anywhere' }}>{cr.name}</h1>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', marginTop: '6px' }}>
@@ -623,29 +670,61 @@ export default function SourceProfile() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: '20px', alignItems: 'start', animation: 'fadein .2s' }}>
             <div style={{ background: '#fff', border: '1px solid var(--ink-100)', borderRadius: '12px', boxShadow: 'var(--e-1)', overflowX: 'auto' }}>
-              <div style={{ padding: '14px 20px' }}>
-                <b>Recent posts</b> <span style={{ fontSize: '12px', color: 'var(--ink-500)' }}>Last 6 posts on {cp}</span>
+              <div style={{ padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <b>Recent posts</b> <span style={{ fontSize: '12px', color: 'var(--ink-500)' }}>Latest public content on {cp}</span>
+                </div>
+                {cr.platform === 'YouTube' && (
+                  <span style={{ fontSize: '11px', color: 'var(--teal-800)', background: 'var(--teal-50)', padding: '3px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                    Live YouTube Data API v3
+                  </span>
+                )}
               </div>
-              {shownP.map((p, i) => {
-                const diff = Math.round((p.v / (p.mv || 1) - 1) * 100);
-                const dLabel = `${diff >= 0 ? '+' : ''}${diff}% vs median`;
-                const dc = diff >= 0 ? 'var(--success-800)' : 'var(--warning-800)';
+              {!shownP.length ? (
+                <div style={{ padding: '36px 20px', textAlign: 'center', color: 'var(--ink-500)', fontSize: '13px' }}>
+                  No public {cp} videos or posts available for this creator.
+                </div>
+              ) : (
+                shownP.map((p, i) => {
+                  const diff = Math.round((p.v / (p.mv || 1) - 1) * 100);
+                  const dLabel = `${diff >= 0 ? '+' : ''}${diff}% vs median`;
+                  const dc = diff >= 0 ? 'var(--success-800)' : 'var(--warning-800)';
 
-                return (
-                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '56px minmax(140px,1fr) 70px 50px 110px', minWidth: '480px', gap: '12px', padding: '10px 20px', borderTop: '1px solid var(--ink-100)', alignItems: 'center', fontSize: '13px' }}>
-                    <span style={{ width: '56px', height: '36px', borderRadius: '6px', background: 'var(--ink-900)', color: '#fff', display: 'grid', placeItems: 'center' }}>
-                      <Icon name="i-play" size={14} />
-                    </span>
-                    <span style={{ minWidth: 0 }}>
-                      <b style={{ fontWeight: 600, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.title}</b>
-                      <span style={{ fontSize: '12px', color: 'var(--ink-500)' }}>{p.platform} · {p.format} · {HQ.ds(p.dateRaw)}</span>
-                    </span>
-                    <span style={{ textAlign: 'right', fontWeight: 600 }}>{HQ.n(p.v)}</span>
-                    <span style={{ textAlign: 'right', color: 'var(--ink-600)' }}>{p.er}%</span>
-                    <span style={{ textAlign: 'right', fontSize: '12px', fontWeight: 600, color: dc }}>{dLabel}</span>
-                  </div>
-                );
-              })}
+                  return (
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '64px minmax(140px,1fr) 80px 60px 110px', minWidth: '520px', gap: '12px', padding: '10px 20px', borderTop: '1px solid var(--ink-100)', alignItems: 'center', fontSize: '13px' }}>
+                      <span style={{ width: '64px', height: '40px', borderRadius: '6px', background: 'var(--ink-900)', color: '#fff', display: 'grid', placeItems: 'center', overflow: 'hidden' }}>
+                        {p.thumbnail ? (
+                          <img src={p.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          <Icon name="i-play" size={14} />
+                        )}
+                      </span>
+                      <span style={{ minWidth: 0 }}>
+                        {p.url ? (
+                          <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 600, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--ink-900)', textDecoration: 'none' }}>
+                            {p.title}
+                          </a>
+                        ) : (
+                          <b style={{ fontWeight: 600, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.title}</b>
+                        )}
+                        <span style={{ fontSize: '12px', color: 'var(--ink-500)', display: 'flex', gap: '8px', alignItems: 'center', marginTop: '2px', flexWrap: 'wrap' }}>
+                          <span>{p.platform} · {p.format} · {HQ.ds(p.dateRaw)}</span>
+                          {p.likes != null && <span>· {p.likes.toLocaleString()} likes</span>}
+                          {p.comments != null && <span>· {p.comments.toLocaleString()} comments</span>}
+                          {p.url && (
+                            <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--teal-700)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                              Watch <Icon name="i-ext" size={11} />
+                            </a>
+                          )}
+                        </span>
+                      </span>
+                      <span style={{ textAlign: 'right', fontWeight: 600 }}>{HQ.n(p.v)}</span>
+                      <span style={{ textAlign: 'right', color: 'var(--ink-600)' }}>{p.er ? `${p.er}%` : '—'}</span>
+                      <span style={{ textAlign: 'right', fontSize: '12px', fontWeight: 600, color: dc }}>{dLabel}</span>
+                    </div>
+                  );
+                })
+              )}
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

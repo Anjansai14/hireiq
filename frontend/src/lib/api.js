@@ -16,7 +16,12 @@ async function req(method, url, body) {
     headers: { ...(isForm || !body ? {} : { 'Content-Type': 'application/json' }), ...(store.get() ? { Authorization: `Bearer ${store.get()}` } : {}) },
     body: isForm ? body : body ? JSON.stringify(body) : undefined,
   });
-  if (res.status === 401 && !url.includes('/auth/login')) { store.set(null); window.location.href = '/login'; }
+  if (res.status === 401 && !url.includes('/auth/login')) {
+    store.set(null);
+    if (typeof window !== 'undefined' && window.HQ) {
+      window.HQ.set((z) => { z.user = null; z.route = { name: 'login' }; });
+    }
+  }
   const data = res.status === 204 ? {} : await res.json().catch(() => ({}));
   if (!res.ok) throw new ApiError(res.status, data);
   return data;

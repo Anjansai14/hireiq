@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useHQ } from '../../hooks/useHQ';
 import { Icon, SvgDefinitions } from '../icons/Icons';
+import { api } from '../../lib/api';
 
 export default function Shell({ children }) {
   const { state, HQ, currentCourse, currentRoute, go, set, toast } = useHQ();
@@ -48,7 +49,7 @@ export default function Shell({ children }) {
     { label: 'Creator Bank', icon: 'i-users', go: () => { closeMenus(); go('creators'); }, meta: String(state.creators.length) },
     { label: 'Profile', icon: 'i-user', go: () => { closeMenus(); go('settings', { tab: 'profile' }); } },
     { label: 'Switch module', icon: 'i-swap', go: () => { closeMenus(); set(x => { x.module = null; }); } },
-    { label: 'Sign out', icon: 'i-logout', color: 'var(--danger-600)', go: () => { closeMenus(); set(x => { x.user = null; x.route = { name: 'login' }; }); toast('Signed out'); } }
+    { label: 'Sign out', icon: 'i-logout', color: 'var(--danger-600)', go: () => { closeMenus(); api.token.set(null); set(x => { x.user = null; x.route = { name: 'login' }; }); toast('Signed out'); } }
   ];
 
   // Course switcher

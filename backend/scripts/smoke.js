@@ -90,7 +90,15 @@ const assert = (c, m) => { if (!c) throw new Error(m); };
   });
   await step('Creator Bank + A3 refresh', async () => { const s = await call('GET', '/api/sources'); const r = await call('POST', '/api/sources/c13/refresh'); return `${s.length} sources, ${s.filter((x) => x.gate).length} gated · c13 ${r.status}`; });
   await step('settings', async () => { const c = await call('GET', '/api/settings/connectors'); const rc = await call('GET', '/api/settings/ratecard'); return `${c.length} connectors, ${rc.tiers.length} tiers`; });
-  await step('close campaign k2', async () => { const r = await call('POST', '/api/campaigns/k2/close', { lessons: ['Repeat campus sessions'] }); return `${r.status} · ${r.diagnosis.verdict}`; });
+  await step('close campaign k2', async () => {
+    const camp = await call('GET', '/api/campaigns/k2');
+    if (camp.status === 'Closed') {
+      const db = require('../src/db');
+      await db.update('campaigns', { status: 'Live' }, 'id = ?', ['k2']);
+    }
+    const r = await call('POST', '/api/campaigns/k2/close', { lessons: ['Repeat campus sessions'] });
+    return `${r.status} · ${r.diagnosis.verdict}`;
+  });
   await step('agent runs logged', async () => { const r = await call('GET', '/api/agents/runs'); return `${r.length} runs: ${[...new Set(r.map((x) => x.agent))].sort().join(' ')}`; });
 
   console.log(`\n${pass} passed, ${fails.length} failed${fails.length ? ': ' + fails.join(', ') : ''}`);

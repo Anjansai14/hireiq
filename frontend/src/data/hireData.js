@@ -182,7 +182,7 @@ export const tone = (t) => {
 export function createInitialState() {
   return {
     v: 2,
-    user: { name: 'Anika Rao', email: 'anika.rao@peopletech.com', role: 'Manager', title: 'Campaign manager' },
+    user: null,
     module: 'hire',
     route: { name: 'dashboard' },
     filmId: 'f1',
@@ -1202,11 +1202,15 @@ class Store {
   }
 
   paidOf(cr) {
-    return cr?.rate ? 'Paid' : 'Unpaid';
+    if (cr?.collab) return cr.collab;
+    if (cr?.rateSrc === 'Partnership' || (cr?.rate === 0 && INSTITUTIONAL.includes(cr?.type))) return 'Partnership';
+    return (cr?.rate && cr.rate > 0) ? 'Paid' : 'Partnership';
   }
 
   accOf(cr) {
-    return cr?.affiliation ? 'Internal' : 'External';
+    if (cr?.account_type) return cr.account_type;
+    if (INSTITUTIONAL.includes(cr?.type) || cr?.acct === 'Institution') return 'Institutional';
+    return 'Individual';
   }
 
   rank(opts = {}) {

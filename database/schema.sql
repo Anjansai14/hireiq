@@ -235,6 +235,10 @@ CREATE TABLE source_recent_posts (
   clicks     INT NULL,
   format     VARCHAR(60) NULL,
   er         DECIMAL(5,2) NULL,
+  url        VARCHAR(255) NULL,
+  thumbnail  VARCHAR(255) NULL,
+  likes      INT NULL,
+  comments   INT NULL,
   CONSTRAINT fk_srp_src FOREIGN KEY (source_id) REFERENCES sources(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 

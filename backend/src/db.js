@@ -114,6 +114,7 @@ async function tx(fn) {
     try {
       await conn.beginTransaction();
       const q = async (sql, params = []) => { const [r] = await conn.query(sql, (params || []).map(enc)); return r; };
+      q.query = q;
       const out = await fn(q);
       await conn.commit();
       return out;
@@ -126,6 +127,7 @@ async function tx(fn) {
   }
   // Embedded transaction fallback
   const q = async (sql, params = []) => query(sql, params);
+  q.query = q;
   return fn(q);
 }
 

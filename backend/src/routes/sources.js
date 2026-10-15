@@ -1,16 +1,19 @@
 /** Creator Bank: influence sources (creators, college networks, placement cells, alumni, trainers, community leaders). */
 const router = require('express').Router();
 const multer = require('multer');
-const fs = require('fs');
-const { parse } = require('csv-parse/sync');
 const config = require('../config');
 const db = require('../db');
 const repo = require('../services/repo');
 const settings = require('../services/settings');
 const ai = require('../services/ai');
+const youtubeService = require('../services/youtubeService');
+const excelImportService = require('../services/excelImportService');
 const { ah, uid, HttpError } = require('../utils/helpers');
 
-const upload = multer({ dest: config.uploadDir });
+const upload = multer({
+  dest: config.uploadDir,
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25 MB max
+});
 
 router.get('/', ah(async (req, res) => {
   const { q, platform, type, status, filter } = req.query;
@@ -29,10 +32,47 @@ router.get('/', ah(async (req, res) => {
   res.json(rows.map((s) => ({ ...s, gate: gates[s.id] || null, institutional: types.institutional.includes(s.type) })));
 }));
 
+/**
+ * Download official template (.xlsx or .csv)
+ */
+router.get('/template', ah(async (req, res) => {
+  const format = req.query.format === 'csv' ? 'csv' : 'xlsx';
+  const data = excelImportService.generateTemplate(format);
+  if (format === 'csv') {
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="hireiq-creator-bank-template.csv"');
+    return res.send(data);
+  }
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.setHeader('Content-Disposition', 'attachment; filename="hireiq-creator-bank-template.xlsx"');
+  return res.send(data);
+}));
+
 router.get('/:id', ah(async (req, res) => res.json(await repo.loadSource(req.params.id))));
+
+router.post('/import-youtube', ah(async (req, res) => {
+  const { url, type, name } = req.body;
+  if (!url) throw new HttpError(400, 'YouTube URL is required');
+  const result = await youtubeService.importCreator({
+    url,
+    type: type || 'Digital creator',
+    name: name || null,
+    user: req.user || {}
+  });
+  res.status(result.isDuplicate ? 200 : 201).json(result);
+}));
 
 router.post('/', ah(async (req, res) => {
   const b = req.body;
+  if (b.platform === 'YouTube' && b.url) {
+    const result = await youtubeService.importCreator({
+      url: b.url,
+      type: b.type || 'Digital creator',
+      name: b.name || null,
+      user: req.user || {}
+    });
+    return res.status(result.isDuplicate ? 200 : 201).json(result.creator);
+  }
   if (!b.name || !b.handle || !b.platform || !b.type) throw new HttpError(400, 'name, handle, platform and type are required');
   const id = uid('c');
   const types = await settings.typeSets();
@@ -62,7 +102,7 @@ router.post('/:id/consent', ah(async (req, res) => {
   res.json(await repo.loadSource(req.params.id));
 }));
 
-/** Agent A3 — refresh one source from official APIs. */
+/** Agent A3 — refresh one source from official APIs or simulation. */
 async function refresh(id) {
   const [s] = await repo.loadSources([id]);
   if (!s) throw new HttpError(404, 'Source not found');
@@ -79,7 +119,24 @@ async function refresh(id) {
   await db.insert('source_activity', { source_id: id, date: today, text: r.activity });
   return r;
 }
-router.post('/:id/refresh', ah(async (req, res) => { await refresh(req.params.id); res.json(await repo.loadSource(req.params.id)); }));
+
+router.post('/:id/refresh', ah(async (req, res) => {
+  const [s] = await repo.loadSources([req.params.id]);
+  if (!s) throw new HttpError(404, 'Source not found');
+  if (s.platform === 'YouTube') {
+    try {
+      const updated = await youtubeService.refreshCreator(req.params.id, null, req.user || {});
+      return res.json(updated);
+    } catch (err) {
+      // Fallback to Agent A3 if YouTube API not available or fictional handle
+      await refresh(req.params.id);
+      return res.json(await repo.loadSource(req.params.id));
+    }
+  }
+  await refresh(req.params.id);
+  res.json(await repo.loadSource(req.params.id));
+}));
+
 router.post('/refresh-failed', ah(async (req, res) => {
   const ids = (await db.query("SELECT id FROM sources WHERE status IN ('Failed','Partial')")).map((r) => r.id);
   const results = [];
@@ -88,32 +145,14 @@ router.post('/refresh-failed', ah(async (req, res) => {
 }));
 
 /**
- * CSV import. Columns: name,handle,platform,type,followers,median_views,er,rate,district,language,affiliation,catchment
- * Matches existing sources by handle (merge) — otherwise creates new ones queued for enrichment.
+ * Excel / CSV workbook import.
+ * Parses all valid rows in worksheet, handles column aliases, validates required fields,
+ * persists new records, merges existing ones, and returns comprehensive import summary.
  */
 router.post('/import', upload.single('file'), ah(async (req, res) => {
-  if (!req.file) throw new HttpError(400, 'Attach a CSV file');
-  const rows = parse(fs.readFileSync(req.file.path, 'utf8'), { columns: true, skip_empty_lines: true, trim: true });
-  const types = await settings.typeSets();
-  const today = await settings.today();
-  let created = 0, merged = 0;
-  const errors = [];
-  for (const [i, r] of rows.entries()) {
-    if (!r.name || !r.handle || !r.platform || !r.type) { errors.push({ row: i + 2, error: 'name, handle, platform, type required' }); continue; }
-    const ex = await db.one('SELECT id FROM sources WHERE handle = ?', [r.handle]);
-    const vals = { followers: +r.followers || 0, median_views: +r.median_views || null, er: +r.er || null, rate: +r.rate || 0, catchment: +r.catchment || null };
-    if (ex) { await db.update('sources', vals, 'id = ?', [ex.id]); merged++; continue; }
-    const id = uid('c');
-    await db.insert('sources', {
-      id, name: r.name, handle: r.handle, platform: r.platform, type: r.type, tier: 'Micro', ...vals,
-      langs: r.language ? { [r.language]: 100 } : {}, markets: r.district ? { [r.district]: 100 } : {}, content_types: [], formats: [], topics: {},
-      status: 'Queued', data_source: 'Uploaded', affiliation: r.affiliation || null, district: r.district || null,
-      consent: types.institutional.includes(r.type) ? 'Missing' : 'Not required', updated_on: today,
-    });
-    await db.insert('source_activity', { source_id: id, date: today, text: `Imported from ${req.file.originalname} by ${req.user.name}` });
-    created++;
-  }
-  res.json({ created, merged, errors });
+  if (!req.file) throw new HttpError(400, 'Please attach an Excel (.xlsx, .xls) or CSV file');
+  const result = await excelImportService.importWorkbook(req.file, { user: req.user || {} });
+  res.json(result);
 }));
 
 module.exports = router;

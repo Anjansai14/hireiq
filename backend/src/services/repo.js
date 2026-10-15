@@ -20,8 +20,16 @@ async function loadSources(ids = null) {
   ]);
   return rows.map((s) => ({
     ...s,
+    updated: s.updated_on ? (typeof s.updated_on === 'string' ? s.updated_on.slice(0, 10) : new Date(s.updated_on).toISOString().slice(0, 10)) : null,
+    mv: s.median_views,
+    rateSrc: s.rate_src,
+    source: s.data_source,
+    next: s.next_refresh,
     history: hist.filter((h) => h.source_id === s.id),
-    recent: recent.filter((r) => r.source_id === s.id),
+    recent: recent.filter((r) => r.source_id === s.id).map(r => ({
+      ...r,
+      date: r.date ? (typeof r.date === 'string' ? r.date.slice(0, 10) : new Date(r.date).toISOString().slice(0, 10)) : null
+    })),
   }));
 }
 

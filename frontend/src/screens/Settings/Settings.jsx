@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useHQ } from '../../hooks/useHQ';
 import { Icon } from '../../components/icons/Icons';
+import { api } from '../../lib/api';
 
 export default function Settings() {
   const { HQ, s } = useHQ();
@@ -10,12 +11,30 @@ export default function Settings() {
   const [state, setState] = useState({
     busy: null,
     testing: null,
+    syncing: null,
     editing: null,
     lo: '',
     hi: '',
     confirm: null,
     prefs: [true, true, false]
   });
+
+  const [dbConnectors, setDbConnectors] = useState([]);
+
+  const loadConnectors = async () => {
+    try {
+      const conns = await api.get('/settings/connectors');
+      if (Array.isArray(conns)) setDbConnectors(conns);
+    } catch {
+      /* ignore if offline */
+    }
+  };
+
+  React.useEffect(() => {
+    if (tab === 'connectors') {
+      loadConnectors();
+    }
+  }, [tab]);
 
   const icons = {
     yt: 'i-play',
@@ -51,12 +70,18 @@ export default function Settings() {
       `Disconnect ${c.name}?`,
       'Tracking and enrichment from this source stop for every course until you reconnect.',
       'Disconnect',
-      () => {
-        setConn(c.id, {
-          status: 'Disconnected',
-          detail: `Disconnected by Anika Rao on ${HQ.d(HQ.TODAY)}`
-        });
-        HQ.toast(`${c.name} disconnected`, 'error');
+      async () => {
+        try {
+          await api.post(`/settings/connectors/${c.id}/disconnect`);
+          setConn(c.id, {
+            status: 'Disconnected',
+            detail: `Disconnected on ${HQ.d(HQ.TODAY)}`
+          });
+          HQ.toast(`${c.name} disconnected`, 'error');
+          loadConnectors();
+        } catch (err) {
+          HQ.toast(`Failed to disconnect: ${err.message}`, 'error');
+        }
       }
     ];
   });
@@ -107,7 +132,9 @@ export default function Settings() {
       {/* TAB 1: Connectors */}
       {tab === 'connectors' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', animation: 'fadein .2s' }}>
-          {(s.connectors || []).map(c => {
+          {(s.connectors || []).map(rawC => {
+            const dbMatch = dbConnectors.find(x => x.id === rawC.id);
+            const c = dbMatch ? { ...rawC, ...dbMatch, last: dbMatch.last_sync || rawC.last } : rawC;
             const unsup = c.status === 'Unsupported' || c.status === 'Phase 2';
             const bd = c.status === 'Expiring' ? '#F1DDAE' : 'var(--ink-100)';
             const op = unsup ? 0.6 : 1;
@@ -117,6 +144,7 @@ export default function Settings() {
             const canDisconnect = c.status === 'Connected' || c.status === 'Expiring';
             const isBusy = state.busy === c.id;
             const isTesting = state.testing === c.id;
+            const isSyncing = state.syncing === c.id;
 
             return (
               <div
@@ -128,82 +156,104 @@ export default function Settings() {
                   padding: '18px 20px',
                   boxShadow: 'var(--e-1)',
                   display: 'flex',
+                  flexDirection: 'column',
                   gap: '16px',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
                   opacity: op
                 }}
               >
-                <span style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'var(--ink-50)', color: 'var(--ink-700)', display: 'grid', placeItems: 'center', flex: 'none' }}>
-                  <Icon name={icons[c.id] || 'i-plug'} size={22} />
-                </span>
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', width: '100%' }}>
+                  <span style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'var(--ink-50)', color: 'var(--ink-700)', display: 'grid', placeItems: 'center', flex: 'none' }}>
+                    <Icon name={icons[c.id] || 'i-plug'} size={22} />
+                  </span>
 
-                <div style={{ flex: 1, minWidth: '240px' }}>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <b style={{ fontSize: '15px' }}>{c.name}</b>
-                    <span style={{ fontSize: '12px', color: 'var(--ink-500)' }}>{c.kind}</span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', height: '22px', padding: '0 8px', borderRadius: '999px', background: HQ.tone(c.status === 'Disconnected' ? 'Failed' : c.status).bg, color: HQ.tone(c.status === 'Disconnected' ? 'Failed' : c.status).fg, fontSize: '12px', fontWeight: 600 }}>
-                      {c.status}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: '13px', color: 'var(--ink-600)', marginTop: '2px' }}>{c.detail}</div>
-                  {c.last && <div style={{ fontSize: '12px', color: 'var(--ink-500)' }}>Last sync {HQ.dt(c.last)}</div>}
-                  {c.quota != null && (
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '8px', maxWidth: '360px' }}>
-                      <div style={{ flex: 1, height: '6px', borderRadius: '999px', background: 'var(--ink-100)', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${c.quota}%`, background: qc }}></div>
-                      </div>
-                      <span style={{ fontSize: '12px', color: 'var(--ink-600)' }}>{c.quota}% of daily quota</span>
+                  <div style={{ flex: 1, minWidth: '240px' }}>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <b style={{ fontSize: '15px' }}>{c.name}</b>
+                      <span style={{ fontSize: '12px', color: 'var(--ink-500)' }}>{c.kind}</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', height: '22px', padding: '0 8px', borderRadius: '999px', background: HQ.tone(c.status === 'Disconnected' ? 'Failed' : c.status).bg, color: HQ.tone(c.status === 'Disconnected' ? 'Failed' : c.status).fg, fontSize: '12px', fontWeight: 600 }}>
+                        {c.status}
+                      </span>
                     </div>
-                  )}
-                </div>
+                    <div style={{ fontSize: '13px', color: 'var(--ink-600)', marginTop: '2px' }}>{c.detail}</div>
+                    {c.last && <div style={{ fontSize: '12px', color: 'var(--ink-500)' }}>Last sync {HQ.dt(c.last)}</div>}
+                    {c.quota != null && (
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '8px', maxWidth: '360px' }}>
+                        <div style={{ flex: 1, height: '6px', borderRadius: '999px', background: 'var(--ink-100)', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${c.quota}%`, background: qc }}></div>
+                        </div>
+                        <span style={{ fontSize: '12px', color: 'var(--ink-600)' }}>{c.quota}% of daily quota</span>
+                      </div>
+                    )}
+                  </div>
 
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  {canTest && (
-                    <button
-                      onClick={() => {
-                        setState(prev => ({ ...prev, testing: c.id }));
-                        setTimeout(() => {
-                          setState(prev => ({ ...prev, testing: null }));
-                          setConn(c.id, { last: HQ.TODAY + 'T' + new Date().toTimeString().slice(0, 5) });
-                          HQ.toast(`${c.name}: connection OK`);
-                        }, 1000);
-                      }}
-                      style={{ height: '36px', padding: '0 12px', borderRadius: '8px', border: '1px solid var(--ink-300)', background: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '13px' }}
-                    >
-                      {isTesting ? 'Testing…' : 'Test'}
-                    </button>
-                  )}
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    {canTest && (
+                      <button
+                        disabled={isTesting || isSyncing}
+                        onClick={async () => {
+                          setState(prev => ({ ...prev, testing: c.id }));
+                          try {
+                            const res = await api.post(`/settings/connectors/${c.id}/test`, {});
+                            if (res.ok) {
+                              HQ.toast(res.message || `${c.name}: Connection verified successfully!`);
+                              setConn(c.id, {
+                                status: res.status || 'Connected',
+                                last: res.last_sync || (HQ.TODAY + 'T' + new Date().toTimeString().slice(0, 5))
+                              });
+                            } else {
+                              HQ.toast(res.message || `${c.name}: Test failed`, 'error');
+                            }
+                            await loadConnectors();
+                          } catch (err) {
+                            HQ.toast(`${c.name} test failed: ${err.body?.error || err.message}`, 'error');
+                          } finally {
+                            setState(prev => ({ ...prev, testing: null }));
+                          }
+                        }}
+                        style={{ height: '36px', padding: '0 12px', borderRadius: '8px', border: '1px solid var(--ink-300)', background: '#fff', fontWeight: 600, cursor: isTesting ? 'wait' : 'pointer', fontSize: '13px' }}
+                      >
+                        {isTesting ? 'Testing…' : 'Test connection'}
+                      </button>
+                    )}
 
-                  {canConnect && (
-                    <button
-                      onClick={() => {
-                        setState(prev => ({ ...prev, busy: c.id }));
-                        setTimeout(() => {
-                          setConn(c.id, {
-                            status: 'Connected',
-                            last: HQ.TODAY + 'T' + new Date().toTimeString().slice(0, 5),
-                            detail: c.id === 'meta' ? 'Business account @nexaskills · token valid until 2 Dec 2026' : c.detail.replace(/Disconnected.*/, 'Connected')
-                          });
-                          setState(prev => ({ ...prev, busy: null }));
-                          HQ.toast(`${c.name} connected`);
-                        }, 1500);
-                      }}
-                      style={{ height: '36px', padding: '0 12px', borderRadius: '8px', border: 0, background: 'var(--teal-700)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '13px', display: 'flex', gap: '6px', alignItems: 'center' }}
-                    >
-                      {isBusy && <span style={{ width: '14px', height: '14px', borderRadius: '50%', border: '2px solid rgba(255,255,255,.35)', borderTopColor: '#fff', animation: 'spin .8s linear infinite' }}></span>}
-                      {isBusy ? 'Waiting for sign-in…' : c.status === 'Expiring' ? 'Reconnect' : 'Connect'}
-                    </button>
-                  )}
+                    {canConnect && (
+                      <button
+                        disabled={isBusy}
+                        onClick={async () => {
+                          setState(prev => ({ ...prev, busy: c.id }));
+                          try {
+                            const res = await api.post(`/settings/connectors/${c.id}/connect`, {});
+                            if (res.ok) {
+                              setConn(c.id, {
+                                status: 'Connected',
+                                last: HQ.TODAY + 'T' + new Date().toTimeString().slice(0, 5),
+                                detail: 'Connected to live service'
+                              });
+                              HQ.toast(`${c.name} connected`);
+                              await loadConnectors();
+                            }
+                          } catch (err) {
+                            HQ.toast(`Connect failed: ${err.message}`, 'error');
+                          } finally {
+                            setState(prev => ({ ...prev, busy: null }));
+                          }
+                        }}
+                        style={{ height: '36px', padding: '0 12px', borderRadius: '8px', border: 0, background: 'var(--teal-700)', color: '#fff', fontWeight: 600, cursor: isBusy ? 'wait' : 'pointer', fontSize: '13px', display: 'flex', gap: '6px', alignItems: 'center' }}
+                      >
+                        {isBusy && <span style={{ width: '14px', height: '14px', borderRadius: '50%', border: '2px solid rgba(255,255,255,.35)', borderTopColor: '#fff', animation: 'spin .8s linear infinite' }}></span>}
+                        {isBusy ? 'Connecting…' : c.status === 'Expiring' ? 'Reconnect' : 'Connect'}
+                      </button>
+                    )}
 
-                  {canDisconnect && (
-                    <button
-                      onClick={() => setState(prev => ({ ...prev, confirm: 'dc_' + c.id }))}
-                      style={{ height: '36px', padding: '0 12px', borderRadius: '8px', border: '1px solid var(--ink-300)', background: '#fff', color: 'var(--danger-600)', fontWeight: 600, cursor: 'pointer', fontSize: '13px' }}
-                    >
-                      Disconnect
-                    </button>
-                  )}
+                    {canDisconnect && (
+                      <button
+                        onClick={() => setState(prev => ({ ...prev, confirm: 'dc_' + c.id }))}
+                        style={{ height: '36px', padding: '0 12px', borderRadius: '8px', border: '1px solid var(--ink-300)', background: '#fff', color: 'var(--danger-600)', fontWeight: 600, cursor: 'pointer', fontSize: '13px' }}
+                      >
+                        Disconnect
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -384,6 +434,7 @@ export default function Settings() {
               </button>
               <button
                 onClick={() => {
+                  api.token.set(null);
                   HQ.set(z => {
                     z.user = null;
                     z.route = { name: 'login' };

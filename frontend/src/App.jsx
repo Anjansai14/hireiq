@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHQ } from './hooks/useHQ';
 import Shell from './components/layout/Shell';
+import { api } from './lib/api';
 import {
   LoginScreen,
   DashboardScreen,
@@ -19,7 +20,45 @@ import {
 
 export default function App() {
   const { HQ, s } = useHQ();
+  const [authChecking, setAuthChecking] = useState(() => !!api.token.get() && !s.user);
   const route = s.route || { name: 'dashboard' };
+
+  useEffect(() => {
+    const token = api.token.get();
+    if (token && !s.user) {
+      api.get('/auth/me')
+        .then((res) => {
+          if (res?.user) {
+            HQ.set((z) => {
+              z.user = res.user;
+              z.module = z.module || 'hire';
+            });
+          }
+        })
+        .catch(() => {
+          api.token.set(null);
+          HQ.set((z) => {
+            z.user = null;
+          });
+        })
+        .finally(() => {
+          setAuthChecking(false);
+        });
+    } else {
+      setAuthChecking(false);
+    }
+  }, []);
+
+  if (authChecking) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'var(--ink-25)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+          <span style={{ width: '28px', height: '28px', borderRadius: '50%', border: '3px solid var(--teal-200)', borderTopColor: 'var(--teal-700)', animation: 'spin .8s linear infinite' }}></span>
+          <span style={{ fontSize: '14px', color: 'var(--ink-600)', fontWeight: 500 }}>Verifying session…</span>
+        </div>
+      </div>
+    );
+  }
 
   if (!s.user || !s.module) {
     return <LoginScreen />;
