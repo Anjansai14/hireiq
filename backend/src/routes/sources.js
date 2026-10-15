@@ -124,14 +124,8 @@ router.post('/:id/refresh', ah(async (req, res) => {
   const [s] = await repo.loadSources([req.params.id]);
   if (!s) throw new HttpError(404, 'Source not found');
   if (s.platform === 'YouTube') {
-    try {
-      const updated = await youtubeService.refreshCreator(req.params.id, null, req.user || {});
-      return res.json(updated);
-    } catch (err) {
-      // Fallback to Agent A3 if YouTube API not available or fictional handle
-      await refresh(req.params.id);
-      return res.json(await repo.loadSource(req.params.id));
-    }
+    const updated = await youtubeService.refreshCreator(req.params.id, null, req.user || {});
+    return res.json(updated);
   }
   await refresh(req.params.id);
   res.json(await repo.loadSource(req.params.id));

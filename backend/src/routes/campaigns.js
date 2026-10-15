@@ -6,8 +6,7 @@ const { ah, HttpError } = require('../utils/helpers');
 
 // ---- list / create / read / delete ------------------------------------
 router.get('/', ah(async (req, res) => {
-  if (!req.query.course) throw new HttpError(400, 'course query parameter is required');
-  res.json(await svc.listCampaigns(req.query.course));
+  res.json(await svc.listCampaigns(req.query.course || null));
 }));
 router.post('/', ah(async (req, res) => res.status(201).json(await wiz.createDraft(req.body.course_id, req.body.name, req.user))));
 router.get('/:id', ah(async (req, res) => res.json(await svc.getCampaign(req.params.id))));

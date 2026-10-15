@@ -179,6 +179,19 @@ async function resolveChannelId(parsed, apiKey) {
 /**
  * Fetch official channel metadata from YouTube Data API v3.
  */
+function parseDurationSeconds(durationStr) {
+  if (!durationStr || typeof durationStr !== 'string') return 0;
+  const match = durationStr.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!match) return 0;
+  const hours = parseInt(match[1] || 0, 10);
+  const minutes = parseInt(match[2] || 0, 10);
+  const seconds = parseInt(match[3] || 0, 10);
+  return hours * 3600 + minutes * 60 + seconds;
+}
+
+/**
+ * Fetch official channel metadata from YouTube Data API v3.
+ */
 async function fetchChannelDetails(channelId, apiKey) {
   const url = `https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${encodeURIComponent(channelId)}&key=${encodeURIComponent(apiKey)}`;
   const res = await fetch(url);
@@ -195,6 +208,8 @@ async function fetchChannelDetails(channelId, apiKey) {
 
   const snip = ch.snippet || {};
   const stats = ch.statistics || {};
+  const cd = ch.contentDetails || {};
+  const uploadsPlaylistId = cd.relatedPlaylists?.uploads || null;
 
   return {
     channelId,
@@ -210,29 +225,49 @@ async function fetchChannelDetails(channelId, apiKey) {
     totalViews: Number(stats.viewCount || 0),
     totalVideos: Number(stats.videoCount || 0),
     hiddenSubscriberCount: !!stats.hiddenSubscriberCount,
+    uploadsPlaylistId,
   };
 }
 
 /**
- * Fetch up to maxResults recent public videos for a channel with statistics.
+ * Fetch up to maxResults recent public videos for a channel using uploads playlist and statistics.
+ * Respects YouTube Data API quotas: playlistItems costs 1 unit vs search 100 units.
  */
-async function fetchChannelRecentVideos(channelId, apiKey, maxResults = 6) {
+async function fetchChannelRecentVideos(channelId, apiKey, uploadsPlaylistId = null, maxResults = 10) {
   try {
-    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${encodeURIComponent(channelId)}&order=date&type=video&maxResults=${maxResults}&key=${encodeURIComponent(apiKey)}`;
-    const sRes = await fetch(searchUrl);
-    const sData = await sRes.json();
+    let videoIds = [];
 
-    if (!sRes.ok) {
-      return [];
+    // 1. Try fetching via uploads playlist (1 quota unit)
+    if (uploadsPlaylistId) {
+      try {
+        const plUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&playlistId=${encodeURIComponent(uploadsPlaylistId)}&maxResults=${maxResults}&key=${encodeURIComponent(apiKey)}`;
+        const plRes = await fetch(plUrl);
+        const plData = await plRes.json();
+        if (plRes.ok && plData.items?.length) {
+          videoIds = plData.items.map((i) => i.contentDetails?.videoId || i.snippet?.resourceId?.videoId).filter(Boolean);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch from uploads playlist, falling back to search:', err.message);
+      }
     }
 
-    const items = sData.items || [];
-    const videoIds = items.map((i) => i.id?.videoId).filter(Boolean);
+    // 2. Fallback to search.list if uploads playlist was missing or failed
+    if (!videoIds.length) {
+      const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${encodeURIComponent(channelId)}&order=date&type=video&maxResults=${maxResults}&key=${encodeURIComponent(apiKey)}`;
+      const sRes = await fetch(searchUrl);
+      const sData = await sRes.json();
+
+      if (sRes.ok && sData.items?.length) {
+        videoIds = sData.items.map((i) => i.id?.videoId).filter(Boolean);
+      }
+    }
+
     if (!videoIds.length) {
       return [];
     }
 
-    const vUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${encodeURIComponent(videoIds.join(','))}&key=${encodeURIComponent(apiKey)}`;
+    // 3. Batch fetch detailed metadata and statistics (1 quota unit)
+    const vUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${encodeURIComponent(videoIds.join(','))}&key=${encodeURIComponent(apiKey)}`;
     const vRes = await fetch(vUrl);
     const vData = await vRes.json();
 
@@ -243,25 +278,30 @@ async function fetchChannelRecentVideos(channelId, apiKey, maxResults = 6) {
     return (vData.items || []).map((v) => {
       const snip = v.snippet || {};
       const stats = v.statistics || {};
+      const cd = v.contentDetails || {};
       const views = Number(stats.viewCount || 0);
-      const likes = Number(stats.likeCount || 0);
-      const comments = Number(stats.commentCount || 0);
-      const er = views > 0 ? Number((((likes + comments) / views) * 100).toFixed(2)) : null;
+      const likes = stats.likeCount != null ? Number(stats.likeCount) : null;
+      const comments = stats.commentCount != null ? Number(stats.commentCount) : null;
+      const durSec = parseDurationSeconds(cd.duration);
+      const format = (durSec > 0 && durSec <= 60) ? 'Shorts' : 'Long video';
+      const er = (views > 0 && likes != null) ? Number(((((likes || 0) + (comments || 0)) / views) * 100).toFixed(2)) : null;
 
       return {
         id: v.id,
         title: snip.title || 'YouTube Video',
         date: snip.publishedAt ? snip.publishedAt.slice(0, 10) : new Date().toISOString().slice(0, 10),
         views,
-        likes,
-        comments,
+        likes: likes || 0,
+        comments: comments || 0,
         er,
-        format: 'Long video',
+        format,
+        duration: durSec,
         url: `https://www.youtube.com/watch?v=${v.id}`,
         thumbnail: snip.thumbnails?.high?.url || snip.thumbnails?.medium?.url || snip.thumbnails?.default?.url || '',
       };
     });
-  } catch {
+  } catch (err) {
+    console.warn('fetchChannelRecentVideos error:', err.message);
     return [];
   }
 }
@@ -304,8 +344,8 @@ async function importCreator({ url, type = 'Digital creator', name = null, custo
   // 2. Fetch channel details
   const ch = await fetchChannelDetails(channelId, key);
 
-  // 3. Fetch recent public videos
-  const recentVideos = await fetchChannelRecentVideos(channelId, key, 6);
+  // 3. Fetch recent public videos using uploads playlist
+  const recentVideos = await fetchChannelRecentVideos(channelId, key, ch.uploadsPlaylistId, 10);
 
   // 4. Calculate metrics from real YouTube data
   const tier = calculateTier(ch.subscribers);
@@ -519,26 +559,38 @@ async function refreshCreator(sourceId, customKey = null, user = {}) {
       const parsed = parseYouTubeUrl(targetHandle);
       if (parsed) channelId = await resolveChannelId(parsed, key);
     } catch {
-      // Prototype seed or handle not found on real YouTube - fallback to Agent A3
-      const { refresh } = require('../routes/sources');
-      return refresh(sourceId);
+      // Prototype seed or handle not found on real YouTube - preserve verified metrics
+      const today = (await settings.today()) || new Date().toISOString().slice(0, 10);
+      await db.insert('source_activity', {
+        source_id: sourceId,
+        date: today,
+        text: `Refresh checked: YouTube channel "${targetHandle}" not found on YouTube Data API. Preserving verified metrics.`
+      });
+      const repo = require('./repo');
+      return await repo.loadSource(sourceId);
     }
   }
 
   if (!channelId) {
-    const { refresh } = require('../routes/sources');
-    return refresh(sourceId);
+    const today = (await settings.today()) || new Date().toISOString().slice(0, 10);
+    await db.insert('source_activity', {
+      source_id: sourceId,
+      date: today,
+      text: `Refresh checked: No YouTube channel ID associated. Preserving verified metrics.`
+    });
+    const repo = require('./repo');
+    return await repo.loadSource(sourceId);
   }
 
   try {
     const ch = await fetchChannelDetails(channelId, key);
-    const recentVideos = await fetchChannelRecentVideos(channelId, key, 6);
+    const recentVideos = await fetchChannelRecentVideos(channelId, key, ch.uploadsPlaylistId, 10);
 
     const tier = calculateTier(ch.subscribers);
     const videoViews = recentVideos.map((v) => v.views).filter((v) => v > 0);
     const medianViews = videoViews.length ? calculateMedian(videoViews) : (ch.totalVideos > 0 && ch.totalViews > 0 ? Math.round(ch.totalViews / ch.totalVideos) : null);
     const totalRecentViews = recentVideos.reduce((sum, v) => sum + v.views, 0);
-    const totalRecentEngagements = recentVideos.reduce((sum, v) => sum + (v.likes + v.comments), 0);
+    const totalRecentEngagements = recentVideos.reduce((sum, v) => sum + ((v.likes || 0) + (v.comments || 0)), 0);
     const er = totalRecentViews > 0 ? Number(((totalRecentEngagements / totalRecentViews) * 100).toFixed(2)) : null;
 
     const today = (await settings.today()) || new Date().toISOString().slice(0, 10);
@@ -583,20 +635,57 @@ async function refreshCreator(sourceId, customKey = null, user = {}) {
         }
       }
 
+      // Add/update monthly snapshot
+      const currentMonth = new Date().toLocaleString('en-US', { month: 'short' });
+      await conn.query(
+        `INSERT INTO source_snapshots (source_id, month, followers)
+         VALUES (?, ?, ?)
+         ON DUPLICATE KEY UPDATE followers = VALUES(followers)`,
+        [sourceId, currentMonth, ch.subscribers]
+      ).catch(() => {});
+
+      // Record activity
       await conn.query(
         `INSERT INTO source_activity (source_id, date, text) VALUES (?, ?, ?)`,
-        [sourceId, today, `Profile refreshed from YouTube Data API v3 by ${userName}`]
+        [sourceId, today, `Profile refreshed from YouTube Data API v3 (${ch.customUrl || channelId}) by ${userName}`]
       );
     });
+
+    // Run AI content classification if recent videos are available
+    const recentTitles = recentVideos.map((v) => v.title).slice(0, 6);
+    if (recentTitles.length) {
+      try {
+        const ai = require('./ai');
+        const aiRes = await ai.runAgent('a3', {
+          source: {
+            id: sourceId,
+            platform: 'YouTube',
+            type: source.type,
+            recent: recentTitles.map((t) => ({ title: t }))
+          },
+          today
+        }, { log: false });
+
+        if (aiRes?.updates?.tone || aiRes?.updates?.content_types) {
+          const aiPatch = {};
+          if (aiRes.updates.tone) aiPatch.tone = aiRes.updates.tone;
+          if (aiRes.updates.content_types) aiPatch.content_types = JSON.stringify(aiRes.updates.content_types);
+          if (Object.keys(aiPatch).length) {
+            await db.query(
+              `UPDATE sources SET ${Object.keys(aiPatch).map((k) => `${k} = ?`).join(', ')} WHERE id = ?`,
+              [...Object.values(aiPatch), sourceId]
+            );
+          }
+        }
+      } catch (aiErr) {
+        console.warn('AI classification skipped on refresh:', aiErr.message);
+      }
+    }
 
     const repo = require('./repo');
     return await repo.loadSource(sourceId);
   } catch (err) {
-    if (err.status === 404 || err.status === 400) {
-      // Prototype fictional channel - fallback to Agent A3
-      const { refresh } = require('../routes/sources');
-      return refresh(sourceId);
-    }
+    console.error('Error in refreshCreator:', err.message);
     throw err;
   }
 }
