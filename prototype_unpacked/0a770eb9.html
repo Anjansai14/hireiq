@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><script src="data.js"></script></helmet>
+<div style="padding:28px 32px 48px;max-width:1320px;display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+    <div style="width:88px;height:120px;border-radius:10px;background:var(--ink-900);color:#fff;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;flex:none;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.04) 0 8px,transparent 8px 16px)"><span style="font-size:10px;color:var(--ink-300)">Poster</span><span style="font-weight:600;font-size:13px">{{ f.title }}</span></div>
+    <div style="flex:1;min-width:200px">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;background:var(--screen-tint);color:var(--screen-ink);font-size:12px;font-weight:600">{{ f.daysLabel }}</span><span style="font-size:13px;color:var(--ink-500);white-space:nowrap">{{ f.studio }}</span></div>
+      <h1 style="margin:0 0 4px;font-size:32px;line-height:40px;font-weight:600;letter-spacing:-.015em">{{ f.title }}</h1>
+      <div style="color:var(--ink-600)">{{ f.meta }}</div>
+    </div>
+    <div style="display:flex;gap:10px;flex:none">
+      <button onClick="{{ goBrief }}" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--ink-300);background:#fff;font-weight:600;cursor:pointer" style-hover="background:var(--ink-50)"><svg width="18" height="18"><use href="#i-edit"></use></svg>Film brief</button>
+      <button onClick="{{ newCampaign }}" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;border:0;background:var(--teal-700);color:#fff;font-weight:600;cursor:pointer" style-hover="background:var(--teal-800)"><svg width="18" height="18"><use href="#i-plus"></use></svg>New campaign</button>
+    </div>
+  </div>
+
+  <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px"><sc-for list="{{ skel }}" as="k" hint-placeholder-count="4"><div style="height:112px;border-radius:12px;background:linear-gradient(90deg,var(--ink-50) 25%,var(--ink-100) 37%,var(--ink-50) 63%);background-size:400% 100%;animation:shimmer 1.6s linear infinite"></div></sc-for></div>
+    <div style="height:280px;border-radius:12px;background:linear-gradient(90deg,var(--ink-50) 25%,var(--ink-100) 37%,var(--ink-50) 63%);background-size:400% 100%;animation:shimmer 1.6s linear infinite"></div>
+  </sc-if>
+
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:20px;animation:fadein .2s">
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px">
+      <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;padding:18px 20px;box-shadow:var(--e-1);cursor:pointer" onClick="{{ goBrief }}" style-hover="border-color:var(--ink-300)">
+        <div style="font-size:13px;color:var(--ink-600);margin-bottom:6px">Brief readiness</div>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:28px;line-height:32px;font-weight:600">{{ rd.ok }}/{{ rd.req }}</span><span style="font-size:13px;color:var(--ink-500)">required fields</span></div>
+        <div style="height:8px;border-radius:999px;background:var(--ink-100);overflow:hidden;margin-top:12px"><div style="height:100%;width:{{ rd.pct }}%;background:{{ rd.color }};border-radius:999px"></div></div>
+      </div>
+      <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="3">
+        <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;padding:18px 20px;box-shadow:var(--e-1)">
+          <div style="font-size:13px;color:var(--ink-600);margin-bottom:6px">{{ k.label }}</div>
+          <div style="font-size:28px;line-height:32px;font-weight:600;letter-spacing:-.01em" title="{{ k.stamp }}">{{ k.value }}</div>
+          <div style="font-size:12px;color:var(--ink-500);margin-top:8px">{{ k.sub }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ hasAlerts }}">
+    <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1);overflow:hidden">
+      <div style="padding:14px 20px;border-bottom:1px solid var(--ink-100);display:flex;align-items:center;gap:8px"><svg width="18" height="18" style="color:var(--danger-600)"><use href="#i-alert"></use></svg><b>Needs attention</b><span style="font-size:12px;color:var(--ink-500)">{{ alertCount }} items · each links to where you fix it</span></div>
+      <sc-for list="{{ alerts }}" as="a" hint-placeholder-count="3">
+        <button onClick="{{ a.go }}" style="width:100%;display:flex;align-items:center;gap:12px;padding:12px 20px;border:0;border-bottom:1px solid var(--ink-100);background:#fff;cursor:pointer;text-align:left" style-hover="background:var(--ink-25)">
+          <span style="width:8px;height:8px;border-radius:50%;background:{{ a.dot }};flex:none"></span>
+          <span style="flex:1;min-width:0"><b style="font-weight:600">{{ a.title }}</b><span style="color:var(--ink-500)"> · {{ a.sub }}</span></span>
+          <span style="color:var(--teal-700);font-weight:600;font-size:13px;display:flex;align-items:center;gap:4px;white-space:nowrap">{{ a.cta }}<svg width="14" height="14"><use href="#i-right"></use></svg></span>
+        </button>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <div style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <sc-if value="{{ talk.has }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1);padding:18px 20px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font-size:16px;flex:1">What people are saying</b><span style="font-size:12px;color:var(--ink-500)">{{ talk.stamp }}</span></div>
+          <p style="margin:0;font-size:14px;line-height:23px;color:var(--ink-800);text-wrap:pretty">{{ talk.text }}</p>
+        </div>
+        </sc-if>
+        <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1)">
+          <div style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between"><b style="font-size:16px">Campaigns at a glance</b><a href="#" onClick="{{ goCampaigns }}" style="font-size:13px;font-weight:600">View all</a></div>
+          <sc-if value="{{ noCamps }}">
+            <div style="margin:0 20px 20px;text-align:center;padding:36px 24px;border:1px dashed var(--ink-200);border-radius:12px">
+              <div style="width:48px;height:48px;border-radius:12px;background:var(--teal-50);color:var(--teal-700);display:grid;place-items:center;margin:0 auto 12px"><svg width="24" height="24"><use href="#i-mega"></use></svg></div>
+              <b style="display:block;margin-bottom:4px">No campaigns for {{ f.title }} yet</b>
+              <p style="margin:0 auto 16px;color:var(--ink-600);max-width:380px">{{ emptyNote }}</p>
+              <button onClick="{{ emptyAction }}" style="height:40px;padding:0 16px;border-radius:8px;border:0;background:var(--teal-700);color:#fff;font-weight:600;cursor:pointer">{{ emptyCta }}</button>
+            </div>
+          </sc-if>
+          <sc-for list="{{ camps }}" as="c" hint-placeholder-count="3">
+            <button onClick="{{ c.open }}" style="width:100%;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1.3fr) 110px;gap:16px;align-items:center;padding:14px 20px;border:0;border-top:1px solid var(--ink-100);background:#fff;cursor:pointer;text-align:left" style-hover="background:var(--ink-25)">
+              <span style="min-width:0"><span style="display:flex;gap:8px;align-items:center;margin-bottom:4px"><b style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.name }}</b><span style="display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:999px;background:{{ c.st.bg }};color:{{ c.st.fg }};font-size:12px;font-weight:600">{{ c.status }}</span></span><span style="font-size:12px;color:var(--ink-500)">{{ c.meta }}</span></span>
+              <span><span style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-600);margin-bottom:6px"><span>{{ c.kpiLabel }}</span><b style="color:var(--ink-900)">{{ c.kpiVal }}</b></span><span style="display:block;position:relative;height:8px;border-radius:999px;background:var(--ink-100)"><span style="position:absolute;left:{{ c.bandL }}%;width:{{ c.bandW }}%;top:0;bottom:0;background:var(--teal-100);border-radius:999px"></span><span style="position:absolute;left:0;width:{{ c.actW }}%;top:2px;bottom:2px;background:{{ c.actC }};border-radius:999px"></span></span></span>
+              <span style="text-align:right"><span style="display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:999px;background:{{ c.vt.bg }};color:{{ c.vt.fg }};font-size:12px;font-weight:600">{{ c.verdict }}</span></span>
+              <sc-if value="{{ c.hasSum }}"><span style="grid-column:1 / -1;font-size:13px;line-height:20px;color:var(--ink-700);text-wrap:pretty;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">{{ c.sum }}</span></sc-if>
+            </button>
+          </sc-for>
+        </div>
+
+        <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1)">
+          <div style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between"><b style="font-size:16px">Film reads</b><span style="font-size:12px;color:var(--ink-500)">Run in the background once the 9 required fields exist</span></div>
+          <sc-if value="{{ readsBlocked }}">
+            <div style="margin:0 20px 20px;display:flex;gap:12px;padding:14px 16px;border-radius:8px;background:var(--warning-100);border:1px solid #F1DDAE;color:var(--warning-800)"><svg width="20" height="20"><use href="#i-lock"></use></svg><div><b style="display:block">Waiting for {{ rd.missingCount }} required fields</b>{{ rd.missingList }}. <a href="#" onClick="{{ goBrief }}" style="color:var(--warning-800);text-decoration:underline;font-weight:600">Complete the brief</a></div></div>
+          </sc-if>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--ink-100)">
+            <sc-for list="{{ reads }}" as="rd2" hint-placeholder-count="3">
+              <div style="padding:16px 20px;border-right:1px solid var(--ink-100);display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b style="font-size:14px">{{ rd2.title }}</b><span style="display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:999px;background:{{ rd2.st.bg }};color:{{ rd2.st.fg }};font-size:12px;font-weight:600;white-space:nowrap">{{ rd2.status }}</span></div>
+                <sc-if value="{{ rd2.running }}"><div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;height:6px;border-radius:999px;background:var(--ink-100);overflow:hidden"><i style="position:absolute;width:40%;height:100%;background:var(--teal-600);border-radius:999px;animation:indet 1.3s cubic-bezier(.2,.7,.2,1) infinite"></i></div><span style="font-size:12px;color:var(--ink-500)">{{ rd2.runNote }}</span></div></sc-if>
+                <sc-if value="{{ rd2.stale }}"><div style="font-size:12px;color:var(--warning-800);background:var(--warning-100);padding:6px 8px;border-radius:6px">Stale: {{ rd2.staleNote }}</div></sc-if>
+                <sc-for list="{{ rd2.items }}" as="it" hint-placeholder-count="3">
+                  <div style="display:flex;gap:8px;font-size:13px;line-height:1.45"><span style="width:4px;height:4px;border-radius:50%;background:var(--ink-400);margin-top:8px;flex:none"></span><span style="flex:1">{{ it.t }} <span title="{{ it.src }}" style="display:inline-flex;height:18px;padding:0 6px;border-radius:4px;background:{{ it.tone.bg }};color:{{ it.tone.fg }};font-size:11px;font-weight:600;align-items:center;cursor:help">{{ it.stamp }}</span></span></div>
+                </sc-for>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:6px"><span style="font-size:12px;color:var(--ink-500)">{{ rd2.date }}</span><button onClick="{{ rd2.rerun }}" style="height:28px;padding:0 10px;border-radius:6px;border:1px solid var(--ink-300);background:#fff;font-size:12px;font-weight:600;cursor:pointer;display:flex;gap:6px;align-items:center" style-hover="background:var(--ink-50)"><svg width="14" height="14"><use href="#i-refresh"></use></svg>Re-run</button></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1);padding:18px 20px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px"><b style="font-size:16px">Money</b><span style="font-size:12px;color:var(--ink-500)">Computed from deals</span></div>
+          <div style="display:flex;height:12px;border-radius:999px;overflow:hidden;background:var(--ink-100);margin-bottom:14px"><div style="width:{{ money.spentPct }}%;background:var(--teal-700)"></div><div style="width:{{ money.commitPct }}%;background:var(--teal-300)"></div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 16px">
+            <sc-for list="{{ money.rows }}" as="m" hint-placeholder-count="4"><div><div style="display:flex;gap:6px;align-items:center;font-size:12px;color:var(--ink-600)"><span style="width:8px;height:8px;border-radius:2px;background:{{ m.c }}"></span>{{ m.l }}</div><div style="font-size:18px;font-weight:600">{{ m.v }}</div></div></sc-for>
+          </div>
+        </div>
+
+        <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1)">
+          <div style="padding:16px 20px 8px;display:flex;justify-content:space-between;align-items:center"><b style="font-size:16px">Live activity</b><span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--success-600)"><span style="width:6px;height:6px;border-radius:50%;background:var(--success-600);animation:pulse 2s infinite"></span>Live</span></div>
+          <sc-for list="{{ activity }}" as="a" hint-placeholder-count="5">
+            <div style="display:flex;gap:12px;padding:10px 20px"><span style="width:28px;height:28px;border-radius:8px;background:var(--ink-50);color:var(--ink-600);display:grid;place-items:center;flex:none"><svg width="15" height="15"><use href="{{ a.icon }}"></use></svg></span><div style="flex:1;font-size:13px"><div>{{ a.text }}</div><div style="font-size:12px;color:var(--ink-500)">{{ a.t }}</div></div></div>
+          </sc-for>
+          <div style="height:8px"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { loading: true, running: {} };
+  componentDidMount() { this.u = IQ.sub(() => this.forceUpdate()); this.t = setTimeout(() => this.setState({ loading: false }), 650); }
+  componentWillUnmount() { this.u && this.u(); clearTimeout(this.t); }
+  renderVals() {
+    if (!window.IQ) return { loading: true, skel: [1, 2, 3, 4] };
+    const s = IQ.s, film = IQ.film(), rd = IQ.readiness(film);
+    const days = IQ.daysBetween(IQ.TODAY, film.release);
+    const camps = s.campaigns.filter(c => c.filmId === film.id);
+    const dubs = (film.brief.find(b => b.key === 'dubs') || {}).value;
+    const genre = (film.brief.find(b => b.key === 'genre') || {}).value;
+    const bud = (film.brief.find(b => b.key === 'budget') || {}).value;
+    const filmBudget = bud ? +bud.replace(/[^\d]/g, '') : 0;
+    let committed = 0, spent = 0, views = 0, posts = 0, live = 0;
+    camps.forEach(c => { if (c.status === 'Draft') return; const st = IQ.campStats(c); committed += st.committed; spent += st.spent; if (c.status === 'Live') { views += st.views; posts += st.posts; live++; } });
+    const alerts = [];
+    camps.filter(c => c.status === 'Live').forEach(c => { const cp = c.checkpoints.filter(k => k.verdict).slice(-1)[0]; if (cp && cp.verdict === 'Behind') alerts.push({ title: c.name + ' is Behind at ' + cp.label, sub: cp.note, cta: 'Open Insights', go: () => IQ.go('campaign', { id: c.id, tab: 'insights' }), dot: 'var(--danger-600)' }); c.alerts.forEach(a => alerts.push({ title: a.kind + ' alert · ' + c.name, sub: a.text, cta: 'Review', go: () => IQ.go('campaign', { id: c.id, tab: 'insights' }), dot: 'var(--warning-600)' })); c.ccs.filter(x => x.late && !x.posts.length).forEach(x => alerts.push({ title: IQ.creator(x.creatorId).name + ' is past the post date', sub: c.name + ' · due ' + IQ.ds(x.deal.end), cta: 'Open creator', go: () => IQ.go('influencer', { campId: c.id, ccId: x.id, tab: 'posts' }), dot: 'var(--warning-600)' })); });
+    if (rd.missing.length) alerts.unshift({ title: 'Brief is missing ' + rd.missing.length + ' required fields', sub: rd.missing.map(m => m.label).join(', ') + ' · film reads are blocked', cta: 'Complete brief', go: () => IQ.go('brief'), dot: 'var(--danger-600)' });
+    if (rd.refused) alerts.unshift({ title: 'Governance flag Refused: Real events', sub: 'Create campaign is blocked until this is cleared', cta: 'Review flag', go: () => IQ.go('brief', { tab: 'governance' }), dot: 'var(--danger-600)' });
+    s.connectors.filter(c => c.status === 'Expiring').forEach(c => alerts.push({ title: c.name + ' token expires in 6 days', sub: 'Instagram and Facebook tracking stops on 9 Oct', cta: 'Reconnect', go: () => IQ.go('settings', { tab: 'connectors' }), dot: 'var(--warning-600)' }));
+    const actIcon = { fetch: '#i-refresh', post: '#i-play', deal: '#i-tag', alert: '#i-alert', film: '#i-film' };
+    const reads = rd.missing.length ? ['What is already public', 'Who the audience is', 'What could go wrong'].map(t => ({ title: t, status: 'Blocked', st: IQ.tone('Blocked'), items: [], date: 'Not run', rerun: () => IQ.toast('Complete the 9 required brief fields first', 'error') })) :
+      film.reads.map(r => { const run = this.state.running[r.key]; return { title: r.title, status: run ? 'Running' : r.status, st: IQ.tone(run ? 'Running' : r.status), running: !!run, runNote: 'Searching sources and reading comments… about 8 minutes (shortened for prototype)', stale: r.status === 'Stale' && !run, staleNote: r.staleNote, items: run ? [] : r.items.map(i => ({ t: i.t, stamp: i.stamp, src: 'Source: ' + i.src, tone: IQ.tone(i.stamp) })), date: 'Updated ' + IQ.d(r.date), rerun: () => { this.setState({ running: Object.assign({}, this.state.running, { [r.key]: 1 }) }); IQ.toast('Re-running "' + r.title + '"'); setTimeout(() => { IQ.set(x => { const fr = x.films.find(q => q.id === film.id).reads.find(q => q.key === r.key); fr.status = 'Ready'; fr.date = IQ.TODAY; }); this.setState({ running: Object.assign({}, this.state.running, { [r.key]: 0 }) }); IQ.toast(r.title + ' updated'); }, 3200); } }; });
+    const blocked = rd.refused || rd.missing.length;
+    return {
+      loading: this.state.loading, ready: !this.state.loading, skel: [1, 2, 3, 4],
+      f: { title: film.title, studio: film.studio, daysLabel: days > 0 ? days + ' days to release' : 'Released', meta: [film.language, dubs ? 'dubs: ' + dubs : null, genre, 'releases ' + IQ.d(film.release)].filter(Boolean).join(' · ') },
+      rd: { ok: rd.ok, req: rd.req, pct: rd.pct, color: rd.pct === 100 ? 'var(--success-600)' : rd.pct > 60 ? 'var(--warning-600)' : 'var(--danger-600)', missingCount: rd.missing.length, missingList: rd.missing.map(m => m.label).join(', ') },
+      kpis: [
+        { label: 'Live campaigns', value: String(live), sub: camps.length + ' total · ' + camps.filter(c => c.status === 'Draft').length + ' draft' },
+        { label: 'Views on live campaigns', value: IQ.n(views), sub: posts + ' tracked posts · updated 08:40', stamp: 'Observed · YouTube Data API, Meta Graph API' },
+        { label: 'Committed spend', value: IQ.inrL(committed), sub: filmBudget ? 'of ' + IQ.inrL(filmBudget) + ' promotion budget' : 'Promotion budget not set' }
+      ],
+      talk: { has: !!IQ.filmSummary(film), text: IQ.filmSummary(film), stamp: 'Updated daily · ' + IQ.d(IQ.TODAY) + ', 08:40' },
+      hasAlerts: alerts.length > 0, alerts, alertCount: alerts.length,
+      noCamps: !camps.length, emptyNote: blocked ? 'Finish the brief and clear governance flags before you create a campaign.' : 'Start with an objective; agents suggest narratives, channels and creators.',
+      emptyCta: blocked ? 'Complete brief' : 'New campaign', emptyAction: () => blocked ? IQ.go('brief') : IQ.go('wizard', { id: null }),
+      camps: camps.map(c => { const st = IQ.campStats(c); const isEng = c.kpi === 'Engagements'; const act = isEng ? st.eng : st.views; const range = isEng ? c.pred && c.pred.eng : c.pred && c.pred.views; const max = range ? range[1] * 1.15 : 1; const cp = (c.checkpoints || []).filter(k => k.verdict).slice(-1)[0]; const verdict = c.status === 'Draft' ? 'Draft' : c.status === 'Closed' ? 'Closed' : cp ? cp.verdict : 'On track';
+        return { sum: IQ.campSummary(c), hasSum: !!IQ.campSummary(c), name: c.name, status: c.status, st: IQ.tone(c.status), meta: c.asset + ' · ' + c.objective + ' · ' + (c.status === 'Draft' ? 'Step ' + ((c.wiz && c.wiz.step) + 1) + ' of 6' : IQ.ds(c.start) + '–' + IQ.ds(c.end)), kpiLabel: c.status === 'Draft' ? 'Not started' : (isEng ? 'Engagements' : 'Views') + ' vs frozen range', kpiVal: c.status === 'Draft' ? '—' : IQ.n(act) + ' / ' + IQ.n(range[0]) + '–' + IQ.n(range[1]), bandL: range ? range[0] / max * 100 : 0, bandW: range ? (range[1] - range[0]) / max * 100 : 0, actW: range ? Math.min(100, act / max * 100) : 0, actC: verdict === 'Behind' ? 'var(--danger-600)' : 'var(--teal-700)', verdict, vt: IQ.tone(verdict), open: () => c.status === 'Draft' ? IQ.go('wizard', { id: c.id }) : IQ.go('campaign', { id: c.id, tab: 'overview' }) }; }),
+      money: { spentPct: filmBudget ? spent / filmBudget * 100 : 0, commitPct: filmBudget ? (committed - spent) / filmBudget * 100 : 0, rows: [{ l: 'Budget', v: filmBudget ? IQ.inrL(filmBudget) : 'Not set', c: 'var(--ink-200)' }, { l: 'Committed', v: IQ.inrL(committed), c: 'var(--teal-300)' }, { l: 'Spent (delivered posts)', v: IQ.inrL(spent), c: 'var(--teal-700)' }, { l: 'Remaining', v: filmBudget ? IQ.inrL(filmBudget - committed) : '—', c: 'var(--ink-100)' }] },
+      activity: film.activity.slice(0, 6).map(a => ({ text: a.text, t: IQ.dt(a.t), icon: actIcon[a.kind] || '#i-info' })),
+      watch: film.watch.map(w => ({ handle: w.handle, platform: w.platform + ' · ' + w.kind, state: w.state, st: IQ.tone(w.state), icon: w.kind === 'Hashtag' ? '#i-tag' : '#i-eye' })),
+      flags: film.flags.map(g => ({ type: g.type, status: g.status, note: g.note || 'No issues recorded', st: IQ.tone(g.status) })),
+      readsBlocked: rd.missing.length > 0, reads,
+      goBrief: e => { e && e.preventDefault && e.preventDefault(); IQ.go('brief'); }, goWatch: e => { e.preventDefault(); IQ.go('brief', { tab: 'watch' }); }, goCampaigns: e => { e.preventDefault(); IQ.go('campaigns'); },
+      newCampaign: () => { if (blocked) { IQ.toast(rd.refused ? 'Create campaign is blocked: a governance flag is Refused' : 'Complete the required brief fields first', 'error'); IQ.go('brief'); } else IQ.go('wizard', { id: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

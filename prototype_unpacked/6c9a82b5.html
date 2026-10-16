@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><script src="hire-data.js"></script></helmet>
+<div style="display:grid;grid-template-columns:232px minmax(0,1fr);height:100vh;overflow:hidden">
+  <aside style="background:#fff;border-right:1px solid var(--ink-100);display:flex;flex-direction:column;padding:20px 12px 12px;min-height:0">
+    <div style="display:flex;align-items:center;gap:9px;padding:0 8px 16px"><svg width="28" height="28"><use href="#logo-mark"></use></svg><b style="font-size:16px;letter-spacing:-.02em;font-weight:600">Influence<span style="color:var(--teal-600)">IQ</span></b></div>
+    <div style="display:inline-flex;align-self:flex-start;align-items:center;gap:8px;height:28px;padding:0 10px 0 6px;border-radius:8px;background:var(--hire-tint);color:#7A4F0F;font-size:13px;font-weight:600;margin:0 8px 18px;white-space:nowrap"><span style="width:20px;height:20px;border-radius:5px;background:var(--hire);color:#fff;display:grid;place-items:center"><svg width="13" height="13"><use href="#i-brief"></use></svg></span>Hire IQ</div>
+    <nav style="display:flex;flex-direction:column;gap:2px">
+      <sc-for list="{{ nav }}" as="it" hint-placeholder-count="4">
+        <button onClick="{{ it.go }}" style="position:relative;display:flex;align-items:center;gap:10px;height:38px;padding:0 10px;border:0;border-radius:8px;background:{{ it.bg }};color:{{ it.fg }};font-weight:{{ it.fw }};cursor:pointer;text-align:left" style-hover="background:var(--ink-50);color:var(--ink-900)">
+          <span style="position:absolute;left:-12px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:{{ it.bar }}"></span>
+          <svg width="20" height="20" style="color:{{ it.ic }}"><use href="{{ it.icon }}"></use></svg>{{ it.label }}
+        </button>
+      </sc-for>
+    </nav>
+    <div style="flex:1"></div>
+    <div style="position:relative">
+      <sc-if value="{{ acctOpen }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closeMenus }}" style="position:fixed;inset:0;z-index:40"></div>
+        <div style="position:absolute;bottom:calc(100% + 6px);left:0;right:0;z-index:41;background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-2);padding:6px;animation:fadein .12s">
+          <div style="padding:8px 10px 10px;border-bottom:1px solid var(--ink-100);margin-bottom:6px"><div style="font-weight:600">{{ userName }}</div><div style="font-size:12px;color:var(--ink-500)">{{ userEmail }}</div></div>
+          <div style="padding:6px 10px 4px;font-size:12px;font-weight:600;color:var(--ink-500)">Settings</div>
+          <sc-for list="{{ acctItems }}" as="m" hint-placeholder-count="6">
+            <button onClick="{{ m.go }}" style="width:100%;display:flex;align-items:center;gap:10px;min-height:36px;padding:6px 10px;border:0;border-radius:8px;background:none;cursor:pointer;text-align:left;color:{{ m.color }}" style-hover="background:var(--ink-50)"><svg width="18" height="18"><use href="{{ m.icon }}"></use></svg>{{ m.label }}<span style="margin-left:auto;font-size:12px;color:var(--ink-500)">{{ m.meta }}</span></button>
+          </sc-for>
+        </div>
+      </sc-if>
+      <button onClick="{{ toggleAcct }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--ink-100);border-radius:10px;background:#fff;cursor:pointer;text-align:left" style-hover="background:var(--ink-25)">
+        <span style="width:32px;height:32px;border-radius:50%;background:var(--teal-100);color:var(--teal-800);display:grid;place-items:center;font-weight:600;font-size:13px">{{ userInitials }}</span>
+        <span style="flex:1;min-width:0"><span style="display:block;font-weight:600;font-size:13px">{{ userName }}</span><span style="display:block;font-size:12px;color:var(--ink-500)">{{ userTitle }}</span></span>
+        <svg width="16" height="16" style="color:var(--ink-500)"><use href="#i-settings"></use></svg>
+      </button>
+    </div>
+  </aside>
+  <div style="display:flex;flex-direction:column;min-width:0;min-height:0">
+    <header style="height:60px;flex:none;background:#fff;border-bottom:1px solid var(--ink-100);display:flex;align-items:center;gap:16px;padding:0 24px;position:relative;z-index:20">
+      <div style="position:relative">
+        <button onClick="{{ toggleFilm }}" style="display:flex;align-items:center;gap:10px;height:40px;padding:0 10px 0 6px;border:1px solid var(--ink-200);border-radius:8px;background:#fff;cursor:pointer;min-width:240px" style-hover="border-color:var(--ink-400)">
+          <span style="width:28px;height:28px;border-radius:6px;background:var(--ink-900);color:#fff;display:grid;place-items:center;font-weight:600;font-size:12px">{{ filmInitial }}</span>
+          <span style="flex:1;text-align:left;min-width:0"><span style="display:block;font-weight:600;font-size:14px;line-height:1.2">{{ filmTitle }}</span><span style="display:block;font-size:12px;color:var(--ink-500);line-height:1.2">{{ filmMeta }}</span></span>
+          <svg width="16" height="16" style="color:var(--ink-500)"><use href="#i-down"></use></svg>
+        </button>
+        <sc-if value="{{ filmOpen }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ closeMenus }}" style="position:fixed;inset:0;z-index:40"></div>
+          <div style="position:absolute;top:calc(100% + 6px);left:0;width:320px;z-index:41;background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-2);padding:6px;animation:fadein .12s">
+            <div style="padding:2px 2px 6px;position:relative"><svg width="16" height="16" style="position:absolute;left:12px;top:10px;color:var(--ink-500)"><use href="#i-search"></use></svg><input value="{{ filmQ }}" onChange="{{ setFilmQ }}" placeholder="Search courses" style="width:100%;height:32px;padding:0 10px 0 34px;border:1px solid var(--ink-300);border-radius:8px;font-size:13px"></div>
+            <sc-for list="{{ filmList }}" as="f" hint-placeholder-count="2">
+              <button onClick="{{ f.pick }}" style="width:100%;display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 10px;border:0;border-radius:8px;background:{{ f.bg }};cursor:pointer;text-align:left" style-hover="background:var(--ink-50)">
+                <span style="width:28px;height:28px;border-radius:6px;background:var(--ink-900);color:#fff;display:grid;place-items:center;font-weight:600;font-size:12px">{{ f.initial }}</span>
+                <span style="flex:1"><span style="display:block;font-weight:600">{{ f.title }}</span><span style="display:block;font-size:12px;color:var(--ink-500)">{{ f.meta }}</span></span>
+                <sc-if value="{{ f.on }}"><svg width="16" height="16" style="color:var(--teal-700)"><use href="#i-check"></use></svg></sc-if>
+              </button>
+            </sc-for>
+            <sc-if value="{{ filmEmpty }}"><div style="padding:14px 10px;color:var(--ink-500);font-size:13px;text-align:center">No courses match</div></sc-if>
+            <div style="height:1px;background:var(--ink-100);margin:6px 0"></div>
+            <button onClick="{{ newFilm }}" style="width:100%;display:flex;align-items:center;gap:10px;min-height:38px;padding:6px 10px;border:0;border-radius:8px;background:none;cursor:pointer;color:var(--teal-700);font-weight:600" style-hover="background:var(--teal-50)"><svg width="18" height="18"><use href="#i-plus"></use></svg>New course</button>
+          </div>
+        </sc-if>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;color:var(--ink-500);font-size:13px;min-width:0;overflow:hidden;white-space:nowrap"><sc-for list="{{ crumbs }}" as="c" hint-placeholder-count="1"><svg width="14" height="14"><use href="#i-right"></use></svg><span style="color:{{ c.color }};font-weight:{{ c.fw }}">{{ c.label }}</span></sc-for></div>
+      <div style="flex:1"></div>
+      <div style="position:relative">
+        <button onClick="{{ toggleNotif }}" aria-label="Alerts" style="position:relative;width:40px;height:40px;border:0;border-radius:8px;background:none;cursor:pointer;display:grid;place-items:center;color:var(--ink-600)" style-hover="background:var(--ink-50)"><svg width="20" height="20"><use href="#i-bell"></use></svg><span style="position:absolute;top:6px;right:6px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--danger-600);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center">{{ alertCount }}</span></button>
+        <sc-if value="{{ notifOpen }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ closeMenus }}" style="position:fixed;inset:0;z-index:40"></div>
+          <div style="position:absolute;top:calc(100% + 6px);right:0;width:380px;z-index:41;background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-2);padding:6px;animation:fadein .12s">
+            <div style="padding:8px 10px;font-weight:600">Needs attention</div>
+            <sc-for list="{{ alerts }}" as="a" hint-placeholder-count="3">
+              <button onClick="{{ a.go }}" style="width:100%;display:flex;gap:10px;padding:10px;border:0;border-radius:8px;background:none;cursor:pointer;text-align:left" style-hover="background:var(--ink-50)"><span style="width:28px;height:28px;border-radius:8px;background:{{ a.bg }};color:{{ a.fg }};display:grid;place-items:center;flex:none"><svg width="16" height="16"><use href="#i-alert"></use></svg></span><span style="flex:1"><span style="display:block;font-weight:600;font-size:13px">{{ a.title }}</span><span style="display:block;font-size:12px;color:var(--ink-500)">{{ a.sub }}</span></span><svg width="16" height="16" style="color:var(--ink-400);margin-top:6px"><use href="#i-right"></use></svg></button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </header>
+    <div style="flex:1;display:flex;min-height:0">
+      <main data-iq-main="1" style="flex:1;overflow:auto;min-width:0">
+        <sc-if value="{{ r.dashboard }}" hint-placeholder-val="{{ false }}"><dc-import name="HireDashboard" hint-size="100%,800px"></dc-import></sc-if>
+        <sc-if value="{{ r.brief }}" hint-placeholder-val="{{ false }}"><dc-import name="HireCourseBrief" hint-size="100%,800px"></dc-import></sc-if>
+        <sc-if value="{{ nfOpen }}" hint-placeholder-val="{{ false }}"><dc-import name="HireNewCourse" on-close="{{ closeNf }}" hint-size="0,0"></dc-import></sc-if>
+        <sc-if value="{{ r.campaigns }}" hint-placeholder-val="{{ false }}"><dc-import name="HireCampaigns" hint-size="100%,800px"></dc-import></sc-if>
+        <sc-if value="{{ r.wizard }}" hint-placeholder-val="{{ false }}"><dc-import name="HireWizard" hint-size="100%,800px"></dc-import></sc-if>
+        <sc-if value="{{ r.campaign }}" hint-placeholder-val="{{ false }}"><dc-import name="HireCampaignPage" hint-size="100%,800px"></dc-import></sc-if>
+        <sc-if value="{{ r.influencer }}" hint-placeholder-val="{{ false }}"><dc-import name="HireSourceDetail" hint-size="100%,800px"></dc-import></sc-if>
+        <sc-if value="{{ r.creators }}" hint-placeholder-val="{{ false }}"><dc-import name="HireCreatorBank" hint-size="100%,800px"></dc-import></sc-if>
+        <sc-if value="{{ r.creator }}" hint-placeholder-val="{{ false }}"><dc-import name="HireSourceProfile" hint-size="100%,800px"></dc-import></sc-if>
+        <sc-if value="{{ r.copilot }}" hint-placeholder-val="{{ false }}"><dc-import name="HireCopilot" mode="page" hint-size="100%,800px"></dc-import></sc-if>
+        <sc-if value="{{ r.files }}" hint-placeholder-val="{{ false }}"><dc-import name="HireArtifacts" hint-size="100%,800px"></dc-import></sc-if>
+        <sc-if value="{{ r.settings }}" hint-placeholder-val="{{ false }}"><dc-import name="HireSettings" hint-size="100%,800px"></dc-import></sc-if>
+      </main>
+      <sc-if value="{{ copilotPanel }}" hint-placeholder-val="{{ false }}">
+        <div style="width:400px;flex:none;border-left:1px solid var(--ink-100);background:#fff;display:flex;flex-direction:column;min-height:0;animation:slidein .2s">
+          <dc-import name="HireCopilot" mode="panel" hint-size="400px,100%" style="flex:1;min-height:0;display:flex;flex-direction:column"></dc-import>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+<div style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;align-items:center;z-index:100;pointer-events:none">
+  <sc-for list="{{ toasts }}" as="t" hint-placeholder-count="0">
+    <div style="pointer-events:auto;display:inline-flex;align-items:center;gap:12px;background:{{ t.bg }};color:#fff;padding:12px 16px;border-radius:8px;box-shadow:var(--e-2);font-size:14px;animation:fadein .2s;max-width:520px">
+      <svg width="18" height="18" style="color:{{ t.ic }}"><use href="{{ t.icon }}"></use></svg><span>{{ t.text }}</span>
+      <button onClick="{{ t.close }}" aria-label="Dismiss" style="border:0;background:none;color:#fff;opacity:.7;cursor:pointer;display:grid;place-items:center;padding:2px"><svg width="14" height="14"><use href="#i-x"></use></svg></button>
+    </div>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { filmOpen: false, acctOpen: false, notifOpen: false, filmQ: '' };
+  componentDidMount() {
+    const t = () => { if (window.HQ && window.IQ) { this.u = HQ.sub(() => this.forceUpdate()); if (IQ.s.user && (!HQ.s.user || HQ.s.user.email !== IQ.s.user.email)) HQ.set(x => { x.user = IQ.s.user; }); this.forceUpdate(); } else setTimeout(t, 30); };
+    t();
+  }
+  componentWillUnmount() { this.u && this.u(); }
+  closeAll() { this.setState({ filmOpen: false, acctOpen: false, notifOpen: false }); }
+  renderVals() {
+    if (!window.HQ || !window.IQ) return { toasts: [] };
+    const s = HQ.s, st = this.state, r = s.route || { name: 'dashboard' };
+    const go = (name, p) => () => { this.closeAll(); HQ.go(name, p); };
+    const film = HQ.film() || s.films[0];
+    const sec = { dashboard: 'dashboard', brief: 'dashboard', newfilm: 'dashboard', campaigns: 'campaigns', wizard: 'campaigns', campaign: 'campaigns', influencer: 'campaigns', copilot: 'copilot', files: 'files' }[r.name];
+    const nav = [['dashboard', 'Dashboard', '#i-home'], ['campaigns', 'Campaigns', '#i-mega'], ['copilot', 'Copilot', '#i-chat'], ['files', 'Artifacts', '#i-folder']].map(([k, label, icon]) => {
+      const on = sec === k;
+      return { label, icon, go: go(k), bg: on ? 'var(--ink-50)' : 'transparent', fg: on ? 'var(--ink-900)' : 'var(--ink-600)', fw: on ? 600 : 500, bar: on ? 'var(--hire)' : 'transparent', ic: on ? 'var(--hire)' : 'currentColor' };
+    });
+    const acctItems = [
+      { label: 'Connectors', icon: '#i-plug', go: go('settings', { tab: 'connectors' }), meta: s.connectors.some(c => c.status === 'Expiring') ? '1 expiring' : '' },
+      { label: 'Rate card', icon: '#i-tag', go: go('settings', { tab: 'ratecard' }) },
+      { label: 'Creator Bank', icon: '#i-users', go: go('creators'), meta: String(s.creators.length) },
+      { label: 'Profile', icon: '#i-user', go: go('settings', { tab: 'profile' }) },
+      { label: 'Switch module', icon: '#i-swap', go: () => { this.closeAll(); IQ.set(x => { x.module = null; }); } },
+      { label: 'Sign out', icon: '#i-logout', color: 'var(--danger-600)', go: () => { this.closeAll(); IQ.set(x => { x.user = null; x.route = { name: 'login' }; }); IQ.toast('Signed out'); } }
+    ];
+    const q = st.filmQ.toLowerCase();
+    const filmList = s.films.filter(f => f.title.toLowerCase().includes(q)).map(f => ({ title: f.title, initial: f.title[0], meta: (f.batch || 'Batch 1') + ' · starts ' + HQ.d(f.release), on: f.id === s.filmId, bg: f.id === s.filmId ? 'var(--teal-50)' : 'transparent', pick: () => { this.closeAll(); HQ.set(x => { x.filmId = f.id; x.route = { name: (['campaigns', 'files', 'copilot', 'creators'].includes(r.name)) ? r.name : 'dashboard' }; }); HQ.toast('Switched to ' + f.title); } }));
+    const ccName = () => { const x = HQ.ccOf(r.campId, r.ccId); return x ? HQ.creator(x.creatorId).name : ''; };
+    const crumbLabels = { dashboard: ['Dashboard'], brief: [film.title, 'Course brief'], newfilm: ['New course'], campaigns: ['Campaigns'], wizard: ['Campaigns', 'New campaign'], campaign: ['Campaigns', (HQ.camp(r.id) || {}).name], influencer: ['Campaigns', (HQ.camp(r.campId) || {}).name, ccName()], creators: ['Settings', 'Creator Bank'], creator: ['Creator Bank', (HQ.creator(r.id) || {}).name], copilot: ['Copilot'], files: ['Artifacts'], settings: ['Settings', { connectors: 'Connectors', ratecard: 'Rate card', profile: 'Profile' }[r.tab] || 'Connectors'] }[r.name] || [];
+    const crumbs = crumbLabels.filter(Boolean).map((l, i, a) => ({ label: l, color: i === a.length - 1 ? 'var(--ink-900)' : 'var(--ink-500)', fw: i === a.length - 1 ? 600 : 400 }));
+    const alerts = [];
+    const ar = HQ.readiness(film); if (ar.missing.length) alerts.push({ title: film.title + ' brief is missing ' + ar.missing.length + ' required field' + (ar.missing.length > 1 ? 's' : ''), sub: ar.missing.map(m => m.label).join(', '), go: go('brief'), lvl: 'danger' });
+    film.flags.filter(f => f.status === 'Refused').forEach(f => alerts.push({ title: f.type + ' flag is Refused', sub: 'Create campaign is blocked until it is resolved', go: go('brief', { tab: 'governance' }), lvl: 'danger' }));
+    s.campaigns.filter(c => c.filmId === film.id && c.status === 'Live').forEach(c => {
+      const cp = c.checkpoints.filter(k => k.verdict).slice(-1)[0];
+      if (cp && cp.verdict === 'Behind') alerts.push({ title: c.name + ' is Behind', sub: cp.label + ' checkpoint · ' + cp.note, go: go('campaign', { id: c.id, tab: 'insights' }), lvl: 'danger' });
+      (c.alerts || []).filter(a => a.rule === 'RR-H05' && !a.dismissed).forEach(a => alerts.push({ title: 'Enrolment rate below floor', sub: c.name + ' · message and programme mismatch (RR-H05)', go: go('campaign', { id: c.id, tab: 'insights' }), lvl: 'warning' }));
+      c.ccs.filter(x => x.late && !x.posts.length && x.status !== 'Live').forEach(x => alerts.push({ title: HQ.creator(x.creatorId).name + ' is past the post date', sub: c.name + ' · due ' + HQ.ds(x.deal.end), go: go('influencer', { campId: c.id, ccId: x.id, tab: 'posts' }), lvl: 'warning' }));
+    });
+    s.connectors.filter(c => c.status === 'Expiring').forEach(c => alerts.push({ title: c.name + ' token expires in 6 days', sub: 'Reconnect before 12 Oct to keep Instagram and Facebook metrics flowing', go: go('settings', { tab: 'connectors' }), lvl: 'warning' }));
+    const res = s.connectors.find(c => c.id === 'res'); if (res && (res.status !== 'Connected' || HQ.daysBetween(res.last.slice(0, 10), HQ.TODAY) > 1)) alerts.push({ title: 'Resolence feed is stale', sub: 'Registrations and enrolments may be out of date', go: go('settings', { tab: 'connectors' }), lvl: 'warning' });
+    const stale = s.creators.filter(c => c.status === 'Failed' || c.status === 'Partial').length;
+    if (stale) alerts.push({ title: stale + ' source profiles need a refresh', sub: 'Failed or partial enrichment in the Creator Bank', go: go('creators', { filter: 'attention' }), lvl: 'warning' });
+    alerts.forEach(a => { const t = HQ.tone(a.lvl === 'danger' ? 'Fail' : 'Warning'); a.bg = t.bg; a.fg = t.fg; });
+    const rr = {}; ['dashboard', 'brief', 'newfilm', 'campaigns', 'wizard', 'campaign', 'influencer', 'creators', 'creator', 'copilot', 'files', 'settings'].forEach(k => rr[k] = r.name === k);
+    if (rr.newfilm) rr.dashboard = true; if (!Object.values(rr).some(Boolean)) rr.dashboard = true;
+    const u = IQ.s.user || s.user || {};
+    return {
+      nav, acctItems, userName: u.name, userInitials: (u.name || 'A R').split(/\s+/).filter(Boolean).slice(0, 2).map(s => s[0].toUpperCase()).join(''), userEmail: u.email, userTitle: u.title,
+      acctOpen: st.acctOpen, filmOpen: st.filmOpen, notifOpen: st.notifOpen,
+      toggleAcct: () => this.setState({ acctOpen: !st.acctOpen, filmOpen: false, notifOpen: false }),
+      toggleFilm: () => this.setState({ filmOpen: !st.filmOpen, acctOpen: false, notifOpen: false, filmQ: '' }),
+      toggleNotif: () => this.setState({ notifOpen: !st.notifOpen, acctOpen: false, filmOpen: false }),
+      closeMenus: () => this.closeAll(),
+      filmTitle: film.title, filmInitial: film.title[0], filmMeta: (film.batch || 'Batch 1') + ' · starts ' + HQ.d(film.release),
+      filmQ: st.filmQ, setFilmQ: e => this.setState({ filmQ: e.target.value }), filmList, filmEmpty: !filmList.length,
+      newFilm: () => { this.closeAll(); this.setState({ nf: true }); }, nfOpen: !!st.nf || r.name === 'newfilm', closeNf: () => { this.setState({ nf: false }); if (HQ.s.route.name === 'newfilm') HQ.go('dashboard'); },
+      crumbs, alerts, alertCount: alerts.length,
+      copilotPanel: !!s.copilotOpen && r.name !== 'copilot', copBg: s.copilotOpen ? 'var(--teal-50)' : '#fff',
+      toggleCopilot: () => HQ.set(x => { x.copilotOpen = !x.copilotOpen; }),
+      r: rr,
+      toasts: HQ.toasts.map(t => ({ text: t.text, bg: t.kind === 'error' ? 'var(--danger-800)' : 'var(--ink-900)', ic: t.kind === 'error' ? '#FCE9E6' : 'var(--teal-300)', icon: t.kind === 'error' ? '#i-alert' : '#i-check', close: () => HQ.dismissToast(t.id) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

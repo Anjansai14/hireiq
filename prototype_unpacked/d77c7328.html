@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><script src="data.js"></script></helmet>
+<div style="padding:28px 32px 48px;max-width:1240px;display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap">
+    <div style="flex:1;min-width:260px">
+      <button onClick="{{ back }}" style="border:0;background:none;padding:0;color:var(--ink-600);cursor:pointer;display:flex;align-items:center;gap:4px;font-size:13px;margin-bottom:8px"><svg width="16" height="16"><use href="#i-left"></use></svg>Dashboard</button>
+      <h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-.015em">{{ title }}</h1>
+      <p style="margin:4px 0 0;color:var(--ink-600)">{{ sub }}</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--ink-100);border-radius:12px;padding:10px 16px"><div style="width:160px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-600);margin-bottom:6px"><span>Required filled</span><b style="color:var(--ink-900)">{{ rd.ok }}/{{ rd.req }}</b></div><div style="height:8px;border-radius:999px;background:var(--ink-100);overflow:hidden"><div style="height:100%;width:{{ rd.pct }}%;background:{{ rd.color }}"></div></div></div></div>
+  </div>
+  <div style="display:flex;gap:24px;border-bottom:1px solid var(--ink-100);overflow-x:auto;overflow-y:hidden">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.go }}" style="border:0;background:none;padding:10px 0;margin-bottom:-1px;border-bottom:2px solid {{ t.bc }};color:{{ t.c }};font-weight:{{ t.fw }};cursor:pointer;white-space:nowrap">{{ t.label }} <span style="color:var(--ink-500);font-weight:400">{{ t.n }}</span></button></sc-for>
+  </div>
+
+  <input type="file" multiple ref="{{ fileRef }}" onChange="{{ onFiles }}" style="display:none">
+
+  <sc-if value="{{ tOver }}" hint-placeholder-val="{{ true }}">
+    <div onClick="{{ pickFiles }}" onDragOver="{{ dragOver }}" onDragLeave="{{ dragLeave }}" onDrop="{{ onDrop }}" style="border:2px dashed {{ dzBorder }};background:{{ dzBg }};border-radius:12px;padding:20px 24px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;cursor:pointer">
+      <div style="width:44px;height:44px;border-radius:12px;background:var(--teal-50);color:var(--teal-700);display:grid;place-items:center;flex:none"><svg width="22" height="22"><use href="#i-upload"></use></svg></div>
+      <div style="flex:1;min-width:220px"><b style="display:block">Upload the press kit or brief PDF</b><span style="font-size:13px;color:var(--ink-600)">We read it and fill the details below. Anything we can't find stays empty for you to type.</span></div>
+      <button onClick="{{ useSample }}" style="height:36px;padding:0 14px;border-radius:8px;border:1px solid var(--ink-300);background:#fff;font-size:13px;font-weight:600;cursor:pointer" style-hover="background:var(--ink-50)">Use sample press kit</button>
+      <button style="height:36px;padding:0 14px;border-radius:8px;border:0;background:var(--teal-700);color:#fff;font-size:13px;font-weight:600;cursor:pointer;display:flex;gap:8px;align-items:center" style-hover="background:var(--teal-800)"><svg width="16" height="16"><use href="#i-upload"></use></svg>Choose PDF</button>
+    </div>
+    <sc-for list="{{ upl }}" as="f" hint-placeholder-count="0">
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:#fff;border:1px solid var(--ink-100);border-radius:10px">
+        <span style="width:32px;height:32px;border-radius:8px;background:var(--ink-50);display:grid;place-items:center;color:var(--ink-600);flex:none"><svg width="16" height="16"><use href="#i-file"></use></svg></span>
+        <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.name }}</div><div style="font-size:12px;color:var(--ink-600)">{{ f.note }}</div></div>
+        <sc-if value="{{ f.busy }}"><span style="width:16px;height:16px;border-radius:50%;border:2px solid var(--teal-100);border-top-color:var(--teal-600);animation:spin .8s linear infinite;flex:none"></span></sc-if>
+        <sc-if value="{{ f.done }}"><svg width="18" height="18" style="color:var(--success-600);flex:none"><use href="#i-check"></use></svg></sc-if>
+      </div>
+    </sc-for>
+
+    <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1);padding:24px 28px;display:flex;flex-direction:column;gap:28px">
+      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+        <div style="display:flex;flex-direction:column;gap:28px">
+          <sc-if value="{{ g.boxed }}"><b style="font-size:15px;margin-bottom:-16px">{{ g.title }}</b></sc-if>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:24px 32px;border:{{ g.bd }};border-radius:12px;padding:{{ g.pad }}">
+            <sc-for list="{{ g.fields }}" as="f">
+              <div style="grid-column:{{ f.span }};display:flex;flex-direction:column;gap:6px;min-width:0">
+                <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><b style="font-size:14px;font-weight:600">{{ f.label }}</b><sc-if value="{{ f.req }}"><span style="color:var(--ink-400)">*</span></sc-if><sc-if value="{{ f.filled }}"><span style="height:20px;padding:0 6px;border-radius:4px;background:var(--teal-50);color:var(--teal-800);font-size:11px;font-weight:600;display:inline-flex;align-items:center">From file</span></sc-if><span style="flex:1"></span><sc-if value="{{ f.badge }}"><span style="height:22px;padding:0 6px;border-radius:4px;border:1px solid var(--ink-200);color:var(--ink-600);font-size:11px;font-weight:700;letter-spacing:.04em;display:inline-flex;align-items:center">{{ f.badge }}</span></sc-if></div>
+                <sc-if value="{{ f.help }}"><span style="font-size:13px;color:var(--ink-600)">{{ f.help }}</span></sc-if>
+                <sc-if value="{{ f.isText }}"><input value="{{ f.value }}" onChange="{{ f.onChange }}" placeholder="{{ f.ph }}" style="height:40px;padding:0 12px;border:1px solid var(--ink-300);border-radius:8px;background:#fff;width:100%"></sc-if>
+                <sc-if value="{{ f.isDate }}"><input type="date" value="{{ f.value }}" onChange="{{ f.onChange }}" style="height:40px;padding:0 12px;border:1px solid var(--ink-300);border-radius:8px;background:#fff;width:100%"></sc-if>
+                <sc-if value="{{ f.isArea }}"><textarea value="{{ f.value }}" onChange="{{ f.onChange }}" placeholder="{{ f.ph }}" style="min-height:110px;padding:10px 12px;border:1px solid var(--ink-300);border-radius:8px;resize:vertical;font:inherit;width:100%"></textarea></sc-if>
+                <sc-if value="{{ f.isSelect }}"><select value="{{ f.value }}" onChange="{{ f.onChange }}" style="height:40px;padding:0 10px;border:1px solid var(--ink-300);border-radius:8px;background:#fff;width:100%"><option value="">Choose one</option><sc-for list="{{ f.opts }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select></sc-if>
+                <sc-if value="{{ f.isChips }}"><div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ f.chips }}" as="o"><button onClick="{{ o.toggle }}" style="height:36px;padding:0 14px;border-radius:999px;border:1px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};font-size:14px;font-weight:600;cursor:pointer">{{ o.label }}</button></sc-for></div></sc-if>
+                <sc-if value="{{ f.isMulti }}"><div style="position:relative">
+                  <button onClick="{{ f.toggleOpen }}" style="width:100%;height:40px;padding:0 12px;border:1px solid {{ f.ddBd }};border-radius:8px;background:#fff;display:flex;align-items:center;gap:8px;cursor:pointer;text-align:left;font:inherit"><span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:{{ f.ddC }}">{{ f.summary }}</span><svg width="16" height="16" style="flex:none;color:var(--ink-600)"><use href="#i-down"></use></svg></button>
+                  <sc-if value="{{ f.open }}"><div onClick="{{ f.toggleOpen }}" style="position:fixed;inset:0;z-index:20"></div><div style="position:absolute;left:0;right:0;top:44px;z-index:21;background:#fff;border:1px solid var(--ink-200);border-radius:8px;box-shadow:var(--e-2);padding:6px;max-height:260px;overflow:auto">
+                    <sc-for list="{{ f.chips }}" as="o"><label style="display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:6px;cursor:pointer" style-hover="background:var(--ink-50)"><input type="checkbox" checked="{{ o.on }}" onChange="{{ o.toggle }}" style="width:16px;height:16px;margin:0;accent-color:var(--teal-700)">{{ o.label }}</label></sc-for>
+                  </div></sc-if>
+                </div></sc-if>
+                <sc-if value="{{ f.isYesNo }}"><div style="display:inline-flex;align-self:flex-start;border:1px solid var(--ink-300);border-radius:8px;overflow:hidden"><sc-for list="{{ f.yn }}" as="o"><button onClick="{{ o.go }}" style="height:40px;padding:0 22px;border:0;background:{{ o.bg }};color:{{ o.fg }};font-weight:600;cursor:pointer">{{ o.label }}</button></sc-for></div></sc-if>
+                <sc-if value="{{ f.isTags }}"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;min-height:44px;padding:6px 8px;border:1px solid var(--ink-300);border-radius:8px;background:#fff"><sc-for list="{{ f.tags }}" as="t"><span style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 6px 0 10px;border-radius:6px;background:var(--ink-50);border:1px solid var(--ink-100);font-size:14px">{{ t.label }}<button onClick="{{ t.remove }}" aria-label="Remove" style="width:20px;height:20px;border:0;background:none;cursor:pointer;color:var(--ink-500);display:grid;place-items:center;padding:0"><svg width="12" height="12"><use href="#i-x"></use></svg></button></span></sc-for><input value="{{ f.draft }}" onChange="{{ f.setDraft }}" onKeyDown="{{ f.onKey }}" onBlur="{{ f.commit }}" placeholder="Type and press Enter" style="flex:1;min-width:160px;height:30px;border:0;outline:none;background:none;padding:0 4px"></div></sc-if>
+                <sc-if value="{{ f.after }}"><span style="font-size:13px;color:var(--ink-600)">{{ f.after }}</span></sc-if>
+              </div>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ g.people }}">
+            <sc-for list="{{ people }}" as="p" hint-placeholder-count="2">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;gap:6px;align-items:center"><b style="font-size:14px;font-weight:600">{{ p.label }}</b><sc-if value="{{ p.req }}"><span style="color:var(--ink-400)">*</span></sc-if><sc-if value="{{ p.filled }}"><span style="height:20px;padding:0 6px;border-radius:4px;background:var(--teal-50);color:var(--teal-800);font-size:11px;font-weight:600;display:inline-flex;align-items:center">From file</span></sc-if><span style="flex:1"></span><sc-if value="{{ p.req }}"><span style="height:22px;padding:0 6px;border-radius:4px;border:1px solid var(--ink-200);color:var(--ink-600);font-size:11px;font-weight:700;letter-spacing:.04em;display:inline-flex;align-items:center">REQUIRED</span></sc-if></div>
+                <sc-if value="{{ p.help }}"><span style="font-size:13px;color:var(--ink-600)">{{ p.help }}</span></sc-if>
+                <sc-for list="{{ p.rows }}" as="r">
+                  <div style="display:flex;gap:10px;align-items:center">
+                    <sc-for list="{{ r.cells }}" as="c"><input value="{{ c.value }}" onChange="{{ c.onChange }}" placeholder="{{ c.ph }}" style="flex:1;min-width:0;height:40px;padding:0 12px;border:1px solid var(--ink-300);border-radius:8px;background:#fff"></sc-for>
+                    <button onClick="{{ r.remove }}" aria-label="Remove" style="width:32px;height:32px;flex:none;border:0;border-radius:6px;background:none;cursor:pointer;color:var(--ink-500);display:grid;place-items:center" style-hover="background:var(--ink-100)"><svg width="14" height="14"><use href="#i-x"></use></svg></button>
+                  </div>
+                </sc-for>
+                <button onClick="{{ p.add }}" style="align-self:flex-start;height:32px;padding:0 12px;border-radius:8px;border:1px dashed var(--ink-300);background:none;color:var(--ink-600);font-size:13px;cursor:pointer;display:flex;gap:6px;align-items:center" style-hover="background:var(--ink-50)"><svg width="14" height="14"><use href="#i-plus"></use></svg>Add</button>
+              </div>
+            </sc-for>
+          </sc-if>
+
+          <sc-if value="{{ g.objective }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:24px 32px">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;gap:6px;align-items:center"><b style="font-size:14px;font-weight:600">Objective</b><span style="color:var(--ink-400)">*</span><span style="flex:1"></span><span style="height:22px;padding:0 6px;border-radius:4px;border:1px solid var(--ink-200);color:var(--ink-600);font-size:11px;font-weight:700;letter-spacing:.04em;display:inline-flex;align-items:center">REQUIRED</span></div>
+                <span style="font-size:13px;color:var(--ink-600)">The four objectives imply different plans and cannot all be optimised at once.</span>
+                <select value="{{ obj }}" onChange="{{ setObj }}" style="height:40px;padding:0 10px;border:1px solid var(--ink-300);border-radius:8px;background:#fff"><option value="">Choose one</option><sc-for list="{{ objOpts }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <b style="font-size:14px;font-weight:600">Secondary objectives</b>
+                <span style="font-size:13px;color:var(--ink-600)">Explicitly subordinate. Cannot repeat the primary.</span>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <sc-for list="{{ secOpts }}" as="o"><button onClick="{{ o.toggle }}" style="height:32px;padding:0 12px;border-radius:999px;border:1px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};font-size:13px;font-weight:600;cursor:pointer">{{ o.label }}</button></sc-for>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ g.sens }}">
+            <sc-for list="{{ sens }}" as="s" hint-placeholder-count="2">
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px 32px;align-items:start">
+                <label style="display:flex;gap:10px;align-items:center;cursor:pointer"><input type="checkbox" checked="{{ s.on }}" onChange="{{ s.toggle }}" style="width:18px;height:18px;accent-color:var(--teal-700);margin:0"><b style="font-size:14px;font-weight:600">{{ s.label }}</b></label>
+                <sc-if value="{{ s.on }}">
+                  <div style="display:flex;flex-direction:column;gap:6px;border-left:2px solid var(--ink-200);padding-left:16px">
+                    <b style="font-size:14px;font-weight:600">{{ s.cLabel }}</b><span style="font-size:13px;color:var(--ink-600)">{{ s.cHelp }}</span>
+                    <select value="{{ s.consent }}" onChange="{{ s.setConsent }}" style="height:40px;padding:0 10px;border:1px solid var(--ink-300);border-radius:8px;background:#fff"><option>unknown</option><option>obtained</option><option>pending</option><option>not required</option></select>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ tFiles }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:20px;align-items:start">
+      <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1);padding:20px;display:flex;flex-direction:column;gap:12px">
+        <div><b style="font-size:16px">About this movie</b><p style="margin:4px 0 0;font-size:13px;color:var(--ink-600)">Story, audience, what makes it different. Copilot uses this as context.</p></div>
+        <textarea value="{{ ctx }}" onChange="{{ setCtx }}" placeholder="e.g. A rooted action drama set around a temple festival. The first single releases six weeks out." style="width:100%;min-height:160px;padding:10px 12px;border:1px solid var(--ink-300);border-radius:8px;resize:vertical;font:inherit"></textarea>
+        <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end"><span style="font-size:12px;color:var(--ink-500)">{{ ctxNote }}</span><button onClick="{{ saveCtx }}" style="height:36px;padding:0 14px;border-radius:8px;border:0;background:var(--teal-700);color:#fff;font-weight:600;cursor:pointer" style-hover="background:var(--teal-800)">Save context</button></div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--ink-100);border-radius:12px;box-shadow:var(--e-1);overflow:hidden">
+        <div style="padding:16px 20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--ink-100)"><div style="flex:1;min-width:180px"><b style="font-size:16px;display:block">Context files</b><span style="font-size:13px;color:var(--ink-600)">Scripts, decks, notes, posters</span></div><button onClick="{{ pickFiles }}" style="height:36px;padding:0 14px;border-radius:8px;border:0;background:var(--teal-700);color:#fff;font-size:13px;font-weight:600;cursor:pointer;display:flex;gap:8px;align-items:center" style-hover="background:var(--teal-800)"><svg width="16" height="16"><use href="#i-upload"></use></svg>Upload</button></div>
+        <sc-for list="{{ upl }}" as="f" hint-placeholder-count="0">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid var(--ink-100);background:var(--teal-50)"><span style="flex:1;min-width:0;font-size:13px"><b style="font-weight:600">{{ f.name }}</b> · {{ f.note }}</span><sc-if value="{{ f.busy }}"><span style="width:16px;height:16px;border-radius:50%;border:2px solid var(--teal-100);border-top-color:var(--teal-600);animation:spin .8s linear infinite;flex:none"></span></sc-if></div>
+        </sc-for>
+        <sc-if value="{{ noFiles }}"><div style="padding:32px 20px;text-align:center;color:var(--ink-500);font-size:13px">No files yet.</div></sc-if>
+        <sc-for list="{{ files }}" as="f" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid var(--ink-100)">
+            <span style="width:32px;height:32px;border-radius:8px;background:var(--ink-50);display:grid;place-items:center;color:var(--ink-600);flex:none"><svg width="16" height="16"><use href="{{ f.icon }}"></use></svg></span>
+            <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.name }}</div><div style="font-size:12px;color:var(--ink-600)">{{ f.meta }}</div></div>
+            <button onClick="{{ f.del }}" aria-label="Delete" style="width:32px;height:32px;border:0;border-radius:6px;background:none;cursor:pointer;color:var(--ink-500);display:grid;place-items:center;flex:none" style-hover="background:var(--danger-100);color:var(--danger-600)"><svg width="16" height="16"><use href="#i-trash"></use></svg></button>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { ctx: null, ctxFor: null, upl: [], drag: false };
+  fileRef = React.createRef();
+  componentDidMount() { this.u = IQ.sub(() => this.forceUpdate()); }
+  componentWillUnmount() { this.u && this.u(); (this.timers || []).forEach(clearTimeout); }
+  later(ms, fn) { (this.timers = this.timers || []).push(setTimeout(fn, ms)); }
+  formOf(f) {
+    if (f.form) return f.form;
+    const bv = k => (f.brief.find(b => b.key === k) || {}).value || '';
+    return { nativeTitle: '', alts: [], hasDubs: null, dubs: (bv('dubs') ? bv('dubs').split(',').map(x => x.trim()) : []), tone: (bv('tone') ? bv('tone').split(',').map(x => x.trim()) : []), title: f.title, banner: f.studio && f.studio !== 'Studio not set' ? f.studio : '', language: f.language, genre: bv('genre'), synopsis: bv('synopsis'),
+      cast: bv('cast') ? bv('cast').split(',').map(n => ({ name: n.trim(), role: '', billing: '' })) : [], crew: [bv('director') && { name: bv('director'), role: 'director' }, bv('music') && { name: bv('music'), role: 'music' }].filter(Boolean),
+      origin: '', production: '', markets: bv('markets'), release: f.release || '', releaseSource: '', cert: bv('cert'), objective: '', secondary: [], budgetAmount: bv('budget'), budgetCurrency: 'INR', budgetBasis: '', screens: '', promoDays: '', realPerson: false, realConsent: 'unknown', artform: false, artConsent: 'unknown', src: {} };
+  }
+  sync(f, src) {
+    const m = f.form, set = (k, v) => { const b = f.brief.find(q => q.key === k); if (!b) return; b.value = v; b.status = v ? 'Confirmed' : 'Missing'; b.source = v ? (src || 'Entered') : ''; b.date = IQ.TODAY; };
+    set('title', m.title); set('language', m.language); set('genre', m.genre); set('synopsis', m.synopsis); set('markets', m.markets); set('cert', m.cert); set('budget', m.budgetAmount);
+    set('release', m.release ? IQ.d(m.release) : ''); set('cast', m.cast.map(c => c.name).filter(Boolean).join(', '));
+    set('dubs', m.hasDubs ? (m.dubs || []).join(', ') : ''); set('tone', (m.tone || []).join(', ')); set('director', (m.crew.find(c => /direct/i.test(c.role)) || {}).name || ''); set('music', (m.crew.find(c => /music/i.test(c.role)) || {}).name || '');
+    if (m.title) f.title = m.title; if (m.language) f.language = m.language; if (m.release) f.release = m.release; f.studio = m.banner || 'Studio not set';
+  }
+  edit(fn) { const id = IQ.film().id; IQ.set(x => { const f = x.films.find(q => q.id === id); f.form = JSON.parse(JSON.stringify(this.formOf(f))); fn(f.form); this.sync(f); }); }
+  ingest(list) {
+    const fid = IQ.film().id;
+    list.forEach(file => { const id = IQ.uid('up'), name = file.name, size = file.size ? (file.size > 1e6 ? (file.size / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(file.size / 1e3)) + ' KB') : '3.9 MB';
+      const isImg = /\.(png|jpe?g|webp|gif)$/i.test(name);
+      this.setState(s => ({ upl: s.upl.concat([{ id, name, note: 'Uploading…', busy: true }]) }));
+      this.later(600, () => this.setState(s => ({ upl: s.upl.map(u => u.id === id ? Object.assign({}, u, { note: isImg ? 'Saving image…' : 'Reading pages and filling details…' }) : u) })));
+      this.later(1800, () => { let n = 0;
+        IQ.set(x => { const f = x.films.find(q => q.id === fid); if (!f) return; f.form = JSON.parse(JSON.stringify(this.formOf(f))); const m = f.form; m.src = m.src || {};
+          if (!isImg) { const vals = { nativeTitle: f.language === 'Telugu' ? 'రుద్ర కాలం' : '', alts: [f.title.replace(/\s+/g, ''), '#' + f.title.replace(/\s+/g, '')], hasDubs: true, dubs: ['Tamil', 'Hindi'], tone: ['Mass', 'Family'], banner: 'Sitara Lanes Pictures', genre: 'Action', synopsis: 'When a retired stunt double returns to his village, an old rivalry resurfaces on the eve of the temple festival.', origin: 'Andhra Pradesh', production: 'Hyderabad', markets: 'Andhra Pradesh, Telangana, Karnataka, Overseas', releaseSource: 'Producer press kit', cert: 'U/A', screens: 'AP=620, TS=480, KA=210', promoDays: '45',
+              cast: [{ name: 'Arjun Varma', role: 'Lead', billing: '1' }, { name: 'Meera Iyer', role: 'Lead', billing: '2' }, { name: 'Ravi Kiran', role: 'Antagonist', billing: '3' }], crew: [{ name: 'K. Raghavendra', role: 'director' }, { name: 'S. Thaman', role: 'music' }] };
+            Object.keys(vals).forEach(k => { const empty = Array.isArray(m[k]) ? !m[k].length : (m[k] == null || m[k] === ''); if (empty) { m[k] = vals[k]; m.src[k] = name; n++; } }); this.sync(f, name); }
+          x.files.unshift({ id: IQ.uid('fl'), filmId: fid, name, size, lane: isImg ? 'Brand assets' : 'Brief material', date: IQ.TODAY, by: 'Anika Rao', status: isImg ? 'Stored' : 'Extracted' });
+          f.activity.unshift({ t: IQ.TODAY + 'T' + new Date().toTimeString().slice(0, 5), text: name + ' uploaded' + (n ? ', ' + n + ' details filled' : ''), kind: 'film' }); });
+        this.setState(s => ({ upl: s.upl.map(u => u.id === id ? Object.assign({}, u, { busy: false, done: true, note: size + ' · ' + (isImg ? 'Saved' : n ? n + ' details filled. Review them below.' : 'Read. Nothing new to fill.') }) : u) }));
+        IQ.toast(n ? name + ': ' + n + ' details filled' : name + ' uploaded'); }); });
+  }
+  renderVals() {
+    if (!window.IQ) return {};
+    const s = IQ.s, film = IQ.film(), rd = IQ.readiness(film), r = s.route, st = this.state, m = this.formOf(film), src = m.src || {};
+    const tab = r.tab === 'files' ? 'files' : 'overview';
+    const myFiles = s.files.filter(f => f.filmId === film.id);
+    const tabs = [['overview', 'Overview', ''], ['files', 'Files', myFiles.length]].map(([k, l, n]) => ({ label: l, n, go: () => IQ.go('brief', { tab: k }), bc: tab === k ? 'var(--teal-600)' : 'transparent', c: tab === k ? 'var(--teal-800)' : 'var(--ink-600)', fw: tab === k ? 600 : 500 }));
+    const F = (key, label, o) => Object.assign({ label, help: '', after: '', badge: '', req: false, span: 'auto', ph: '', isText: true, isDate: false, isArea: false, isSelect: false, isChips: false, isMulti: false, open: false, summary: '', ddBd: 'var(--ink-300)', ddC: 'var(--ink-900)', isYesNo: false, isTags: false, opts: [], chips: [], yn: [], tags: [], draft: '', value: m[key] || '', filled: !!src[key], onChange: e => { const v = e.target.value; this.edit(z => { z[key] = v; if (z.src) delete z.src[key]; }); } }, o || {}, o && o.req ? { badge: 'REQUIRED' } : {});
+    const area = { isText: false, isArea: true, span: '1 / -1' }, date = { isText: false, isDate: true }, blocks = { badge: 'BLOCKS A SECTION' };
+    const LANGS = ['Telugu', 'Hindi', 'Tamil', 'Kannada', 'Malayalam', 'Bhojpuri', 'Marathi', 'Bengali'], GENRES = ['Action', 'Drama', 'Comedy', 'Thriller', 'Romance', 'Horror', 'Family', 'Fantasy', 'Mythological', 'Sci-fi'];
+    const tgl = (key, v) => () => this.edit(z => { const L = z[key] = (z[key] || []).slice(); const i = L.indexOf(v); if (i >= 0) L.splice(i, 1); else L.push(v); if (z.src) delete z.src[key]; });
+    const chipsOf = (key, opts) => opts.map(o => { const on = (m[key] || []).includes(o); return { label: o, on, toggle: tgl(key, o), bd: on ? 'var(--teal-700)' : 'var(--ink-300)', bg: on ? 'var(--teal-700)' : '#fff', fg: on ? '#fff' : 'var(--ink-700)' }; });
+    const C = (key, label, opts, o) => { const sel = (m[key] || []).filter(v => opts.includes(v)); return F(key, label, Object.assign({ isText: false, isMulti: true, chips: chipsOf(key, opts), open: st.dd === key, toggleOpen: () => this.setState({ dd: st.dd === key ? null : key }), summary: sel.length ? sel.join(', ') : 'Choose one or more', ddC: sel.length ? 'var(--ink-900)' : 'var(--ink-500)', ddBd: st.dd === key ? 'var(--teal-600)' : 'var(--ink-300)' }, o)); };
+    const Sel = (key, label, opts, o) => F(key, label, Object.assign({ isText: false, isSelect: true, opts: m[key] && !opts.includes(m[key]) ? [m[key]].concat(opts) : opts }, o));
+    const addAlt = () => { const v = (st.altDraft || '').trim(); if (!v) return; this.setState({ altDraft: '' }); this.edit(z => { z.alts = (z.alts || []).filter(q => q.toLowerCase() !== v.toLowerCase()).concat([v]); if (z.src) delete z.src.alts; }); };
+    const alts = m.alts || [];
+    const langFields = [
+      F('title', 'Title', { req: true, help: 'There is nothing to plan for without it.' }),
+      F('nativeTitle', 'Title in native script', { help: 'Mandatory when the language is not English.', badge: 'CONDITIONAL', ph: 'e.g. రుద్ర కాలం' }),
+      F('alts', 'Alternate spellings', { req: true, span: '1 / -1', isText: false, isTags: true, tags: alts.map(a => ({ label: a, remove: () => this.edit(z => { z.alts = (z.alts || []).filter(q => q !== a); }) })), draft: st.altDraft || '', setDraft: e => this.setState({ altDraft: e.target.value }), onKey: e => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addAlt(); } else if (e.key === 'Backspace' && !st.altDraft && alts.length) this.edit(z => { z.alts = z.alts.slice(0, -1); }); }, commit: addAlt, after: (alts.length < 2 ? 'Add ' + (2 - alts.length) + ' more. ' : '') + 'Minimum 2. Misspellings, hashtag forms, transliterations. Missing ones break buzz tracking later.' }),
+      Sel('language', 'Original language', LANGS, { req: true, after: 'Drives creator language filtering and vendor queries.' }),
+      F('hasDubs', 'Has dubs', { req: true, isText: false, isYesNo: true, yn: [['Yes', true], ['No', false]].map(([l, v]) => ({ label: l, go: () => this.edit(z => { z.hasDubs = v; if (z.src) delete z.src.hasDubs; }), bg: m.hasDubs === v ? 'var(--teal-700)' : '#fff', fg: m.hasDubs === v ? '#fff' : 'var(--ink-700)' })), after: 'Turns on dub languages.' })];
+    if (m.hasDubs) langFields.push(C('dubs', 'Dub languages', LANGS.filter(l => l !== m.language), { badge: 'CONDITIONAL', after: 'Each dub is a separate audience and a separate creator list.' }));
+    langFields.push(Sel('genre', 'Genre', GENRES, { req: true, after: 'Primary genre.' }), C('tone', 'Tone', ['Mass', 'Family', 'Youth', 'Urban', 'Rural', 'Festive'], { req: true, after: 'Feeds creator archetype matching.' }));
+    const groups = [
+      { fields: langFields.concat([F('banner', 'Banner', { help: 'Production house.' }), F('synopsis', 'Synopsis', Object.assign({ req: true, help: 'Without it there is nothing to say about the film.' }, area))]), people: true },
+      { fields: [F('origin', 'Origin market', { req: true, help: 'Where the story is set or from.' }), F('production', 'Production base', Object.assign({ help: 'Where it was made. Distinct from origin and from consumption.' }, blocks)), F('markets', 'Consumption markets', { req: true, help: 'Where it will be sold.', ph: 'comma separated' }), F('release', 'Release date', Object.assign({ req: true, help: 'Every recommendation is relative to it.' }, date)), F('releaseSource', 'Release date source', { help: 'Public aggregators disagree on these. Record which one, or who confirmed it.' }), F('cert', 'Certification', { req: true, help: 'Expected CBFC certificate.', ph: 'U, U/A or A' })], objective: true },
+      { boxed: true, title: 'Budget envelope', bd: '1px solid var(--ink-100)', pad: '20px', fields: [F('budgetAmount', 'Amount', { req: true, ph: 'e.g. 45,00,000' }), F('budgetCurrency', 'Currency', { help: 'ISO 4217, e.g. INR.' }), F('budgetBasis', 'Basis', { help: 'What it covers: P&A only, all-in, committed vs indicative.' })] },
+      { fields: [F('screens', 'Screen count by territory', Object.assign({ ph: 'key=value, key=value' }, blocks)), F('promoDays', 'Promotion window days', Object.assign({ help: 'Days of active promotion before release.' }, blocks))], sens: true }
+    ].map(g => Object.assign({ boxed: false, title: '', bd: '0', pad: '0', people: false, objective: false, sens: false }, g));
+    const rowsOf = (key, cols) => m[key].map((row, i) => ({ cells: cols.map(([c, ph]) => ({ value: row[c] || '', ph, onChange: e => { const v = e.target.value; this.edit(z => { z[key][i][c] = v; }); } })), remove: () => this.edit(z => { z[key].splice(i, 1); }) }));
+    const people = [
+      { label: 'Cast', req: true, help: 'Casting is most of what a campaign has to work with.', filled: !!src.cast, rows: rowsOf('cast', [['name', 'Name'], ['role', 'Role'], ['billing', 'Billing']]), add: () => this.edit(z => { z.cast.push({ name: '', role: '', billing: '' }); }) },
+      { label: 'Crew', req: false, help: '', filled: !!src.crew, rows: rowsOf('crew', [['name', 'Name'], ['role', 'Role']]), add: () => this.edit(z => { z.crew.push({ name: '', role: '' }); }) }];
+    const objs = ['Awareness', 'Engagement', 'Ticket sales', 'Reach'];
+    const sec = m.secondary || [];
+    const sens = [['realPerson', 'realConsent', 'Depicts real person', 'Real person consent', 'Required when the film depicts a real person.'], ['artform', 'artConsent', 'Depicts living art form', 'Living art form consent', 'Required when the film depicts a living art form or its practitioners.']].map(([k, ck, label, cLabel, cHelp]) => ({ label, cLabel, cHelp, on: !!m[k], consent: m[ck] || 'unknown', toggle: () => this.edit(z => { z[k] = !z[k]; }), setConsent: e => { const v = e.target.value; this.edit(z => { z[ck] = v; }); } }));
+    const ctxVal = st.ctxFor === film.id && st.ctx != null ? st.ctx : (film.context || '');
+    return {
+      title: film.title, sub: film.language + ' · releases ' + IQ.d(film.release), back: () => IQ.go('dashboard'), tabs, tOver: tab === 'overview', tFiles: tab === 'files',
+      rd: { ok: rd.ok, req: rd.req, pct: rd.pct, color: rd.pct === 100 ? 'var(--success-600)' : 'var(--warning-600)' },
+      fileRef: this.fileRef, pickFiles: () => this.fileRef.current && this.fileRef.current.click(), onFiles: e => { this.ingest(Array.from(e.target.files || [])); e.target.value = ''; },
+      dragOver: e => { e.preventDefault(); if (!st.drag) this.setState({ drag: true }); }, dragLeave: () => this.setState({ drag: false }), onDrop: e => { e.preventDefault(); this.setState({ drag: false }); this.ingest(Array.from(e.dataTransfer.files || [])); },
+      dzBorder: st.drag ? 'var(--teal-600)' : 'var(--ink-200)', dzBg: st.drag ? 'var(--teal-50)' : '#fff',
+      useSample: e => { e.stopPropagation(); this.ingest([{ name: film.title.toLowerCase().replace(/\s+/g, '-') + '-press-kit.pdf', size: 3900000 }]); },
+      upl: st.upl.map(u => ({ name: u.name, note: u.note, busy: !!u.busy, done: !!u.done })),
+      groups, people, sens, objOpts: objs, obj: m.objective || '', setObj: e => { const v = e.target.value; this.edit(z => { z.objective = v; z.secondary = (z.secondary || []).filter(q => q !== v); }); },
+      secOpts: objs.filter(o => o !== m.objective).map(o => { const on = sec.includes(o); return { label: o, bd: on ? 'var(--teal-600)' : 'var(--ink-300)', bg: on ? 'var(--teal-50)' : '#fff', fg: on ? 'var(--teal-800)' : 'var(--ink-700)', toggle: () => this.edit(z => { z.secondary = on ? (z.secondary || []).filter(q => q !== o) : (z.secondary || []).concat([o]); }) }; }),
+      ctx: ctxVal, setCtx: e => this.setState({ ctx: e.target.value, ctxFor: film.id }), ctxNote: film.context ? 'Saved' : 'Not saved yet',
+      saveCtx: () => { IQ.set(x => { x.films.find(q => q.id === film.id).context = ctxVal.trim(); }); this.setState({ ctx: null, ctxFor: null }); IQ.toast('Context saved'); },
+      noFiles: !myFiles.length,
+      files: myFiles.map(f => ({ name: f.name, meta: f.size + ' · ' + IQ.ds(f.date) + ' · ' + f.by, icon: /\.(png|jpe?g|webp|gif)$/i.test(f.name) ? '#i-image' : '#i-file', del: () => { IQ.set(x => { x.files = x.files.filter(q => q.id !== f.id); }); IQ.toast('Deleted ' + f.name); } }))
+    };
+  }
+}
+</script>
+</body>
+</html>
