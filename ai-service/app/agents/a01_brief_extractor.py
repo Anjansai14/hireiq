@@ -16,10 +16,27 @@ import base64
 import io
 import re
 
+import httpx
+
 from .. import governance
 from ..llm import complete_json
+from ..util import make_envelope, now_iso
 
 AGENT = {"id": "A1", "name": "Brief Extractor", "kind": "llm+rules"}
+
+
+def _fetch_url_text(url: str) -> list[str]:
+    """Fetch external web page text if a URL is provided."""
+    try:
+        resp = httpx.get(url, timeout=15.0, follow_redirects=True)
+        if resp.status_code == 200:
+            # Strip simple HTML tags and extra spaces
+            text = re.sub(r"<[^>]+>", " ", resp.text)
+            text = re.sub(r"\s+", " ", text).strip()
+            return [text] if text else []
+    except Exception:
+        pass
+    return []
 
 
 def _pdf_pages(b64: str) -> list[str]:
@@ -83,15 +100,35 @@ def _fallback(pages: list[str], lookups: dict) -> dict:
 def run(payload: dict) -> dict:
     filename = payload.get("filename") or "upload"
     lookups = payload.get("lookups", {})
+    data_sources = [filename]
+
     if payload.get("file_b64"):
         try:
             pages = _pdf_pages(payload["file_b64"])
         except Exception:
             pages = [base64.b64decode(payload["file_b64"]).decode("utf-8", "ignore")]
+    elif payload.get("url"):
+        pages = _fetch_url_text(payload["url"])
+        data_sources.append(payload["url"])
     else:
         pages = [p for p in re.split(r"\f|\n-{3,}\s*page\s*\d+\s*-{3,}\n", payload.get("text", ""), flags=re.I) if p.strip()]
+
     if not pages:
-        return {"values": {}, "sources": {}, "claims": [], "flags": [], "note": "No readable text found"}
+        return make_envelope(
+            agent_id="A1",
+            name="Brief Extractor",
+            status="Failed",
+            execution_mode="deterministic_fallback",
+            data_sources=data_sources,
+            warnings=["No readable text or pages found in the brief upload"],
+            values={},
+            sources={},
+            claims=[],
+            flags=[],
+            pages=0,
+            llm=False,
+            note="No readable text found",
+        )
 
     fields = [f["code"] for f in payload.get("fields", [])] or [
         "title", "link", "domain", "level", "eligibility", "duration", "mode", "locations",
@@ -126,5 +163,22 @@ def run(payload: dict) -> dict:
         flags.append({"type": "Eligibility", "status": "Refused", "rule": "RR-H02",
                       "note": "Eligibility mentions a protected attribute. Escalated to the fairness reviewer; field stays unconfirmed until changed."})
 
-    return {"values": values, "sources": sources, "claims": claims, "flags": flags,
-            "pages": len(pages), "llm": used_llm}
+    status = "Blocked" if any(f["status"] == "Refused" for f in flags) else "Success"
+    exec_mode = "llm" if used_llm else "deterministic_fallback"
+
+    return make_envelope(
+        agent_id="A1",
+        name="Brief Extractor",
+        status=status,
+        execution_mode=exec_mode,
+        data_sources=data_sources,
+        evidence=[{"claim": c["text"], "src": c["src"]} for c in claims],
+        validation={"flags": flags, "claims_awaiting_evidence": len(claims)},
+        values=values,
+        sources=sources,
+        claims=claims,
+        flags=flags,
+        pages=len(pages),
+        llm=used_llm,
+    )
+

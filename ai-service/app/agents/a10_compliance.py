@@ -6,7 +6,7 @@ so every verdict is reproducible and auditable.
 """
 from __future__ import annotations
 
-from ..util import inr
+from ..util import inr, make_envelope
 
 AGENT = {"id": "A10", "name": "Compliance & Fairness Gate", "kind": "rules"}
 
@@ -77,6 +77,24 @@ def run(payload: dict) -> dict:
     ]
     out = [{"label": l, "status": s, "note": n, "rule": r} for l, s, n, r in checks]
     fails = [x for x in out if x["status"] == "Fail"]
-    return {"checks": out, "pass": sum(1 for x in out if x["status"] == "Pass"),
-            "warnings": sum(1 for x in out if x["status"] == "Warning"), "fails": len(fails),
-            "can_create": not fails, "summary": f"{len(out) - len(fails)} of {len(out)} checks pass" + (f" · {len(fails)} blocking" if fails else "")}
+    warnings = [x for x in out if x["status"] == "Warning"]
+    can_create = not fails
+    status = "Success" if can_create else "Blocked"
+    summary = f"{len(out) - len(fails)} of {len(out)} checks pass" + (f" · {len(fails)} blocking" if fails else "")
+
+    return make_envelope(
+        agent_id="A10",
+        name="Compliance & Fairness Gate",
+        status=status,
+        execution_mode="rules",
+        data_sources=["campaigns", "courses", "prediction", "campaign_sources", "content_items", "governance_flags", "governance_rules"],
+        validation={"total_checks": len(out), "passed": len(out) - len(fails) - len(warnings), "warnings": len(warnings), "fails": len(fails), "warning_notes": [w["note"] for w in warnings]},
+        warnings=len(warnings),
+        checks=out,
+        fails=len(fails),
+        can_create=can_create,
+        summary=summary,
+        **{"pass": sum(1 for x in out if x["status"] == "Pass")},
+    )
+
+

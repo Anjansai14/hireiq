@@ -13,6 +13,7 @@ from __future__ import annotations
 import difflib
 
 from .. import governance
+from ..util import make_envelope
 
 AGENT = {"id": "A4", "name": "Objective & Cohort", "kind": "rules"}
 
@@ -34,12 +35,22 @@ def normalise_districts(raw: list[str], standard: list[str]) -> tuple[list[str],
     return list(dict.fromkeys(out)), changes
 
 
-def estimate_size(markets, qual, age_band, exp_band, lk: dict) -> dict:
+def estimate_size(markets, qual, age_band, exp_band, lk: dict) -> tuple[dict, dict]:
     pool = {d["code"]: (d.get("meta") or {}).get("grad_pool", 0) for d in lk.get("district", [])}
     share = lambda cat, code: next(((x.get("meta") or {}).get("share", 1.0) for x in lk.get(cat, []) if x["code"] == code), 1.0)
     base = sum(pool.get(m, 0) for m in markets)
-    size = base * share("qualification", qual) * share("age_band", age_band) * share("exp_band", exp_band)
-    return {"size": int(round(size, -1)), "stamp": "Inferred", "basis": "District graduate pool × qualification × band shares"}
+    q_share = share("qualification", qual)
+    a_share = share("age_band", age_band)
+    e_share = share("exp_band", exp_band)
+    size = base * q_share * a_share * e_share
+    details = {
+        "base_graduate_pool": base,
+        "qualification_share": q_share,
+        "age_band_share": a_share,
+        "experience_band_share": e_share,
+        "raw_size": size,
+    }
+    return {"size": int(round(size, -1)), "stamp": "Inferred", "basis": "District graduate pool × qualification × band shares"}, details
 
 
 def run(payload: dict) -> dict:
@@ -54,12 +65,12 @@ def run(payload: dict) -> dict:
     course_locs = (course.get("form") or {}).get("locations") or []
     outside = [m for m in markets if course_locs and m not in course_locs]
 
-    size = estimate_size(markets, c.get("qual"), c.get("age_band"), c.get("exp_band"), lk)
+    size, details = estimate_size(markets, c.get("qual"), c.get("age_band"), c.get("exp_band"), lk)
     min_size = settings.get("min_cohort_size", 500)
 
     proposals = []
     for d in (markets or course_locs)[:3]:
-        s = estimate_size([d], c.get("qual"), c.get("age_band"), c.get("exp_band"), lk)
+        s, _ = estimate_size([d], c.get("qual"), c.get("age_band"), c.get("exp_band"), lk)
         proposals.append({"label": f"{c.get('qual') or 'Graduates'}, {d}", "markets": [d], "size": s["size"],
                           "ok": s["size"] >= min_size})
     if len(markets) > 1:
@@ -77,8 +88,31 @@ def run(payload: dict) -> dict:
     if outside:
         notes.append(f"{', '.join(outside)} has no delivery centre for this course; campaign will be flagged")
 
-    return {
-        "markets": markets, "district_changes": changes, "cohort_size": size, "min_size": min_size,
-        "size_ok": size["size"] >= min_size, "proposals": proposals, "questions": questions,
-        "notes": notes, "outside_delivery": outside, "refusal": refusal,
-    }
+    status = "Blocked" if refusal else "Success"
+    warnings = []
+    if outside:
+        warnings.append(f"Districts outside delivery centre: {', '.join(outside)}")
+    if size["size"] < min_size:
+        warnings.append(f"Cohort size ({size['size']}) is below minimum required size ({min_size})")
+
+    return make_envelope(
+        agent_id="A4",
+        name="Objective & Cohort",
+        status=status,
+        execution_mode="rules",
+        data_sources=["lookup_values.district", "lookup_values.qualification", "lookup_values.age_band", "lookup_values.exp_band", "lookup_values.cohort_question"],
+        calculation_details=details,
+        warnings=warnings,
+        validation={"refusal": refusal, "size_ok": size["size"] >= min_size, "min_cohort_size": min_size},
+        markets=markets,
+        district_changes=changes,
+        cohort_size=size,
+        min_size=min_size,
+        size_ok=size["size"] >= min_size,
+        proposals=proposals,
+        questions=questions,
+        notes=notes,
+        outside_delivery=outside,
+        refusal=refusal,
+    )
+

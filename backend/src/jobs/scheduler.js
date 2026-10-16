@@ -14,7 +14,18 @@ const { addDays } = require('../utils/helpers');
 
 const TZ = { timezone: 'Asia/Kolkata' };
 const safe = (name, fn) => async () => {
-  try { console.log(`[job] ${name}`); await fn(); } catch (e) { console.error(`[job] ${name} failed:`, e.message); }
+  try {
+    console.log(`[job] ${name}`);
+    await fn();
+  } catch (e) {
+    console.error(`[job] ${name} failed:`, e.message);
+    try {
+      await db.query(
+        'INSERT INTO activity_log (course_id, campaign_id, ts, kind, text) VALUES (?, ?, NOW(), ?, ?)',
+        [null, null, 'alert', `Job ${name} failed: ${e.message.slice(0, 450)}`]
+      );
+    } catch {}
+  }
 };
 
 function start() {
@@ -31,11 +42,25 @@ function start() {
     const { refresh } = require('../routes/sources');
     const today = await settings.today();
     const due = await db.query("SELECT id FROM sources WHERE next_refresh = 'Overdue' OR next_refresh <= ? OR status IN ('Failed','Partial')", [today]);
+    let succeeded = 0;
+    let failed = 0;
     for (const { id } of due) {
-      await refresh(id);
-      const days = (await settings.load()).settings.source_refresh_days || 30;
-      await db.update('sources', { next_refresh: addDays(today, days) }, 'id = ?', [id]);
+      try {
+        await refresh(id);
+        const days = (await settings.load()).settings.source_refresh_days || 30;
+        await db.update('sources', { next_refresh: addDays(today, days) }, 'id = ?', [id]);
+        succeeded++;
+      } catch (err) {
+        failed++;
+        console.error(`[job] creator-bank-refresh failed for source ${id}:`, err.message);
+      }
     }
+    try {
+      await db.query(
+        'INSERT INTO activity_log (course_id, campaign_id, ts, kind, text) VALUES (?, ?, NOW(), ?, ?)',
+        [null, null, 'fetch', `Monthly Creator Bank refresh completed: ${succeeded} succeeded, ${failed} failed across ${due.length} sources`]
+      );
+    } catch {}
   }), TZ);
 
   cron.schedule('0 7 * * *', safe('token-expiry', async () => {

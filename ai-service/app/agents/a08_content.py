@@ -10,8 +10,10 @@ from __future__ import annotations
 
 from .. import governance
 from ..llm import complete_json
+from ..util import make_envelope
 
 AGENT = {"id": "A8", "name": "Content Studio", "kind": "llm+checks"}
+
 
 
 def _templates(c: dict, course: dict, s: dict, narr: dict) -> list[dict]:
@@ -104,4 +106,23 @@ def run(payload: dict) -> dict:
             "tracking_tag": tag, "disclosure": paid,
             "checks": {"claims": "Fail" if claim_hit else "Pass", "disclosure": "Pass" if paid else "Not required", "link": "Pass"},
         })
-    return {"variants": out, "llm": used, "posts_in_deal": payload.get("posts", 1)}
+
+    claim_fails = sum(1 for v in out if v["checks"]["claims"] == "Fail")
+    warnings = []
+    if claim_fails:
+        warnings.append(f"{claim_fails} variant(s) contain unevidenced outcome claims awaiting evidence")
+
+    return make_envelope(
+        agent_id="A8",
+        name="Content Studio",
+        status="Success",
+        execution_mode="llm" if used else "deterministic_fallback",
+        data_sources=["course_brief", "source_profile", "narratives"],
+        calculation_details={"source_primary_language": lang, "paid_item": paid, "posts_requested": payload.get("posts", 1)},
+        warnings=warnings,
+        validation={"variants_generated": len(out), "paid_disclosure_enforced": paid, "claim_violations": claim_fails},
+        variants=out,
+        llm=used,
+        posts_in_deal=payload.get("posts", 1),
+    )
+

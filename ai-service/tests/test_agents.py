@@ -144,3 +144,101 @@ def test_copilot_refuses_and_routes():
                                                                "diagnosis": {"verdict": "Behind", "gap": "15 below", "causes": [{"label": "Adoption gap", "share": 50, "detail": "x"}]},
                                                                "moves": [{"id": "m1", "title": "Chase", "status": "Open"}]}})
     assert r["intent"] == "diagnose" and r["proposal"]["action"]["type"] == "accept_move"
+
+
+def test_explainability_envelopes_present():
+    """Verify that all agents output standard Section 6 explainability envelope metadata."""
+    # A1
+    r1 = run("a1", {"text": "Duration 16 weeks in Warangal", "lookups": {"district": ["Warangal"]}})
+    assert r1["agent_id"] == "A1" and r1["status"] and r1["timestamp"] and "calculation_details" in r1
+
+    # A4
+    r4 = run("a4", {"campaign": CAMP, "course": COURSE_DTO, "lookups": {"district": lk("district")}, "settings": {}})
+    assert r4["agent_id"] == "A4" and "calculation_details" in r4 and "execution_mode" in r4
+
+    # A5
+    r5 = run("a5", {"campaign": CAMP, "course": COURSE_DTO, "objective_narratives": ["Career outcome"]})
+    assert r5["agent_id"] == "A5" and "calculation_details" in r5
+
+    # A6
+    r6 = run("a6", {"campaign": CAMP, "channel_priors": CFG["channel_priors"]})
+    assert r6["agent_id"] == "A6" and "calculation_details" in r6
+
+    # A7
+    r7 = run("a7", {"campaign": CAMP, "sources": SOURCES, "today": TODAY, "gates": CFG["settings"]["gates"]["value"]})
+    assert r7["agent_id"] == "A7" and "calculation_details" in r7
+
+    # A9
+    shortlist = [{"source_id": "c1", "posts": 2, "fee": 75000}]
+    r9 = run("a9", {"campaign": CAMP, "shortlist": shortlist, "sources": SOURCES, "funnel": CFG["settings"]["funnel_defaults"]["value"]})
+    assert r9["agent_id"] == "A9" and "calculation_details" in r9 and "missing_data" in r9
+
+    # A10
+    ch = run("a6", {"campaign": CAMP, "channel_priors": CFG["channel_priors"]})["channels"]
+    r10 = run("a10", {"campaign": dict(CAMP, cohort_size=4000), "course": COURSE_DTO, "prediction": r9["prediction"], "shortlist": shortlist,
+                      "sources": SOURCES, "channels": ch, "content_selected": {}, "narratives": []})
+    assert r10["agent_id"] == "A10" and "validation" in r10
+
+    # A11
+    r11 = run("a11", {"comments": [{"text": "eppudu start batch?"}], "scepticism_threshold_pct": 15})
+    assert r11["agent_id"] == "A11" and "calculation_details" in r11
+
+    # A12
+    r12 = run("a12", {"campaign": {"start": "2026-09-22", "end": "2026-10-26", "pred": {"enrols": [50, 100]}}, "today": TODAY, "stats": {"enrols": 30}, "sources": [], "settings": {}})
+    assert r12["agent_id"] == "A12" and "calculation_details" in r12
+
+
+def test_a7_mathematical_weights_and_breakdown():
+    r = run("a7", {"campaign": CAMP, "sources": SOURCES, "today": TODAY, "gates": CFG["settings"]["gates"]["value"]})
+    assert r["ranked"]
+    top = r["ranked"][0]
+    sc = top["score_components"]
+    assert all(k in sc for k in ("trust", "qualified_reach", "quality", "fit", "reliability", "reach_score", "weights"))
+    
+    # Check weights sum to 1.0 (0.40, 0.15, 0.15, 0.20, 0.10)
+    w = sc["weights"]
+    assert sum(w) == 1.0
+    assert w == [0.4, 0.15, 0.15, 0.2, 0.1]
+    
+    # Recompute composite score with formula: trust^w0 * reach_score^w1 * quality^w2 * fit^w3 * (reliability + 0.1)^w4
+    expected_score = (
+        (sc["trust"] ** w[0]) *
+        (sc["reach_score"] ** w[1]) *
+        (sc["quality"] ** w[2]) *
+        (sc["fit"] ** w[3]) *
+        ((sc["reliability"] + 0.1) ** w[4])
+    )
+    assert abs(top["score"] - round(expected_score, 4)) < 0.001
+    assert r["calculation_details"]["weights"] == [0.4, 0.15, 0.15, 0.2, 0.1]
+
+
+def test_a9_bands_and_overlap_cap():
+    # 1 source: overlap discount is 0
+    sl1 = [{"source_id": "c1", "posts": 1}]
+    r1 = run("a9", {"campaign": CAMP, "shortlist": sl1, "sources": SOURCES, "funnel": CFG["settings"]["funnel_defaults"]["value"]})
+    assert r1["prediction"]["overlap"] == 0.0
+    # 8 sources: overlap discount min(0.30, 0.05 * 7) = 0.30
+    sl8 = [{"source_id": f"c{i}", "posts": 1} for i in range(1, 9)]
+    r8 = run("a9", {"campaign": CAMP, "shortlist": sl8, "sources": SOURCES, "funnel": CFG["settings"]["funnel_defaults"]["value"]})
+    assert r8["prediction"]["overlap"] == 0.30
+    assert r8["calculation_details"]["band_multipliers"] == {"low": 0.60, "high": 1.45}
+
+
+def test_a12_lag_curve_and_cause_shares_sum_100():
+    rows = [
+        {"name": "S1", "type": "Digital creator", "platform": "Instagram", "clicks": 2000, "regs": 100, "enrols": 1, "fee": 10000, "cohort_share": 10},
+        {"name": "S2", "type": "Trainer or mentor", "platform": "YouTube", "late": True, "clicks": 0, "regs": 0, "enrols": 0, "fee": 5000},
+    ]
+    r = run("a12", {
+        "campaign": {"name": "Test", "start": "2026-09-01", "end": "2026-10-01", "pred": {"enrols": [100, 200], "clicks": [10000, 20000]}},
+        "today": "2026-09-16",
+        "stats": {"enrols": 15, "clicks": 5000, "regRate": 8},
+        "sources": rows,
+        "listening": {"theme_shares": {"Placement doubt": 25}},
+        "settings": {"enrol_rate_floor_pct": 4, "scepticism_threshold_pct": 15},
+    })
+    assert r["verdict"] == "Behind"
+    assert len(r["causes"]) >= 2
+    total_shares = sum(c["share"] for c in r["causes"])
+    assert total_shares == 100, f"Expected 100 but got {total_shares}"
+

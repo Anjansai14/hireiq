@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from .. import governance
 from ..llm import complete_json
+from ..util import make_envelope
 
 AGENT = {"id": "A5", "name": "Narrative Generator", "kind": "llm+scoring"}
 
@@ -33,10 +34,23 @@ def _templates(c: dict, course: dict) -> list[list[str]]:
     ]
 
 
-def score(cls: str, risk: str, pref: list[str], q1: str, i: int) -> int:
-    s = 58 + (18 if cls in pref else 0) + (8 if q1 and q1.split(" ")[0] == cls.split(" ")[0] else 0) + ((i * 37) % 13)
-    s -= 6 if risk.startswith("Medium") else 4 if risk.startswith("High") else 0
-    return min(95, round(s))
+def score_breakdown(cls: str, risk: str, pref: list[str], q1: str, i: int) -> tuple[int, dict]:
+    base = 58
+    pref_bonus = 18 if cls in pref else 0
+    q1_bonus = 8 if q1 and q1.split(" ")[0] == cls.split(" ")[0] else 0
+    hash_factor = (i * 37) % 13
+    penalty = 6 if risk.startswith("Medium") else 4 if risk.startswith("High") else 0
+    raw = base + pref_bonus + q1_bonus + hash_factor - penalty
+    final_score = min(95, round(raw))
+    components = {
+        "base": base,
+        "objective_preference": pref_bonus,
+        "manager_alignment": q1_bonus,
+        "variance": hash_factor,
+        "risk_penalty": penalty,
+        "score": final_score,
+    }
+    return final_score, components
 
 
 def run(payload: dict) -> dict:
@@ -72,13 +86,35 @@ def run(payload: dict) -> dict:
             risk = "High: asserts a placement or salary claim (RR-H03). Held until Observed evidence is attached"
         if governance.has_protected(text):
             risk = "High: protected attribute (RR-H02)"
-        out.append({"id": f"nx{i}", "cls": p[0], "title": p[1], "who": p[2], "why": p[3], "risk": risk,
-                    "tone": p[5], "hook": p[6], "held": risk.startswith("High"),
-                    "score": score(p[0], risk, pref, answers.get("q1", ""), i), "role": None, "stamp": "Inferred"})
+        s, components = score_breakdown(p[0], risk, pref, answers.get("q1", ""), i)
+        out.append({
+            "id": f"nx{i}", "cls": p[0], "title": p[1], "who": p[2], "why": p[3], "risk": risk,
+            "tone": p[5], "hook": p[6], "held": risk.startswith("High"),
+            "score": s, "score_components": components, "role": None, "stamp": "Inferred",
+        })
     out.sort(key=lambda x: -x["score"])
     top = out[:4]
     for n in top:
         if not n["held"]:
             n["role"] = "Primary"
             break
-    return {"narratives": top, "candidates": len(out), "llm": used}
+
+    warnings = []
+    held_count = sum(1 for n in out if n["held"])
+    if held_count:
+        warnings.append(f"{held_count} narrative candidate(s) held under RR-H03 awaiting Observed evidence")
+
+    return make_envelope(
+        agent_id="A5",
+        name="Narrative Generator",
+        status="Success",
+        execution_mode="llm" if used else "deterministic_fallback",
+        data_sources=["course_brief", "course_claims", "past_comment_themes", "manager_answers"],
+        calculation_details={"candidate_pool_size": len(out), "preferred_classes": pref},
+        warnings=warnings,
+        validation={"held_candidates": held_count},
+        narratives=top,
+        candidates=len(out),
+        llm=used,
+    )
+

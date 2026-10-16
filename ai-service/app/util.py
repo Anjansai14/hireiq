@@ -1,7 +1,7 @@
 """Small shared helpers (dates, number formatting) used by several agents."""
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
@@ -70,3 +70,44 @@ def top(d: dict) -> tuple[str, float]:
         return ("", 0)
     k = max(d, key=lambda key: d[key] or 0)
     return (k, d[k])
+
+
+def now_iso() -> str:
+    """Return current ISO-8601 UTC timestamp."""
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def make_envelope(
+    agent_id: str,
+    name: str,
+    status: str,
+    execution_mode: str,
+    data_sources: list[str] | None = None,
+    evidence: list[dict] | None = None,
+    calculation_details: dict | None = None,
+    warnings: list[str] | int | None = None,
+    missing_data: list[str] | None = None,
+    validation: dict | None = None,
+    result: dict | None = None,
+    **extra,
+) -> dict:
+    """Standard explainability envelope for all agents (Section 6)."""
+    env = {
+        "agent_id": agent_id,
+        "name": name,
+        "status": status,
+        "execution_mode": execution_mode,
+        "data_sources": data_sources or [],
+        "evidence": evidence or [],
+        "calculation_details": calculation_details or {},
+        "warnings": warnings if warnings is not None else [],
+        "missing_data": missing_data or [],
+        "validation": validation or {},
+        "timestamp": now_iso(),
+    }
+    if result is not None:
+        env["result"] = result
+    env.update(extra)
+    return env
+
+

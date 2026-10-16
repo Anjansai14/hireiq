@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import math
 
-from ..util import days_between, n, top
+from ..util import days_between, make_envelope, n, top
 
 AGENT = {"id": "A7", "name": "Source Ranker", "kind": "rules"}
 
@@ -83,7 +83,23 @@ def run(payload: dict) -> dict:
         hist = s.get("history") or []
         rel = (sum(1 for h in hist if h.get("status") == "Delivered") / len(hist)) if hist else 0.7
         trust = trust_of(s, markets or list((s.get("markets") or {}).keys()), anchor_types)
-        score = (trust ** w[0]) * ((math.log10(qr + 10) / 6) ** w[1]) * (q ** w[2]) * (fit ** w[3]) * ((rel + 0.1) ** w[4])
+        reach_score = math.log10(qr + 10) / 6
+        score = (trust ** w[0]) * (reach_score ** w[1]) * (q ** w[2]) * (fit ** w[3]) * ((rel + 0.1) ** w[4])
+
+        components = {
+            "trust": round(trust, 4),
+            "trust_component": round(trust ** w[0], 4),
+            "qualified_reach": round(qr),
+            "reach_score": round(reach_score, 4),
+            "reach_component": round(reach_score ** w[1], 4),
+            "quality": round(q, 4),
+            "quality_component": round(q ** w[2], 4),
+            "fit": round(fit, 4),
+            "fit_component": round(fit ** w[3], 4),
+            "reliability": round(rel, 4),
+            "reliability_component": round((rel + 0.1) ** w[4], 4),
+            "weights": w,
+        }
 
         flags = []
         if s.get("updated_on") and days_between(s["updated_on"], today) > stale_days:
@@ -99,7 +115,7 @@ def run(payload: dict) -> dict:
             "type": s.get("type"), "tier": s.get("tier"), "followers": s.get("followers"),
             "qualified_reach": round(qr), "quality": round(q, 2), "fit": round(fit, 2), "reliability": round(rel, 2),
             "trust": round(trust, 3), "trust_pct": round(trust * 100), "fit_pct": round(fit * 100),
-            "score": score, "fee": s.get("rate") or 0, "fee_stamp": s.get("rate_src"), "flags": flags,
+            "score": score, "score_components": components, "fee": s.get("rate") or 0, "fee_stamp": s.get("rate_src"), "flags": flags,
             "why": why, "where": f"{s.get('platform')} · {', '.join(s.get('formats') or [])}",
             "what": f"{(s.get('content_types') or ['Posts'])[0]} in {(s.get('tone') or 'neutral').lower()} tone",
             "past": (f"{sum(1 for h in hist if h.get('status') == 'Delivered')} delivered of {len(hist)}" + (f" · {enrols} enrolments" if enrols else "")) if hist else "No history with this team",
@@ -127,5 +143,29 @@ def run(payload: dict) -> dict:
         plat_count[r["platform"]] = plat_count.get(r["platform"], 0) + 1
         if len(portfolio) >= payload.get("max_portfolio", 8):
             break
-    return {"ranked": ranked, "blocked": blocked, "portfolio": portfolio, "portfolio_fees": spent,
-            "stages": ["Pool", "Gates", "Trust and reach", "Quality", "Fit", "Portfolio"]}
+
+    stages = ["Pool", "Gates", "Trust and reach", "Quality", "Fit", "Portfolio"]
+    return make_envelope(
+        agent_id="A7",
+        name="Source Ranker",
+        status="Success",
+        execution_mode="rules",
+        data_sources=["sources", "source_history", "lookup_values.objective.meta.rank_weights"],
+        calculation_details={
+            "stages": stages,
+            "weights": w,
+            "total_candidates_pool": len(sources),
+            "eligible_candidates": len(ranked),
+            "blocked_candidates": len(blocked),
+            "portfolio_sources": len(portfolio),
+            "portfolio_budget": budget,
+            "portfolio_allocated": spent,
+        },
+        validation={"gates_enforced": ["Reliability gate", "RR-H06", "1,000-follower rule", "Verification", "Activity gate"], "blocked_count": len(blocked)},
+        ranked=ranked,
+        blocked=blocked,
+        portfolio=portfolio,
+        portfolio_fees=spent,
+        stages=stages,
+    )
+

@@ -11,6 +11,7 @@ from __future__ import annotations
 import re
 
 from ..llm import complete_json
+from ..util import make_envelope
 
 AGENT = {"id": "A6", "name": "Channel Planner", "kind": "rules+llm-reasons"}
 
@@ -76,4 +77,19 @@ def run(payload: dict) -> dict:
     if llm and isinstance(llm.get("reasons"), dict):
         for r in rows[1:]:
             r["reason"] = llm["reasons"].get(r["name"], r["reason"])
-    return {"channels": rows, "cohort_behaviour": "ITI/diploma" if iti else "graduate", "llm": bool(llm)}
+
+    exec_mode = "rules+llm-reasons" if bool(llm) else "rules"
+
+    return make_envelope(
+        agent_id="A6",
+        name="Channel Planner",
+        status="Success",
+        execution_mode=exec_mode,
+        data_sources=["channel_priors"],
+        calculation_details={"weights": weights, "iti_behaviour": iti, "total_allocated_share": sum(r["share"] for r in rows)},
+        validation={"sum_100": sum(r["share"] for r in rows) == 100, "anchor_locked": rows[0]["locked"]},
+        channels=rows,
+        cohort_behaviour="ITI/diploma" if iti else "graduate",
+        llm=bool(llm),
+    )
+

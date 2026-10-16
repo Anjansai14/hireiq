@@ -5,3 +5,26 @@ __pycache__/
 .pytest_cache/
 backend/uploads/*
 !backend/uploads/.gitkeep
+# Node.js
+node_modules/
+dist/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Python virtual environments
+.venv/
+venv/
+ai-service/.venv/
+ai-service/venv/
+
+# Python generated files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Uploaded files: keep only the placeholder
+backend/uploads/*
+!backend/uploads/.gitkeep
