@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useHQ } from '../../hooks/useHQ';
 import { Icon } from '../../components/icons/Icons';
+import { api } from '../../lib/api';
 
 export default function NewCourseModal({ onClose }) {
   const { HQ } = useHQ();
@@ -11,75 +12,80 @@ export default function NewCourseModal({ onClose }) {
   const [titleErr, setTitleErr] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const t = title.trim();
     if (!t) {
       setTitleErr('Give the course a name.');
       return;
     }
-    if (HQ.s.films.some(f => f.title.toLowerCase() === t.toLowerCase())) {
-      setTitleErr('This provider already has a course with this name.');
-      return;
-    }
+    if (busy) return;
 
     setBusy(true);
-    setTimeout(() => {
-      const id = HQ.uid('f');
+    setTitleErr('');
+
+    try {
       const cleanLink = link.trim().replace(/^https?:\/\//, '');
-      const B = (key, label, tier, value) => ({
-        key,
-        label,
-        tier,
-        value,
-        source: value ? 'Entered' : '',
-        status: value ? 'Confirmed' : 'Missing',
-        date: HQ.TODAY
+      const created = await api.post('/courses', {
+        title: t,
+        link: cleanLink,
+        language: lang,
+        batch_start: release || undefined,
       });
 
-      HQ.set(x => {
-        x.films.push({
-          id,
-          title: t,
-          batch: 'Batch 1',
-          language: lang,
-          release: release || '2027-02-01',
-          provider: 'Nexa Skills Foundation',
+      HQ.set((x) => {
+        x.films = (x.films || []).filter((f) => f.id !== created.id);
+        const newFilm = {
+          id: created.id,
+          title: created.title,
+          batch: created.batch || 'Batch 1',
+          language: created.language || lang,
+          release: created.batch_start || release || '2027-02-01',
+          provider: created.provider || 'Nexa Skills Foundation',
+          form: created.form || {},
           brief: {
-            courseName: t,
-            courseLink: cleanLink,
-            domain: '',
-            level: 'Beginner',
-            eligibility: '',
-            stipend: '',
-            fee: '',
-            mode: '',
-            duration: '',
+            courseName: created.form?.title || created.title,
+            courseLink: created.form?.link || cleanLink,
+            domain: created.form?.domain || '',
+            level: created.form?.level || 'Beginner',
+            eligibility: created.form?.eligibility || '',
+            stipend: created.form?.stipend || '',
+            fee: created.form?.fee || '',
+            mode: created.form?.mode || '',
+            duration: created.form?.duration || '',
             targetAudience: '',
-            intakeTarget: '100',
-            costCeiling: '4000',
+            intakeTarget: String(created.target || '100'),
+            costCeiling: String(created.ceiling || '4000'),
             budget: '500000',
-            src: {}
+            src: created.form_src || {}
           },
-          flags: [
+          flags: created.flags || [
             { type: 'Outcome claims', status: 'Not checked', note: '' },
             { type: 'Institution endorsement', status: 'Not checked', note: '' },
             { type: 'Paid promotion', status: 'Not checked', note: '' }
           ],
-          reads: [
+          reads: created.reads || [
             { key: 'public', title: 'Cohort demand and aspirations', status: 'Waiting', date: '', items: [] },
             { key: 'audience', title: 'Competing programmes and employers', status: 'Waiting', date: '', items: [] },
             { key: 'risk', title: 'What could go wrong', status: 'Waiting', date: '', items: [] }
           ],
-          claims: []
-        });
-        x.filmId = id;
+          claims: created.claims || [],
+          files: created.files || [],
+          readiness: created.readiness || { req: 9, ok: 1, pct: 11, missing: [] }
+        };
+        x.films.push(newFilm);
+        x.filmId = created.id;
       });
 
       if (onClose) onClose();
       HQ.go('brief', { tab: 'overview' });
-      HQ.toast(`${t} created. Read the course link or upload a brochure to fill the brief.`);
-    }, 600);
+      HQ.toast(`${created.title} created.`);
+    } catch (err) {
+      setBusy(false);
+      const msg = err.body?.error || err.message || 'Failed to create course';
+      setTitleErr(msg);
+      HQ.toast(msg, 'error');
+    }
   };
 
   return (
@@ -129,7 +135,7 @@ export default function NewCourseModal({ onClose }) {
           </button>
         </div>
 
-        <div style={{ display: 'flex', flexDirectio: 'column', gap: '6px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <label style={{ fontSize: '13px', fontWeight: 600 }}>Course name</label>
           <input
             autoFocus

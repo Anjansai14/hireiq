@@ -1,33 +1,204 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useHQ } from '../../hooks/useHQ';
 import { Icon } from '../../components/icons/Icons';
+import { api } from '../../lib/api';
+
+const mapFromBackend = (c) => {
+  const f = c?.form || {};
+  const b = c?.brief || {};
+  return {
+    ...b,
+    ...f,
+    courseName: f.title || c?.title || b.courseName || '',
+    courseLink: f.link || b.courseLink || '',
+    title: f.title || c?.title || '',
+    link: f.link || '',
+    domain: f.domain || b.domain || 'AI/ML',
+    level: f.level || b.level || 'Intermediate',
+    eligibility: f.eligibility || b.eligibility || '',
+    stipend: f.stipend || b.stipend || '',
+    fee: f.fee || b.fee || '',
+    mode: f.mode || b.mode || '',
+    duration: f.duration || b.duration || '',
+  };
+};
 
 export default function CourseBrief() {
   const { state, HQ, currentCourse, go, set, toast } = useHQ();
   const film = currentCourse;
-  const rd = HQ.readiness(film);
+  const rd = film?.readiness || HQ.readiness(film);
   const r = state.route;
   const tab = r.tab === 'files' ? 'files' : 'overview';
 
-  const [form, setForm] = useState({ ...film.brief });
+  const [form, setForm] = useState(() => mapFromBackend(film));
   const [readingLink, setReadingLink] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
 
-  const files = state.files.filter(f => f.filmId === film.id);
+  const activeCourseIdRef = useRef(film?.id);
+  const pendingSaveTimeoutRef = useRef(null);
+  const pendingValuesRef = useRef({});
+
+  // Dynamic course aggregate retrieval with race-condition guard
+  useEffect(() => {
+    activeCourseIdRef.current = film?.id;
+    if (!film?.id) return;
+
+    let cancelled = false;
+    setLoading(true);
+
+    api.get(`/courses/${film.id}`)
+      .then((data) => {
+        if (cancelled || activeCourseIdRef.current !== film.id) return;
+        const mapped = mapFromBackend(data);
+        setForm(mapped);
+
+        HQ.set((x) => {
+          const target = (x.films || []).find((f) => f.id === film.id);
+          if (target) {
+            target.title = data.title;
+            target.batch = data.batch;
+            target.release = data.batch_start || target.release;
+            target.provider = data.provider;
+            target.form = data.form || {};
+            target.fields = data.fields || [];
+            target.claims = data.claims || [];
+            target.flags = data.flags || [];
+            target.reads = data.reads || [];
+            target.files = data.files || [];
+            target.readiness = data.readiness;
+            target.brief = {
+              ...(target.brief || {}),
+              ...mapped,
+            };
+          }
+        });
+      })
+      .catch((err) => {
+        if (!cancelled && activeCourseIdRef.current === film.id) {
+          setForm(mapFromBackend(film));
+          toast(err.message || 'Could not load course from server', 'error');
+        }
+      })
+      .finally(() => {
+        if (!cancelled && activeCourseIdRef.current === film.id) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      if (pendingSaveTimeoutRef.current) {
+        clearTimeout(pendingSaveTimeoutRef.current);
+        const valuesToSave = { ...pendingValuesRef.current };
+        pendingValuesRef.current = {};
+        if (Object.keys(valuesToSave).length > 0) {
+          api.patch(`/courses/${film.id}/form`, { values: valuesToSave }).catch(() => {});
+        }
+      }
+    };
+  }, [film?.id]);
+
+  const files = (film?.files && film.files.length > 0)
+    ? film.files
+    : state.files.filter(f => f.filmId === film?.id);
+
+  // Debounced save for text inputs
+  const triggerDebouncedSave = (courseId, backendKey, val) => {
+    pendingValuesRef.current[backendKey] = val;
+    setSaveStatus('saving');
+
+    if (pendingSaveTimeoutRef.current) {
+      clearTimeout(pendingSaveTimeoutRef.current);
+    }
+
+    pendingSaveTimeoutRef.current = setTimeout(async () => {
+      const valuesToSave = { ...pendingValuesRef.current };
+      pendingValuesRef.current = {};
+      try {
+        const updated = await api.patch(`/courses/${courseId}/form`, { values: valuesToSave });
+        if (activeCourseIdRef.current === courseId) {
+          setSaveStatus('saved');
+          setTimeout(() => {
+            if (activeCourseIdRef.current === courseId) setSaveStatus('idle');
+          }, 2000);
+          HQ.set((x) => {
+            const target = (x.films || []).find((f) => f.id === courseId);
+            if (target) {
+              target.form = updated.form;
+              target.readiness = updated.readiness;
+              target.fields = updated.fields;
+              target.flags = updated.flags;
+              target.claims = updated.claims;
+              target.title = updated.title;
+              target.batch = updated.batch;
+              target.release = updated.batch_start || target.release;
+              target.provider = updated.provider;
+            }
+          });
+        }
+      } catch (err) {
+        if (activeCourseIdRef.current === courseId) {
+          setSaveStatus('error');
+          toast(err.message || 'Failed to save changes to server', 'error');
+        }
+      }
+    }, 600);
+  };
 
   const handleFieldChange = (key, val) => {
     setForm(prev => ({ ...prev, [key]: val }));
+    const backendKey = key === 'courseName' ? 'title' : key === 'courseLink' ? 'link' : key;
+
     HQ.set(x => {
-      const f = x.films.find(q => q.id === film.id);
-      if (f && f.brief) {
+      const f = (x.films || []).find(q => q.id === film.id);
+      if (f) {
+        if (!f.brief) f.brief = {};
         f.brief[key] = val;
+        f.brief[backendKey] = val;
+        if (!f.form) f.form = {};
+        f.form[backendKey] = val;
+        if (backendKey === 'title') f.title = val;
       }
     });
+
+    if (key === 'domain' || key === 'level') {
+      if (pendingSaveTimeoutRef.current) clearTimeout(pendingSaveTimeoutRef.current);
+      const valuesToSave = { ...pendingValuesRef.current, [backendKey]: val };
+      pendingValuesRef.current = {};
+      setSaveStatus('saving');
+      api.patch(`/courses/${film.id}/form`, { values: valuesToSave })
+        .then((updated) => {
+          if (activeCourseIdRef.current === film.id) {
+            setSaveStatus('saved');
+            setTimeout(() => {
+              if (activeCourseIdRef.current === film.id) setSaveStatus('idle');
+            }, 2000);
+            HQ.set((x) => {
+              const target = (x.films || []).find((f) => f.id === film.id);
+              if (target) {
+                target.form = updated.form;
+                target.readiness = updated.readiness;
+              }
+            });
+          }
+        })
+        .catch((err) => {
+          if (activeCourseIdRef.current === film.id) {
+            setSaveStatus('error');
+            toast(err.message || 'Failed to save changes', 'error');
+          }
+        });
+    } else {
+      triggerDebouncedSave(film.id, backendKey, val);
+    }
   };
 
+  // Phase 2 mock interactions preserved
   const handleReadLink = () => {
     setReadingLink(true);
-    toast('Reading course website via search gate...');
+    toast('Reading course website via search gate (mock)...');
     setTimeout(() => {
       setReadingLink(false);
       handleFieldChange('domain', 'AI/ML');
@@ -39,7 +210,7 @@ export default function CourseBrief() {
 
   const handleUseSampleBrochure = () => {
     setUploading(true);
-    toast('Parsing sample syllabus brochure...');
+    toast('Parsing sample syllabus brochure (mock)...');
     setTimeout(() => {
       setUploading(false);
       handleFieldChange('eligibility', 'B.Tech/B.E. or MCA, graduated 2022–2026, 60% aggregate');
@@ -48,6 +219,10 @@ export default function CourseBrief() {
       toast('Sample brochure attached. Extracted eligibility and stipend policy.');
     }, 1200);
   };
+
+  const okCount = rd?.ok ?? 0;
+  const totalCount = rd?.req || rd?.total || 9;
+  const pctCount = rd?.pct ?? Math.round((okCount / (totalCount || 1)) * 100);
 
   return (
     <div style={{ padding: '28px 32px 48px', maxWidth: '1320px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -64,17 +239,33 @@ export default function CourseBrief() {
             <h1 style={{ margin: '0 0 4px', fontSize: '32px', fontWeight: 600, letterSpacing: '-.015em' }}>
               {film.title}
             </h1>
-            <div style={{ color: 'var(--ink-600)', fontSize: '14px' }}>
-              {film.batch || 'Batch 4'} · starts {HQ.d(film.release)} · {film.provider || 'Nexa Skills Foundation'}
+            <div style={{ color: 'var(--ink-600)', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              <span>{film.batch || 'Batch 1'} · starts {HQ.d(film.release)} · {film.provider || 'Nexa Skills Foundation'}</span>
+              {saveStatus === 'saving' && (
+                <span style={{ fontSize: '12px', color: 'var(--ink-500)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', border: '2px solid var(--teal-200)', borderTopColor: 'var(--teal-700)', animation: 'spin .8s linear infinite' }}></span>
+                  Saving…
+                </span>
+              )}
+              {saveStatus === 'saved' && (
+                <span style={{ fontSize: '12px', color: 'var(--teal-700)', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                  <Icon name="i-check" size={13} /> Saved
+                </span>
+              )}
+              {saveStatus === 'error' && (
+                <span style={{ fontSize: '12px', color: 'var(--danger-600)', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                  <Icon name="i-alert" size={13} /> Save failed
+                </span>
+              )}
             </div>
           </div>
           <div style={{ background: '#fff', border: '1px solid var(--ink-100)', borderRadius: '10px', padding: '12px 18px', minWidth: '200px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--ink-600)', marginBottom: '6px' }}>
               <span>Required fields</span>
-              <b style={{ color: 'var(--ink-900)' }}>{rd.ok}/{rd.total}</b>
+              <b style={{ color: 'var(--ink-900)' }}>{okCount}/{totalCount}</b>
             </div>
             <div style={{ height: '6px', borderRadius: '999px', background: 'var(--ink-100)', overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${rd.pct}%`, background: rd.pct === 100 ? 'var(--success-600)' : 'var(--warning-600)', borderRadius: '999px' }}></div>
+              <div style={{ height: '100%', width: `${pctCount}%`, background: pctCount === 100 ? 'var(--success-600)' : 'var(--warning-600)', borderRadius: '999px' }}></div>
             </div>
           </div>
         </div>

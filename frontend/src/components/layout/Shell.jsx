@@ -370,9 +370,13 @@ export default function Shell({ children }) {
                     borderRadius: '12px',
                     boxShadow: 'var(--e-2)',
                     padding: '6px',
-                    animation: 'fadein .12s'
+                    animation: 'fadein .12s',
+                    maxHeight: 'min(480px, calc(100vh - 84px))',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    boxSizing: 'border-box'
                   }}>
-                    <div style={{ padding: '2px 2px 6px', position: 'relative' }}>
+                    <div style={{ padding: '2px 2px 6px', position: 'relative', flexShrink: 0 }}>
                       <Icon name="i-search" size={16} style={{ position: 'absolute', left: '12px', top: '10px', color: 'var(--ink-500)' }} />
                       <input
                         value={filmQ}
@@ -381,70 +385,83 @@ export default function Shell({ children }) {
                         style={{ width: '100%', height: '32px', padding: '0 10px 0 34px', border: '1px solid var(--ink-300)', borderRadius: '8px', fontSize: '13px' }}
                       />
                     </div>
-                    {filmList.map(f => {
-                      const on = f.id === film.id;
-                      return (
-                        <button
-                          key={f.id}
-                          onClick={() => {
-                            closeMenus();
-                            set(x => {
-                              x.filmId = f.id;
-                              x.route = { name: (['campaigns', 'files', 'copilot', 'creators'].includes(r.name)) ? r.name : 'dashboard' };
-                            });
-                            toast('Switched to ' + f.title);
-                          }}
-                          style={{
-                            width: '100%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            minHeight: '44px',
-                            padding: '6px 10px',
-                            border: 0,
-                            borderRadius: '8px',
-                            background: on ? 'var(--teal-50)' : 'transparent',
-                            cursor: 'pointer',
-                            textAlign: 'left'
-                          }}
-                          onMouseEnter={e => e.currentTarget.style.background = 'var(--ink-50)'}
-                          onMouseLeave={e => e.currentTarget.style.background = on ? 'var(--teal-50)' : 'transparent'}
-                        >
-                          <span style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'var(--ink-900)', color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 600, fontSize: '12px' }}>
-                            {f.title[0]}
-                          </span>
-                          <span style={{ flex: 1 }}>
-                            <span style={{ display: 'block', fontWeight: 600 }}>{f.title}</span>
-                            <span style={{ display: 'block', fontSize: '12px', color: 'var(--ink-500)' }}>{(f.batch || 'Batch 1') + ' · starts ' + HQ.d(f.release)}</span>
-                          </span>
-                          {on && <Icon name="i-check" size={16} style={{ color: 'var(--teal-700)' }} />}
-                        </button>
-                      );
-                    })}
-                    {filmList.length === 0 && <div style={{ padding: '14px 10px', color: 'var(--ink-500)', fontSize: '13px', textAlign: 'center' }}>No courses match</div>}
-                    <div style={{ height: '1px', background: 'var(--ink-100)', margin: '6px 0' }}></div>
-                    <button
-                      onClick={() => { closeMenus(); go('newfilm'); }}
-                      style={{
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        minHeight: '38px',
-                        padding: '6px 10px',
-                        border: 0,
-                        borderRadius: '8px',
-                        background: 'none',
-                        cursor: 'pointer',
-                        color: 'var(--teal-700)',
-                        fontWeight: 600
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'var(--teal-50)'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'none'}
-                    >
-                      <Icon name="i-plus" size={18} />
-                      New course
-                    </button>
+                    <div style={{
+                      overflowY: 'auto',
+                      flex: '1 1 auto',
+                      minHeight: 0,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '2px',
+                      overscrollBehavior: 'contain'
+                    }}>
+                      {filmList.map(f => {
+                        const on = f.id === film.id;
+                        return (
+                          <button
+                            key={f.id}
+                            onClick={() => {
+                              closeMenus();
+                              set(x => {
+                                x.filmId = f.id;
+                                x.route = { name: (['campaigns', 'files', 'copilot', 'creators'].includes(r.name)) ? r.name : 'dashboard' };
+                              });
+                              toast('Switched to ' + f.title);
+                            }}
+                            style={{
+                              width: '100%',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '10px',
+                              minHeight: '44px',
+                              padding: '6px 10px',
+                              border: 0,
+                              borderRadius: '8px',
+                              background: on ? 'var(--teal-50)' : 'transparent',
+                              cursor: 'pointer',
+                              textAlign: 'left',
+                              flexShrink: 0
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'var(--ink-50)'}
+                            onMouseLeave={e => e.currentTarget.style.background = on ? 'var(--teal-50)' : 'transparent'}
+                          >
+                            <span style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'var(--ink-900)', color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 600, fontSize: '12px', flexShrink: 0 }}>
+                              {f.title[0]}
+                            </span>
+                            <span style={{ flex: 1, minWidth: 0 }}>
+                              <span style={{ display: 'block', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.title}</span>
+                              <span style={{ display: 'block', fontSize: '12px', color: 'var(--ink-500)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{(f.batch || 'Batch 1') + ' · starts ' + HQ.d(f.release)}</span>
+                            </span>
+                            {on && <Icon name="i-check" size={16} style={{ color: 'var(--teal-700)', flexShrink: 0 }} />}
+                          </button>
+                        );
+                      })}
+                      {filmList.length === 0 && <div style={{ padding: '14px 10px', color: 'var(--ink-500)', fontSize: '13px', textAlign: 'center' }}>No courses match</div>}
+                    </div>
+                    <div style={{ flexShrink: 0 }}>
+                      <div style={{ height: '1px', background: 'var(--ink-100)', margin: '6px 0' }}></div>
+                      <button
+                        onClick={() => { closeMenus(); go('newfilm'); }}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          minHeight: '38px',
+                          padding: '6px 10px',
+                          border: 0,
+                          borderRadius: '8px',
+                          background: 'none',
+                          cursor: 'pointer',
+                          color: 'var(--teal-700)',
+                          fontWeight: 600
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = 'var(--teal-50)'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                      >
+                        <Icon name="i-plus" size={18} />
+                        New course
+                      </button>
+                    </div>
                   </div>
                 </>
               )}

@@ -49,6 +49,58 @@ export default function App() {
     }
   }, []);
 
+  useEffect(() => {
+    if (s.user) {
+      api.get('/courses')
+        .then((list) => {
+          if (Array.isArray(list) && list.length > 0) {
+            HQ.set((z) => {
+              list.forEach((c) => {
+                const ex = (z.films || []).find((f) => f.id === c.id);
+                if (ex) {
+                  ex.title = c.title;
+                  ex.batch = c.batch;
+                  ex.release = c.batch_start || ex.release;
+                  ex.provider = c.provider;
+                  ex.readiness = c.readiness;
+                } else {
+                  z.films.push({
+                    id: c.id,
+                    title: c.title,
+                    batch: c.batch || 'Batch 1',
+                    language: 'Telugu',
+                    release: c.batch_start || '2026-11-16',
+                    provider: c.provider || 'Nexa Skills Foundation',
+                    form: {},
+                    brief: {
+                      courseName: c.title,
+                      courseLink: '',
+                      domain: '',
+                      level: 'Beginner',
+                      eligibility: '',
+                      stipend: '',
+                      fee: '',
+                      mode: '',
+                      duration: ''
+                    },
+                    flags: [],
+                    reads: [],
+                    claims: [],
+                    files: [],
+                    readiness: c.readiness
+                  });
+                }
+              });
+              if (!z.films.some((f) => f.id === z.filmId)) {
+                z.filmId = list[0].id;
+              }
+            });
+          }
+        })
+        .catch(() => {});
+    }
+  }, [s.user]);
+
   if (authChecking) {
     return (
       <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'var(--ink-25)' }}>
