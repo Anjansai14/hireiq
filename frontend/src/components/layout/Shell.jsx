@@ -403,7 +403,13 @@ export default function Shell({ children }) {
                               closeMenus();
                               set(x => {
                                 x.filmId = f.id;
-                                x.route = { name: (['campaigns', 'files', 'copilot', 'creators'].includes(r.name)) ? r.name : 'dashboard' };
+                                if (r.name === 'brief') {
+                                  x.route = { name: 'brief', tab: r.tab || 'overview' };
+                                } else if (['campaigns', 'files', 'copilot', 'creators'].includes(r.name)) {
+                                  x.route = { name: r.name };
+                                } else {
+                                  x.route = { name: 'dashboard' };
+                                }
                               });
                               toast('Switched to ' + f.title);
                             }}

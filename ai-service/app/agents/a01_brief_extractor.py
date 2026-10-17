@@ -78,7 +78,7 @@ def _fallback(pages: list[str], lookups: dict) -> dict:
             put("level", lvl)
             break
     for dom in lookups.get("course_domain", []):
-        if re.search(rf"\b{re.escape(dom)}\b", text, re.I):
+        if re.search(rf"\b{re.escape(dom)}\b", text, re.I) or (dom == "AI/ML" and re.search(r"\bAI\s*(?:/|&)\s*ML\b", text, re.I)):
             put("domain", dom)
             break
     locs = [d for d in lookups.get("district", []) if re.search(rf"\b{re.escape(d)}\b", text, re.I)]
@@ -109,6 +109,8 @@ def run(payload: dict) -> dict:
             pages = [base64.b64decode(payload["file_b64"]).decode("utf-8", "ignore")]
     elif payload.get("url"):
         pages = _fetch_url_text(payload["url"])
+        if not pages and payload.get("text"):
+            pages = [p for p in re.split(r"\f|\n-{3,}\s*page\s*\d+\s*-{3,}\n", payload.get("text", ""), flags=re.I) if p.strip()]
         data_sources.append(payload["url"])
     else:
         pages = [p for p in re.split(r"\f|\n-{3,}\s*page\s*\d+\s*-{3,}\n", payload.get("text", ""), flags=re.I) if p.strip()]

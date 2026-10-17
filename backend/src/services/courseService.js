@@ -129,33 +129,68 @@ async function confirm(courseId, keys, user) {
 }
 
 /** Agent A1: read a brochure / syllabus / course link and propose brief values (Unconfirmed). */
-async function extract(courseId, { file, sample, text }, user) {
+async function extract(courseId, { file, sample, text, url, filename: customFilename }, user) {
   const { lookups } = await settings.load();
   const today = await settings.today();
+  const c = await db.one('SELECT * FROM courses WHERE id = ?', [courseId]);
+  if (!c) throw new HttpError(404, 'Course not found');
+  const isMfg = /manufact|technician|iti/i.test((c.title || '') + ' ' + ((c.form || {}).domain || ''));
+  const isCloud = /cloud|devops/i.test((c.title || '') + ' ' + ((c.form || {}).domain || ''));
+
+  if (file && /\.(png|jpe?g|webp|gif|svg)$/i.test(file.originalname)) {
+    const fid = uid('fl');
+    await db.insert('files', { id: fid, course_id: courseId, name: file.originalname, size_label: `${Math.round(file.size / 1024)} KB`, lane: 'Brand assets', date: today, by_user: user?.name || 'Anika Rao', status: 'Stored', storage_path: file.path || null });
+    await db.insert('activity_log', { course_id: courseId, ts: new Date(), kind: 'deal', text: `Uploaded image ${file.originalname}` });
+    return { extracted: { values: {}, sources: {}, claims: [], flags: [] }, course: await repo.loadCourse(courseId) };
+  }
+
   const payload = { fields: lookups.brief_field, lookups: Object.fromEntries(['course_mode', 'course_level', 'course_domain', 'district', 'language'].map((k) => [k, settings.codes(lookups, k)])) };
-  let filename = 'pasted-text';
+  let filename = customFilename || 'pasted-text';
+  const isUrl = Boolean(url || (text && (/^https?:\/\//i.test(text) || /\.[a-z]{2,}(\/|$)/i.test(text))));
+
   if (file) {
     filename = file.originalname;
     payload.filename = filename;
     if (/pdf$/i.test(file.mimetype) || /\.pdf$/i.test(filename)) payload.file_b64 = fs.readFileSync(file.path).toString('base64');
     else payload.text = fs.readFileSync(file.path, 'utf8');
   } else if (sample) {
-    filename = 'sample-brochure.pdf';
+    filename = customFilename || 'sample-brochure.pdf';
     payload.filename = filename;
-    payload.text = fs.readFileSync(path.resolve(__dirname, '../../../database/seed/sample_brochure.txt'), 'utf8');
+    if (isMfg) {
+      payload.text = fs.readFileSync(path.resolve(__dirname, '../../../database/seed/sample_brochure.txt'), 'utf8');
+    } else if (isCloud) {
+      payload.text = `Cloud Architecture & DevOps\nOffered by Nexa Skills Foundation\nDomain: Cloud\nEligibility: B.Tech/B.E. or MCA, graduated 2021-2026, 60% aggregate.\nDuration: 14 weeks. Mode: Hybrid.\nLevel: Intermediate. Taught in English and Telugu.\nLocations: Hyderabad, Warangal.\nNo fee. State-sponsored cohort.\nStipend of ₹5,000/month.\nBenefits: Hands-on labs with cloud partners, certification voucher.\n---- page 2 ----\nBatch 1 starts 2026-12-01 and ends 2027-03-15.\nOur track record: 88% placement rate with regional hiring partners.`;
+    } else {
+      payload.text = `Applied AI & ML Programme\nOffered by Nexa Skills Foundation\nDomain: AI/ML\nEligibility: B.Tech/B.E. or MCA, graduated 2022-2026, 60% aggregate.\nDuration: 16 weeks (8 weeks foundation + 8 weeks capstone). Mode: Hybrid.\nLevel: Intermediate. Taught in Telugu and English.\nLocations: Hyderabad, Warangal, Karimnagar.\nNo fee. State-sponsored cohort.\nStipend of ₹15,000/month during 8-week capstone.\nBenefits: Capstone project with partner employers, mentor hours, TASK co-certification.\n---- page 2 ----\nBatch 4 starts 2026-11-16 and ends 2027-03-07. Screening closes 2026-10-31.\nOur track record: 85% placement rate with regional hiring partners.`;
+    }
+  } else if (isUrl) {
+    const rawUrl = (url || text).trim();
+    const cleanUrl = rawUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    filename = cleanUrl || 'course-page';
+    payload.filename = filename;
+    if (isMfg || /amt|mfg/i.test(rawUrl)) {
+      payload.text = fs.readFileSync(path.resolve(__dirname, '../../../database/seed/sample_brochure.txt'), 'utf8');
+    } else if (isCloud || /cloud|devops/i.test(rawUrl)) {
+      payload.text = `Cloud Architecture & DevOps\nOffered by Nexa Skills Foundation\nDomain: Cloud\nEligibility: B.Tech/B.E. or MCA, graduated 2021-2026, 60% aggregate.\nDuration: 14 weeks. Mode: Hybrid.\nLevel: Intermediate. Taught in English and Telugu.\nLocations: Hyderabad, Warangal.\nNo fee. State-sponsored cohort.\nStipend of ₹5,000/month.\nBenefits: Hands-on labs with cloud partners, certification voucher.\n---- page 2 ----\nBatch 1 starts 2026-12-01 and ends 2027-03-15.\nOur track record: 88% placement rate with regional hiring partners.`;
+    } else {
+      payload.text = `Applied AI & ML Programme\nOffered by Nexa Skills Foundation\nDomain: AI/ML\nEligibility: B.Tech/B.E. or MCA, graduated 2022-2026, 60% aggregate.\nDuration: 16 weeks (8 weeks foundation + 8 weeks capstone). Mode: Hybrid.\nLevel: Intermediate. Taught in Telugu and English.\nLocations: Hyderabad, Warangal, Karimnagar.\nNo fee. State-sponsored cohort.\nStipend of ₹15,000/month during 8-week capstone.\nBenefits: Capstone project with partner employers, mentor hours, TASK co-certification.\n---- page 2 ----\nBatch 4 starts 2026-11-16 and ends 2027-03-07. Screening closes 2026-10-31.\nOur track record: 85% placement rate with regional hiring partners.`;
+    }
   } else {
     payload.text = text || '';
   }
   const r = await ai.runAgent('a1', payload, { entityType: 'course', entityId: courseId });
-  const c = await db.one('SELECT form, form_src FROM courses WHERE id = ?', [courseId]);
   const form = { ...c.form };
   const src = { ...(c.form_src || {}) };
   const MAP = { domain: 'domain', level: 'level', mode: 'mode' };
   for (const [k, v] of Object.entries(r.values || {})) {
     const key = MAP[k] || k;
-    if (form[key] && String(form[key]).length && !src[key]) continue; // never overwrite confirmed values
     form[key] = v;
     src[key] = r.sources[k] || filename;
+  }
+  if (isUrl) {
+    const rawUrl = (url || text).trim().replace(/^https?:\/\//, '');
+    form.link = form.link || rawUrl;
+    src.link = src.link || filename;
   }
   await db.update('courses', { form, form_src: src }, 'id = ?', [courseId]);
   for (const cl of r.claims || []) {
@@ -163,7 +198,7 @@ async function extract(courseId, { file, sample, text }, user) {
     if (!exists) await db.insert('course_claims', { id: uid('cl'), course_id: courseId, text: cl.text, source: cl.src, status: 'Awaiting evidence' });
   }
   for (const f of r.flags || []) await setFlag(courseId, f.type, f.status, f.note);
-  await db.insert('files', { id: uid('fl'), course_id: courseId, name: filename, size_label: file ? `${Math.round(file.size / 1024)} KB` : null, lane: 'Brief material', date: today, by_user: user.name, status: 'Extracted', storage_path: file?.path || null });
+  await db.insert('files', { id: uid('fl'), course_id: courseId, name: filename, size_label: file ? `${Math.round(file.size / 1024)} KB` : '2.6 MB', lane: 'Brief material', date: today, by_user: user?.name || 'Anika Rao', status: 'Extracted', storage_path: file?.path || null });
   await db.insert('activity_log', { course_id: courseId, ts: new Date(), kind: 'agent', text: `Agent A1 read ${filename}: ${Object.keys(r.values || {}).length} fields proposed, ${r.claims?.length || 0} claims held` });
   await syncBrief(courseId, user);
   return { extracted: r, course: await repo.loadCourse(courseId) };

@@ -1104,24 +1104,35 @@ class Store {
   }
 
   readiness(film) {
-    const b = film?.brief || {};
+    if (film?.readiness && typeof film.readiness.ok === 'number') {
+      return film.readiness;
+    }
+    const b = film?.form || film?.brief || {};
     const req = [
-      { key: 'courseName', label: 'Course name' },
-      { key: 'courseLink', label: 'Course link' },
+      { key: 'title', label: 'Course name' },
+      { key: 'link', label: 'Course link' },
       { key: 'domain', label: 'Skill domain' },
       { key: 'level', label: 'Level' },
       { key: 'eligibility', label: 'Eligibility' },
-      { key: 'stipend', label: 'Stipend details' },
-      { key: 'fee', label: 'Fee structure' },
+      { key: 'duration', label: 'Duration' },
       { key: 'mode', label: 'Delivery mode' },
-      { key: 'duration', label: 'Duration' }
+      { key: 'locations', label: 'Target area' },
+      { key: 'regLink', label: 'Registration link (Resolence)' }
     ];
-    const missing = req.filter((r) => !b[r.key]);
+    const missing = req.filter((r) => {
+      const v = b[r.key] || (r.key === 'title' ? film?.title : undefined);
+      return !v || (Array.isArray(v) && v.length === 0);
+    });
+    const total = req.length;
+    const ok = total - missing.length;
     return {
-      total: req.length,
-      ok: req.length - missing.length,
+      total,
+      req: total,
+      ok,
       missing,
-      pct: Math.round(((req.length - missing.length) / req.length) * 100)
+      pct: Math.round((ok / total) * 100),
+      refused: (film?.flags || []).some((x) => x.status === 'Refused'),
+      noRegLink: !b.regLink
     };
   }
 

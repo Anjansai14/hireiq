@@ -31,9 +31,9 @@ router.patch('/:id/context', ah(async (req, res) => {
   res.json(await repo.loadCourse(req.params.id));
 }));
 
-/** Agent A1 — upload a brochure/syllabus, or {sample:true}, or {text}. */
+/** Agent A1 — upload a brochure/syllabus, or {sample:true}, or {text}, or {url}. */
 router.post('/:id/extract', upload.single('file'), ah(async (req, res) => {
-  res.json(await svc.extract(req.params.id, { file: req.file, sample: req.body.sample === 'true' || req.body.sample === true, text: req.body.text }, req.user));
+  res.json(await svc.extract(req.params.id, { file: req.file, sample: req.body.sample === 'true' || req.body.sample === true, text: req.body.text, url: req.body.url, filename: req.body.filename }, req.user));
 }));
 
 /** Agent A2 — refresh programme reads. */
@@ -46,6 +46,11 @@ router.post('/:id/claims/:cid/evidence', upload.single('file'), ah(async (req, r
   await db.update('course_claims', { status: 'Evidenced', evidence_file_id: fid }, 'id = ? AND course_id = ?', [req.params.cid, req.params.id]);
   const left = await db.one("SELECT COUNT(*) n FROM course_claims WHERE course_id = ? AND status = 'Awaiting evidence'", [req.params.id]);
   if (!left.n) await svc.setFlag(req.params.id, 'Outcome claims', 'Cleared', 'All outcome claims have Observed evidence attached.');
+  res.json(await repo.loadCourse(req.params.id));
+}));
+
+router.delete('/:id/files/:fid', ah(async (req, res) => {
+  await db.query('DELETE FROM files WHERE id = ? AND course_id = ?', [req.params.fid, req.params.id]);
   res.json(await repo.loadCourse(req.params.id));
 }));
 
