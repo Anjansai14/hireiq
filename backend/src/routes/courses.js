@@ -7,8 +7,10 @@ const svc = require('../services/courseService');
 const campaigns = require('../services/campaignService');
 const alerts = require('../services/alerts');
 const settings = require('../services/settings');
+const fs = require('fs');
+const path = require('path');
 const { requireRole } = require('../middleware/auth');
-const { ah, uid } = require('../utils/helpers');
+const { ah, uid, HttpError } = require('../utils/helpers');
 
 const upload = multer({ dest: config.uploadDir, limits: { fileSize: 25 * 1024 * 1024 } });
 
@@ -49,8 +51,33 @@ router.post('/:id/claims/:cid/evidence', upload.single('file'), ah(async (req, r
   res.json(await repo.loadCourse(req.params.id));
 }));
 
+/** Store a course document in the Files tab without running A1 extraction */
+router.post('/:id/files', upload.single('file'), ah(async (req, res) => {
+  if (!req.file) throw new HttpError(400, 'Attach a file to upload');
+  const result = await svc.addFile(req.params.id, { file: req.file, lane: req.body.lane }, req.user);
+  res.status(201).json(result);
+}));
+
 router.delete('/:id/files/:fid', ah(async (req, res) => {
+  const file = await db.one('SELECT * FROM files WHERE id = ? AND course_id = ?', [req.params.fid, req.params.id]);
+  if (!file) throw new HttpError(404, 'File not found for this course');
+
+  // Verify file is not linked as evidence for any outcome claim
+  const claim = await db.one('SELECT id, text FROM course_claims WHERE course_id = ? AND evidence_file_id = ?', [req.params.id, req.params.fid]);
+  if (claim) {
+    throw new HttpError(400, `Cannot delete file: referenced as evidence for outcome claim "${claim.text}"`);
+  }
+
   await db.query('DELETE FROM files WHERE id = ? AND course_id = ?', [req.params.fid, req.params.id]);
+
+  // Clean up physical file on disk if no other database record references it
+  if (file.storage_path) {
+    const other = await db.one('SELECT id FROM files WHERE storage_path = ? AND id != ?', [file.storage_path, req.params.fid]);
+    if (!other && fs.existsSync(file.storage_path)) {
+      try { fs.unlinkSync(file.storage_path); } catch { /* ignore disk cleanup failure */ }
+    }
+  }
+
   res.json(await repo.loadCourse(req.params.id));
 }));
 

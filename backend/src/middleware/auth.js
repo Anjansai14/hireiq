@@ -17,16 +17,13 @@ function requireAuth(req, res, next) {
   const h = req.headers.authorization || '';
   const token = h.startsWith('Bearer ') ? h.slice(7) : null;
   if (!token) {
-    // Fall back to demo user in dev/local mode
-    req.user = DEMO_USER;
-    return next();
+    return res.status(401).json({ error: 'Authentication required. Please provide a valid Bearer token.' });
   }
   try {
     req.user = jwt.verify(token, config.jwtSecret);
     next();
-  } catch {
-    req.user = DEMO_USER;
-    next();
+  } catch (err) {
+    return res.status(401).json({ error: 'Invalid or expired authentication token. Please log in again.' });
   }
 }
 

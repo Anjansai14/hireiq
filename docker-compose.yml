@@ -41,6 +41,8 @@ services:
       SEED_ON_START: "true"
       ENABLE_JOBS: "true"
     ports: [ "4000:4000" ]
+    volumes: [ uploads:/app/backend/uploads ]
 
 volumes:
   dbdata:
+  uploads:

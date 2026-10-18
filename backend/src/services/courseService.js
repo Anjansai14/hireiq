@@ -138,8 +138,29 @@ async function extract(courseId, { file, sample, text, url, filename: customFile
   const isCloud = /cloud|devops/i.test((c.title || '') + ' ' + ((c.form || {}).domain || ''));
 
   if (file && /\.(png|jpe?g|webp|gif|svg)$/i.test(file.originalname)) {
-    const fid = uid('fl');
-    await db.insert('files', { id: fid, course_id: courseId, name: file.originalname, size_label: `${Math.round(file.size / 1024)} KB`, lane: 'Brand assets', date: today, by_user: user?.name || 'Anika Rao', status: 'Stored', storage_path: file.path || null });
+    const filename = file.originalname;
+    const existing = await db.one('SELECT * FROM files WHERE course_id = ? AND name = ?', [courseId, filename]);
+    let fid;
+    if (existing) {
+      fid = existing.id;
+      if (existing.storage_path && existing.storage_path !== file.path) {
+        const other = await db.one('SELECT id FROM files WHERE storage_path = ? AND id != ?', [existing.storage_path, existing.id]);
+        if (!other && fs.existsSync(existing.storage_path)) {
+          try { fs.unlinkSync(existing.storage_path); } catch { /* ignore */ }
+        }
+      }
+      await db.update('files', {
+        size_label: `${Math.round(file.size / 1024)} KB`,
+        lane: 'Brand assets',
+        date: today,
+        by_user: user?.name || user?.email || 'User',
+        status: 'Stored',
+        storage_path: file.path || null
+      }, 'id = ?', [fid]);
+    } else {
+      fid = uid('fl');
+      await db.insert('files', { id: fid, course_id: courseId, name: filename, size_label: `${Math.round(file.size / 1024)} KB`, lane: 'Brand assets', date: today, by_user: user?.name || user?.email || 'User', status: 'Stored', storage_path: file.path || null });
+    }
     await db.insert('activity_log', { course_id: courseId, ts: new Date(), kind: 'deal', text: `Uploaded image ${file.originalname}` });
     return { extracted: { values: {}, sources: {}, claims: [], flags: [] }, course: await repo.loadCourse(courseId) };
   }
@@ -198,10 +219,101 @@ async function extract(courseId, { file, sample, text, url, filename: customFile
     if (!exists) await db.insert('course_claims', { id: uid('cl'), course_id: courseId, text: cl.text, source: cl.src, status: 'Awaiting evidence' });
   }
   for (const f of r.flags || []) await setFlag(courseId, f.type, f.status, f.note);
-  await db.insert('files', { id: uid('fl'), course_id: courseId, name: filename, size_label: file ? `${Math.round(file.size / 1024)} KB` : '2.6 MB', lane: 'Brief material', date: today, by_user: user?.name || 'Anika Rao', status: 'Extracted', storage_path: file?.path || null });
+
+  // Deduplicate file record for (courseId, filename)
+  const existingDoc = await db.one('SELECT * FROM files WHERE course_id = ? AND name = ?', [courseId, filename]);
+  const uploader = user?.name || user?.email || 'User';
+  const sizeLabel = file ? `${Math.round(file.size / 1024)} KB` : '2.6 MB';
+
+  if (existingDoc) {
+    if (file && existingDoc.storage_path && existingDoc.storage_path !== file.path) {
+      const other = await db.one('SELECT id FROM files WHERE storage_path = ? AND id != ?', [existingDoc.storage_path, existingDoc.id]);
+      if (!other && fs.existsSync(existingDoc.storage_path)) {
+        try { fs.unlinkSync(existingDoc.storage_path); } catch { /* ignore */ }
+      }
+    }
+    await db.update('files', {
+      size_label: sizeLabel,
+      lane: 'Brief material',
+      date: today,
+      by_user: uploader,
+      status: 'Extracted',
+      storage_path: file?.path || existingDoc.storage_path
+    }, 'id = ?', [existingDoc.id]);
+  } else {
+    await db.insert('files', {
+      id: uid('fl'),
+      course_id: courseId,
+      name: filename,
+      size_label: sizeLabel,
+      lane: 'Brief material',
+      date: today,
+      by_user: uploader,
+      status: 'Extracted',
+      storage_path: file?.path || null
+    });
+  }
+
   await db.insert('activity_log', { course_id: courseId, ts: new Date(), kind: 'agent', text: `Agent A1 read ${filename}: ${Object.keys(r.values || {}).length} fields proposed, ${r.claims?.length || 0} claims held` });
   await syncBrief(courseId, user);
   return { extracted: r, course: await repo.loadCourse(courseId) };
+}
+
+/** Store a course document in files without running Agent A1 extraction */
+async function addFile(courseId, { file, lane }, user) {
+  if (!file) throw new HttpError(400, 'Attach a file to upload');
+  const today = await settings.today();
+  const c = await db.one('SELECT id FROM courses WHERE id = ?', [courseId]);
+  if (!c) throw new HttpError(404, 'Course not found');
+
+  const filename = file.originalname;
+  const sizeLabel = `${Math.max(1, Math.round(file.size / 1024))} KB`;
+  const fileLane = lane || (/\.(png|jpe?g|webp|gif|svg)$/i.test(filename) ? 'Brand assets' : 'Brief material');
+  const uploader = user?.name || user?.email || 'User';
+
+  const existing = await db.one('SELECT * FROM files WHERE course_id = ? AND name = ?', [courseId, filename]);
+  let fileId;
+  if (existing) {
+    fileId = existing.id;
+    if (existing.storage_path && existing.storage_path !== file.path) {
+      const other = await db.one('SELECT id FROM files WHERE storage_path = ? AND id != ?', [existing.storage_path, existing.id]);
+      if (!other && fs.existsSync(existing.storage_path)) {
+        try { fs.unlinkSync(existing.storage_path); } catch { /* ignore */ }
+      }
+    }
+    await db.update('files', {
+      size_label: sizeLabel,
+      lane: fileLane,
+      date: today,
+      by_user: uploader,
+      status: 'Stored',
+      storage_path: file.path
+    }, 'id = ?', [fileId]);
+  } else {
+    fileId = uid('fl');
+    await db.insert('files', {
+      id: fileId,
+      course_id: courseId,
+      name: filename,
+      size_label: sizeLabel,
+      lane: fileLane,
+      date: today,
+      by_user: uploader,
+      status: 'Stored',
+      storage_path: file.path
+    });
+  }
+
+  await db.insert('activity_log', {
+    course_id: courseId,
+    ts: new Date(),
+    kind: 'deal',
+    text: `Uploaded document ${filename}`
+  });
+
+  const updatedFile = await db.one('SELECT * FROM files WHERE id = ?', [fileId]);
+  const course = await repo.loadCourse(courseId);
+  return { file: updatedFile, course };
 }
 
 /** Agent A2: refresh the three programme reads. */
@@ -218,4 +330,4 @@ async function runReads(courseId) {
   return repo.loadCourse(courseId);
 }
 
-module.exports = { createCourse, updateForm, confirm, extract, runReads, syncBrief, setFlag, fieldValue };
+module.exports = { createCourse, updateForm, confirm, extract, runReads, syncBrief, setFlag, fieldValue, addFile };

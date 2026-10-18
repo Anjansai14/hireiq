@@ -46,7 +46,7 @@ export default function CourseBrief() {
   const { state, HQ, currentCourse, go, toast } = useHQ();
   const film = currentCourse;
   const r = state.route || {};
-  const tab = r.tab === 'files' ? 'files' : r.tab === 'governance' ? 'governance' : 'overview';
+  const tab = r.tab === 'files' ? 'files' : 'overview';
 
   const [form, setForm] = useState(() => formOf(film));
   const [formSrc, setFormSrc] = useState(() => film?.form_src || {});
@@ -67,6 +67,7 @@ export default function CourseBrief() {
   const pendingSaveTimeoutRef = useRef(null);
   const pendingValuesRef = useRef({});
   const fileInputRef = useRef(null);
+  const filesTabInputRef = useRef(null);
   const evidenceInputRef = useRef(null);
   const activeClaimIdRef = useRef(null);
 
@@ -384,6 +385,35 @@ export default function CourseBrief() {
     }
   };
 
+  // Upload document directly to course files (Files tab - no AI extraction)
+  const handleUploadCourseFile = async (file) => {
+    if (!file) return;
+    const uploadId = 'up-fl-' + Date.now();
+    const isImg = /\.(png|jpe?g|webp|gif)$/i.test(file.name);
+    setUploadList((prev) => [
+      ...prev,
+      { id: uploadId, name: file.name, note: 'Uploading file…', busy: true, icon: isImg ? 'i-image' : 'i-file' }
+    ]);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('lane', isImg ? 'Brand assets' : 'Brief material');
+
+    try {
+      const res = await api.post(`/courses/${film.id}/files`, formData);
+      setUploadList((prev) =>
+        prev.map((u) => (u.id === uploadId ? { ...u, busy: false, done: true, note: 'Stored in course files' } : u))
+      );
+      applyCourseUpdate(res.course || res);
+      toast(`${file.name} uploaded`);
+    } catch (err) {
+      setUploadList((prev) =>
+        prev.map((u) => (u.id === uploadId ? { ...u, busy: false, note: 'Failed: ' + err.message } : u))
+      );
+      toast(err.message || 'Failed to upload file', 'error');
+    }
+  };
+
   // Attach evidence to an outcome claim
   const handleAttachEvidence = async (file) => {
     const claimId = activeClaimIdRef.current;
@@ -459,6 +489,15 @@ export default function CourseBrief() {
       />
       <input
         type="file"
+        ref={filesTabInputRef}
+        onChange={(e) => {
+          if (e.target.files?.[0]) handleUploadCourseFile(e.target.files[0]);
+          e.target.value = '';
+        }}
+        style={{ display: 'none' }}
+      />
+      <input
+        type="file"
         ref={evidenceInputRef}
         onChange={(e) => {
           if (e.target.files?.[0]) handleAttachEvidence(e.target.files[0]);
@@ -520,7 +559,6 @@ export default function CourseBrief() {
       <div style={{ display: 'flex', gap: '24px', borderBottom: '1px solid var(--ink-100)', overflowX: 'auto', overflowY: 'hidden' }}>
         {[
           { key: 'overview', label: 'Overview', n: '' },
-          { key: 'governance', label: 'Governance', n: flags.filter((f) => f.status === 'Under review').length || '' },
           { key: 'files', label: 'Files', n: files.length }
         ].map((t) => {
           const on = tab === t.key;
@@ -1115,7 +1153,7 @@ export default function CourseBrief() {
                   {outcomeClaimHit && (
                     <div style={{ display: 'flex', gap: '8px', padding: '8px 10px', borderRadius: '6px', background: 'var(--warning-100)', color: 'var(--warning-800)', fontSize: '12px' }}>
                       <Icon name="i-alert" size={14} style={{ flex: 'none', marginTop: '1px' }} />
-                      <span>Held as a claim awaiting evidence. Attach evidence on the Governance tab.</span>
+                      <span>Held as a claim awaiting evidence.</span>
                     </div>
                   )}
                 </div>
@@ -1216,135 +1254,6 @@ export default function CourseBrief() {
         </div>
       )}
 
-      {/* GOVERNANCE TAB */}
-      {tab === 'governance' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Governance Flags Card */}
-          <div style={{ background: '#fff', border: '1px solid var(--ink-100)', borderRadius: '12px', boxShadow: 'var(--e-1)', overflow: 'hidden' }}>
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--ink-100)' }}>
-              <b style={{ fontSize: '16px', display: 'block' }}>Governance flags</b>
-              <span style={{ fontSize: '13px', color: 'var(--ink-600)' }}>
-                Refused blocks Create campaign. Under review raises a warning at Review.
-              </span>
-            </div>
-            {flags.map((g) => {
-              const st = HQ.tone(g.status);
-              const flagHelp = {
-                'Outcome claims': 'Placement rates, salary figures or job guarantees in the brief or files.',
-                'Institution endorsement': 'Any college, ITI or placement cell named as a partner needs a consent record (RR-H06).',
-                'Paid promotion': 'Paid items must carry the platform disclosure tag (RR-H04).'
-              }[g.type] || '';
-              return (
-                <div key={g.id || g.type} style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 200px', gap: '16px', padding: '16px 20px', borderBottom: '1px solid var(--ink-100)', alignItems: 'start' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                      <b style={{ whiteSpace: 'nowrap' }}>{g.type}</b>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', height: '22px', padding: '0 8px', borderRadius: '999px', background: st.bg, color: st.fg, fontSize: '12px', fontWeight: 600 }}>
-                        {g.status}
-                      </span>
-                    </div>
-                    <span style={{ fontSize: '13px', color: 'var(--ink-600)' }}>{flagHelp}</span>
-                    <textarea
-                      value={g.note || ''}
-                      onChange={(e) => {
-                        const note = e.target.value;
-                        setFlags((prev) => prev.map((item) => (item.id === g.id ? { ...item, note } : item)));
-                      }}
-                      onBlur={(e) => handleFlagUpdate(g.id, g.status, e.target.value)}
-                      placeholder="Add a note for reviewers"
-                      style={{ minHeight: '56px', padding: '8px 10px', border: '1px solid var(--ink-300)', borderRadius: '8px', resize: 'vertical', font: 'inherit', fontSize: '13px' }}
-                    />
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-600)' }}>Status</label>
-                    <select
-                      value={g.status}
-                      onChange={(e) => handleFlagUpdate(g.id, e.target.value, g.note || '')}
-                      style={{ height: '40px', padding: '0 10px', border: '1px solid var(--ink-300)', borderRadius: '8px', background: '#fff' }}
-                    >
-                      <option value="Not checked">Not checked</option>
-                      <option value="Cleared">Cleared</option>
-                      <option value="Under review">Under review</option>
-                      <option value="Refused">Refused</option>
-                    </select>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Outcome Claims (RR-H03) Card */}
-          <div style={{ background: '#fff', border: '1px solid var(--ink-100)', borderRadius: '12px', boxShadow: 'var(--e-1)', overflow: 'hidden' }}>
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--ink-100)' }}>
-              <b style={{ fontSize: '16px', display: 'block' }}>Outcome claims (RR-H03)</b>
-              <span style={{ fontSize: '13px', color: 'var(--ink-600)' }}>
-                A placement rate, salary figure or job guarantee is held until Observed evidence is attached. Narratives and content cannot use it before then.
-              </span>
-            </div>
-            {claims.length === 0 ? (
-              <div style={{ padding: '24px 20px', color: 'var(--ink-500)', fontSize: '13px' }}>
-                No outcome claims found in the brief or its files.
-              </div>
-            ) : (
-              claims.map((c) => {
-                const st = HQ.tone(c.status === 'Evidenced' ? 'Observed' : c.status);
-                const canAttach = c.status === 'Awaiting evidence';
-                return (
-                  <div key={c.id || c.text} style={{ display: 'flex', gap: '14px', alignItems: 'center', padding: '14px 20px', borderBottom: '1px solid var(--ink-100)', flexWrap: 'wrap' }}>
-                    <span style={{ width: '32px', height: '32px', borderRadius: '8px', background: st.bg, color: st.fg, display: 'grid', placeItems: 'center', flex: 'none' }}>
-                      <Icon name="i-shield" size={16} />
-                    </span>
-                    <div style={{ flex: 1, minWidth: '200px' }}>
-                      <b style={{ display: 'block' }}>"{c.text}"</b>
-                      <span style={{ fontSize: '12px', color: 'var(--ink-500)' }}>
-                        Found in {c.source || 'Course brief'}{c.evidence_file_id ? ' · evidence attached' : ''}
-                      </span>
-                    </div>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', height: '22px', padding: '0 8px', borderRadius: '999px', background: st.bg, color: st.fg, fontSize: '12px', fontWeight: 600 }}>
-                      {c.status}
-                    </span>
-                    {canAttach && (
-                      <button
-                        onClick={() => {
-                          activeClaimIdRef.current = c.id;
-                          if (evidenceInputRef.current) evidenceInputRef.current.click();
-                        }}
-                        style={{ height: '32px', padding: '0 12px', borderRadius: '8px', border: '1px solid var(--ink-300)', background: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', gap: '6px', alignItems: 'center' }}
-                      >
-                        <Icon name="i-upload" size={14} /> Attach evidence
-                      </button>
-                    )}
-                  </div>
-                );
-              })
-            )}
-          </div>
-
-          {/* Fairness Escalations (RR-H02) */}
-          {eligProtectedHit && (
-            <div style={{ background: '#fff', border: '1px solid var(--ink-100)', borderRadius: '12px', boxShadow: 'var(--e-1)', overflow: 'hidden' }}>
-              <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--ink-100)' }}>
-                <b style={{ fontSize: '16px', display: 'block' }}>Fairness escalations (RR-H02)</b>
-                <span style={{ fontSize: '13px', color: 'var(--ink-600)' }}>
-                  Blocked attempts to use a protected attribute, routed to the fairness reviewer.
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: '12px', padding: '12px 20px', borderBottom: '1px solid var(--ink-100)', fontSize: '13px', alignItems: 'center' }}>
-                <span style={{ flex: 1 }}>
-                  <b style={{ fontWeight: 600 }}>Eligibility:</b> "{form.eligibility}"
-                  <span style={{ display: 'block', fontSize: '12px', color: 'var(--ink-500)' }}>
-                    Logged {HQ.d(HQ.TODAY)} · basis RR-H02 · routed to fairness reviewer
-                  </span>
-                </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', height: '22px', padding: '0 8px', borderRadius: '999px', background: 'var(--warning-100)', color: 'var(--warning-800)', fontSize: '12px', fontWeight: 600 }}>
-                  With reviewer
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
       {/* FILES TAB */}
       {tab === 'files' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,420px),1fr))', gap: '20px', alignItems: 'start' }}>
@@ -1383,7 +1292,7 @@ export default function CourseBrief() {
                 <span style={{ fontSize: '13px', color: 'var(--ink-600)' }}>Brochures, syllabi, past batch reports</span>
               </div>
               <button
-                onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                onClick={() => filesTabInputRef.current && filesTabInputRef.current.click()}
                 style={{ height: '36px', padding: '0 14px', borderRadius: '8px', border: 0, background: 'var(--teal-700)', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', gap: '8px', alignItems: 'center' }}
               >
                 <Icon name="i-upload" size={16} /> Upload
@@ -1407,7 +1316,7 @@ export default function CourseBrief() {
                         {fl.name}
                       </div>
                       <div style={{ fontSize: '12px', color: 'var(--ink-600)' }}>
-                        {(fl.size_label || fl.size || '—') + ' · ' + (fl.date ? HQ.ds(fl.date) : '—') + ' · ' + (fl.by_user || 'Anika Rao')}
+                        {(fl.size_label || fl.size || '—') + ' · ' + (fl.date ? HQ.ds(fl.date) : '—') + ' · ' + (fl.by_user || state.user?.name || '—')}
                       </div>
                     </div>
                     <button

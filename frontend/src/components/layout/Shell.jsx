@@ -92,7 +92,7 @@ export default function Shell({ children }) {
     alerts.push({
       title: `${f.type} flag is Refused`,
       sub: 'Create campaign is blocked until it is resolved',
-      go: () => { closeMenus(); go('brief', { tab: 'governance' }); },
+      go: () => { closeMenus(); go('brief'); },
       lvl: 'danger'
     });
   });

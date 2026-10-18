@@ -92,7 +92,26 @@ files.get('/:id/download', ah(async (req, res) => {
   if (!f?.storage_path || !fs.existsSync(f.storage_path)) throw new HttpError(404, 'File content not stored (seeded or generated record)');
   res.download(path.resolve(f.storage_path), f.name);
 }));
-files.delete('/:id', ah(async (req, res) => { await db.query('DELETE FROM files WHERE id = ?', [req.params.id]); res.status(204).end(); }));
+files.delete('/:id', ah(async (req, res) => {
+  const file = await db.one('SELECT * FROM files WHERE id = ?', [req.params.id]);
+  if (!file) throw new HttpError(404, 'File not found');
+
+  const claim = await db.one('SELECT id, text FROM course_claims WHERE evidence_file_id = ?', [req.params.id]);
+  if (claim) {
+    throw new HttpError(400, `Cannot delete file: referenced as evidence for outcome claim "${claim.text}"`);
+  }
+
+  await db.query('DELETE FROM files WHERE id = ?', [req.params.id]);
+
+  if (file.storage_path) {
+    const other = await db.one('SELECT id FROM files WHERE storage_path = ? AND id != ?', [file.storage_path, req.params.id]);
+    if (!other && fs.existsSync(file.storage_path)) {
+      try { fs.unlinkSync(file.storage_path); } catch { /* ignore unlink error */ }
+    }
+  }
+
+  res.status(204).end();
+}));
 
 // ---------------------------------------------------------------- metrics
 const metrics = express.Router();
