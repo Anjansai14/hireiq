@@ -661,6 +661,136 @@
     "code": "risk",
     "label": "What could go wrong"
    }
+  ],
+  "state": [
+   {
+    "code": "Telangana",
+    "meta": {
+     "grad_pool": 121300,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "Andhra Pradesh",
+    "meta": {
+     "grad_pool": 104000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "Karnataka",
+    "meta": {
+     "grad_pool": 132000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "Tamil Nadu",
+    "meta": {
+     "grad_pool": 148000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "Kerala",
+    "meta": {
+     "grad_pool": 52000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "Maharashtra",
+    "meta": {
+     "grad_pool": 176000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "Odisha",
+    "meta": {
+     "grad_pool": 48000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "West Bengal",
+    "meta": {
+     "grad_pool": 71000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "Gujarat",
+    "meta": {
+     "grad_pool": 69000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "Rajasthan",
+    "meta": {
+     "grad_pool": 58000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "Madhya Pradesh",
+    "meta": {
+     "grad_pool": 63000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "Uttar Pradesh",
+    "meta": {
+     "grad_pool": 154000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "Bihar",
+    "meta": {
+     "grad_pool": 46000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "Delhi",
+    "meta": {
+     "grad_pool": 44000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "Punjab",
+    "meta": {
+     "grad_pool": 31000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   },
+   {
+    "code": "Haryana",
+    "meta": {
+     "grad_pool": 39000,
+     "prov": "Illustrative",
+     "note": "Annual state graduate pool"
+    }
+   }
   ]
  },
  "channel_priors": {
@@ -676,14 +806,14 @@
    "YouTube": {
     "role": "Amplifier",
     "formats": "Long video, Shorts, Live",
-    "meas": 1.0,
+    "meas": 1,
     "meas_label": "Measurable now",
-    "iti": 1.0
+    "iti": 1
    },
    "Instagram": {
     "role": "Amplifier",
     "formats": "Reels, Carousels",
-    "meas": 1.0,
+    "meas": 1,
     "meas_label": "Measurable now",
     "iti": 0.8
    },
@@ -697,7 +827,7 @@
    "Facebook": {
     "role": "Community",
     "formats": "Group posts",
-    "meas": 1.0,
+    "meas": 1,
     "meas_label": "Measurable now",
     "iti": 1.3
    },
@@ -706,7 +836,7 @@
     "formats": "Campus session, tagged QR",
     "meas": 0.6,
     "meas_label": "Manual only",
-    "iti": 1.0
+    "iti": 1
    }
   },
   "priors": {

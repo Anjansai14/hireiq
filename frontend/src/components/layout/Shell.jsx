@@ -159,12 +159,15 @@ export default function Shell({ children }) {
     return { ...a, bg: t.bg, fg: t.fg };
   });
 
+  const isWizard = r.name === 'wizard';
+
   return (
     <>
       <SvgDefinitions />
-      <div style={{ display: 'grid', gridTemplateColumns: '232px minmax(0,1fr)', height: '100vh', overflow: 'hidden' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isWizard ? '1fr' : '232px minmax(0,1fr)', height: '100vh', overflow: 'hidden' }}>
         {/* Left Sidebar */}
-        <aside style={{ background: '#fff', borderRight: '1px solid var(--ink-100)', display: 'flex', flexDirection: 'column', padding: '20px 12px 12px', minHeight: 0 }}>
+        {!isWizard && (
+          <aside style={{ background: '#fff', borderRight: '1px solid var(--ink-100)', display: 'flex', flexDirection: 'column', padding: '20px 12px 12px', minHeight: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '0 8px 16px' }}>
             <Icon name="logo-mark" size={28} />
             <b style={{ fontSize: '16px', letterSpacing: '-.02em', fontWeight: 600 }}>
@@ -322,11 +325,12 @@ export default function Shell({ children }) {
             </button>
           </div>
         </aside>
+        )}
 
         {/* Right Main Body */}
         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0 }}>
           {/* Header */}
-          <header style={{ height: '60px', flex: 'none', background: '#fff', borderBottom: '1px solid var(--ink-100)', display: 'flex', alignItems: 'center', gap: '16px', padding: '0 24px', position: 'relative', zIndex: 20 }}>
+          <header style={{ height: '60px', flex: 'none', background: '#fff', borderBottom: '1px solid var(--ink-100)', display: 'flex', alignItems: 'center', gap: '16px', padding: isWizard ? '0 32px' : '0 24px', position: 'relative', zIndex: 20 }}>
             {/* Course Switcher */}
             <div style={{ position: 'relative' }}>
               <button
@@ -477,8 +481,17 @@ export default function Shell({ children }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--ink-500)', fontSize: '13px', minWidth: 0, overflow: 'hidden', whiteSpace: 'nowrap' }}>
               {crumbLabels.map((c, i) => (
                 <React.Fragment key={i}>
-                  <Icon name="i-right" size={14} />
-                  <span style={{ color: i === crumbLabels.length - 1 ? 'var(--ink-900)' : 'var(--ink-500)', fontWeight: i === crumbLabels.length - 1 ? 600 : 400 }}>
+                  <Icon name="i-right" size={14} style={{ color: 'var(--ink-400)' }} />
+                  <span
+                    onClick={() => {
+                      if (c === 'Campaigns') go('campaigns');
+                    }}
+                    style={{
+                      color: i === crumbLabels.length - 1 ? 'var(--ink-900)' : 'var(--ink-500)',
+                      fontWeight: i === crumbLabels.length - 1 ? 600 : 400,
+                      cursor: c === 'Campaigns' ? 'pointer' : 'default'
+                    }}
+                  >
                     {c}
                   </span>
                 </React.Fragment>

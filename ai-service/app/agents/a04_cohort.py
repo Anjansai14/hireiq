@@ -36,7 +36,8 @@ def normalise_districts(raw: list[str], standard: list[str]) -> tuple[list[str],
 
 
 def estimate_size(markets, qual, age_band, exp_band, lk: dict) -> tuple[dict, dict]:
-    pool = {d["code"]: (d.get("meta") or {}).get("grad_pool", 0) for d in lk.get("district", [])}
+    geo_items = (lk.get("state") or []) + (lk.get("district") or [])
+    pool = {d["code"]: (d.get("meta") or {}).get("grad_pool", 0) for d in geo_items}
     share = lambda cat, code: next(((x.get("meta") or {}).get("share", 1.0) for x in lk.get(cat, []) if x["code"] == code), 1.0)
     base = sum(pool.get(m, 0) for m in markets)
     q_share = share("qualification", qual)
@@ -58,7 +59,7 @@ def run(payload: dict) -> dict:
     course = payload.get("course", {})
     lk = payload.get("lookups", {})
     settings = payload.get("settings", {})
-    std = [d["code"] for d in lk.get("district", [])]
+    std = [d["code"] for d in (lk.get("state") or [])] + [d["code"] for d in (lk.get("district") or [])]
 
     refusal = governance.screen_request(" ".join(str(c.get(k) or "") for k in ("free_text", "cohort", "name")))
     markets, changes = normalise_districts(c.get("markets") or [], std)

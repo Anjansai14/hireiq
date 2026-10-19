@@ -1105,25 +1105,27 @@ class Store {
 
   readiness(film) {
     if (film?.readiness && typeof film.readiness.ok === 'number') {
-      return film.readiness;
+      const total = film.readiness.total || film.readiness.req || 9;
+      return {
+        ...film.readiness,
+        req: film.readiness.req || total,
+        total,
+      };
     }
     const b = film?.form || film?.brief || {};
     const req = [
-      { key: 'title', label: 'Course name' },
-      { key: 'link', label: 'Course link' },
-      { key: 'domain', label: 'Skill domain' },
-      { key: 'level', label: 'Level' },
-      { key: 'eligibility', label: 'Eligibility' },
-      { key: 'duration', label: 'Duration' },
-      { key: 'mode', label: 'Delivery mode' },
-      { key: 'locations', label: 'Target area' },
-      { key: 'regLink', label: 'Registration link (Resolence)' }
+      { key: 'title', label: 'Course name', check: () => Boolean(b.title || film?.title) },
+      { key: 'link', label: 'Course link', check: () => Boolean(b.link) },
+      { key: 'domain', label: 'Skill domain & level', check: () => Boolean(b.domain) },
+      { key: 'eligibility', label: 'Eligibility', check: () => Boolean(b.eligibility) },
+      { key: 'duration', label: 'Duration & mode', check: () => Boolean(b.duration) },
+      { key: 'locations', label: 'Target area', check: () => Boolean(b.locations && (!Array.isArray(b.locations) || b.locations.length > 0)) },
+      { key: 'batch', label: 'Batch dates', check: () => Boolean(b.batchStart || film?.batch_start || film?.batch) },
+      { key: 'target', label: 'Enrolment target & cost ceiling', check: () => Boolean(b.target || film?.target || b.ceiling || film?.ceiling) },
+      { key: 'regLink', label: 'Registration link (Resolence)', check: () => Boolean(b.regLink) }
     ];
-    const missing = req.filter((r) => {
-      const v = b[r.key] || (r.key === 'title' ? film?.title : undefined);
-      return !v || (Array.isArray(v) && v.length === 0);
-    });
-    const total = req.length;
+    const missing = req.filter((r) => !r.check()).map((r) => ({ key: r.key, label: r.label }));
+    const total = 9;
     const ok = total - missing.length;
     return {
       total,

@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 os.environ["ANTHROPIC_API_KEY"] = ""
+os.environ["GROQ_API_KEY"] = ""
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "ai-service"))
 
@@ -76,6 +77,113 @@ def test_a5_holds_unevidenced_claim():
     assert len(r["narratives"]) == 4
     prim = [n for n in r["narratives"] if n["role"] == "Primary"]
     assert len(prim) == 1 and not prim[0]["held"]
+
+
+def test_a5_valid_narrative_why_word_count():
+    from app.agents.a05_narratives import _valid_narrative_why
+    assert not _valid_narrative_why(None)
+    assert not _valid_narrative_why(123)
+    assert not _valid_narrative_why("")
+    assert not _valid_narrative_why(" ".join(["word"] * 50))
+    assert not _valid_narrative_why(" ".join(["word"] * 99))
+    assert _valid_narrative_why(" ".join(["word"] * 100))
+    assert _valid_narrative_why(" ".join(["word"] * 125))
+    assert _valid_narrative_why(" ".join(["word"] * 150))
+    assert _valid_narrative_why(" ".join(["word"] * 151))
+    assert _valid_narrative_why(" ".join(["word"] * 250))
+
+
+def test_a5_held_candidates_never_become_primary():
+    # Test 1: Fallback template with unevidenced claim is held, and Primary is assigned to an unheld candidate
+    r = run("a5", {"campaign": CAMP, "course": COURSE_DTO, "objective_narratives": ["Career outcome"]})
+    for n in r["narratives"]:
+        if n["held"]:
+            assert n["role"] != "Primary", f"Held candidate {n['id']} was marked as Primary"
+    prim = [n for n in r["narratives"] if n["role"] == "Primary"]
+    assert len(prim) == 1 and not prim[0]["held"]
+
+    # Test 2: If all candidates in pool are held, ensure NO candidate has role == "Primary"
+    course_all_claims = dict(COURSE_DTO, claims=[
+        {"text": "Placement rate 100%", "status": "Awaiting evidence"},
+        {"text": "12 LPA package", "status": "Awaiting evidence"}
+    ])
+    all_held_pool = [
+        ["Career outcome", "100% placement rate guaranteed", "Audience", "Why copy text with 100% placement rate", "High: claim", "Confident", "Hook 1"],
+        ["Career outcome", "Package of 12 LPA", "Audience", "Why copy text with 12 LPA salary", "High: claim", "Confident", "Hook 2"],
+    ]
+    from unittest.mock import patch
+    with patch("app.agents.a05_narratives._templates", return_value=all_held_pool):
+        r_all_held = run("a5", {"campaign": CAMP, "course": course_all_claims})
+        assert all(n["held"] for n in r_all_held["narratives"])
+        assert not any(n["role"] == "Primary" for n in r_all_held["narratives"])
+
+
+def test_a5_groq_validation_and_bounded_retries(monkeypatch):
+    from app.config import settings
+
+    monkeypatch.setattr(settings, "groq_api_key", "mock-groq-key")
+    monkeypatch.setattr(settings, "llm_max_retries", 2)
+
+    # Sub-test 1: Groq returns narratives with why < 100 words -> must be rejected and fallback used
+    short_why = "This is a short narrative explanation with only a few words."
+    short_narratives = {
+        "narratives": [
+            {"cls": "Career outcome", "title": "T1", "who": "W1", "why": short_why, "risk": "Low", "tone": "T", "hook": "H"}
+        ]
+    }
+    call_count = 0
+    def mock_short(*args, **kwargs):
+        nonlocal call_count
+        call_count += 1
+        return short_narratives
+
+    monkeypatch.setattr("app.agents.a05_narratives.complete_groq_json", mock_short)
+    r_short = run("a5", {"campaign": CAMP, "course": COURSE_DTO})
+    assert r_short["llm"] is False  # Rejected and fell back to templates
+    assert call_count == 3  # 1 initial attempt + 2 retries = 3 bounded retries
+
+    # Sub-test 2: Groq returns valid 120-word narratives -> must be accepted
+    valid_why = " ".join(["word"] * 120)
+    valid_narratives = {
+        "narratives": [
+            {"cls": "Career outcome", "title": f"T{i}", "who": "Audience", "why": valid_why, "risk": "Low", "tone": "T", "hook": "H"}
+            for i in range(5)
+        ]
+    }
+    monkeypatch.setattr("app.agents.a05_narratives.complete_groq_json", lambda *a, **k: valid_narratives)
+    r_valid = run("a5", {"campaign": CAMP, "course": COURSE_DTO})
+    assert r_valid["llm"] is True
+    assert len(r_valid["narratives"]) == 4
+    for n in r_valid["narratives"]:
+        assert len(n["why"].split()) == 120
+
+
+def test_a5_governance_blocks_claims_and_protected():
+    from unittest.mock import patch
+    valid_why = " ".join(["word"] * 120)
+    # Narrative asserting 95% placement rate claim and another with protected attribute
+    test_narratives = {
+        "narratives": [
+            {"cls": "Career outcome", "title": "Top Tech Career", "who": "Engineers", "why": valid_why + " 95% placement rate achieved.", "risk": "Low", "tone": "T", "hook": "H"},
+            {"cls": "Speed to employment", "title": "Fast Tech", "who": "women only students", "why": valid_why, "risk": "Low", "tone": "T", "hook": "H"},
+            {"cls": "Skill relevance", "title": "Real Skills", "who": "Students", "why": valid_why, "risk": "Low", "tone": "T", "hook": "H"},
+            {"cls": "Institutional endorsement", "title": "Endorsed", "who": "Students", "why": valid_why, "risk": "Low", "tone": "T", "hook": "H"},
+        ]
+    }
+    with patch("app.config.settings.groq_api_key", "mock-groq-key"), \
+         patch("app.agents.a05_narratives.complete_groq_json", return_value=test_narratives):
+        r = run("a5", {"campaign": CAMP, "course": COURSE_DTO})
+        # Check claim narrative was caught and held under RR-H03
+        claim_n = next(n for n in r["narratives"] if "Top Tech Career" in n["title"])
+        assert claim_n["held"] is True
+        assert "RR-H03" in claim_n["risk"]
+        assert claim_n["role"] != "Primary"
+
+        # Check protected attribute was caught and held under RR-H02
+        prot_n = next(n for n in r["narratives"] if "women only" in n["who"])
+        assert prot_n["held"] is True
+        assert "RR-H02" in prot_n["risk"]
+        assert prot_n["role"] != "Primary"
 
 
 def test_a6_shares_sum_to_100():

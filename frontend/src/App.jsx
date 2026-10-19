@@ -63,6 +63,9 @@ export default function App() {
                   ex.release = c.batch_start || ex.release;
                   ex.provider = c.provider;
                   ex.readiness = c.readiness;
+                  if (c.form) ex.form = c.form;
+                  if (c.form_src) ex.form_src = c.form_src;
+                  if (c.flags) ex.flags = c.flags;
                 } else {
                   z.films.push({
                     id: c.id,
@@ -71,7 +74,8 @@ export default function App() {
                     language: 'Telugu',
                     release: c.batch_start || '2026-11-16',
                     provider: c.provider || 'Nexa Skills Foundation',
-                    form: {},
+                    form: c.form || {},
+                    form_src: c.form_src || {},
                     brief: {
                       courseName: c.title,
                       courseLink: '',
@@ -83,7 +87,7 @@ export default function App() {
                       mode: '',
                       duration: ''
                     },
-                    flags: [],
+                    flags: c.flags || [],
                     reads: [],
                     claims: [],
                     files: [],

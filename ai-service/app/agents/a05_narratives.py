@@ -8,11 +8,23 @@ leans on an unevidenced claim is returned as `held` and cannot be selected.
 """
 from __future__ import annotations
 
+import logging
 from .. import governance
-from ..llm import complete_json
+from ..config import settings
+from ..llm import complete_groq_json
 from ..util import make_envelope
 
+log = logging.getLogger("hireiq.a05")
 AGENT = {"id": "A5", "name": "Narrative Generator", "kind": "llm+scoring"}
+
+
+def _valid_narrative_why(why: str) -> bool:
+    """Check whether campaign copy meets the required minimum word count (>= 100 words)."""
+    if not isinstance(why, str):
+        return False
+
+    word_count = len(why.split())
+    return word_count >= 100
 
 
 def _templates(c: dict, course: dict) -> list[list[str]]:
@@ -20,7 +32,7 @@ def _templates(c: dict, course: dict) -> list[list[str]]:
     mk = " and ".join((c.get("markets") or [])[:2]) or "the target districts"
     first = (c.get("markets") or ["campus"])[0]
     dur = f.get("duration") or "a few weeks"
-    claim = next((q for q in course.get("claims", []) if q.get("status") == "Awaiting evidence"), None)
+    claim = next((q for q in course.get("claims", []) if q.get("status") in ("Awaiting evidence", "Unverified", "Pending") or q.get("status") != "Observed"), None)
     qual = c.get("qual") or "Graduates"
     return [
         ["Career outcome", f"From {first} to a {f.get('domain') or 'tech'} team", f"{qual}, {mk}", "Alumni posts drove a higher enrolment rate than creator posts on past batches (Observed)", "Low: uses alumni stories, no salary figures", "Grounded, aspirational", '"9 months ago I was where you are."'],
@@ -62,42 +74,180 @@ def run(payload: dict) -> dict:
     instruction = payload.get("instruction")
     evidence = payload.get("evidence", {})
 
-    llm = complete_json(
-        "Generate 8 candidate campaign narratives for this cohort across these classes: "
-        f"{classes}. Each must be grounded in the course brief and evidence. Never use a claim whose "
-        "status is 'Awaiting evidence' unless you mark risk as 'High: ... (RR-H03)'. "
-        + (f"Manager instruction: {instruction}. " if instruction else ""),
-        {"campaign": c, "course_form": course.get("form"), "claims": course.get("claims"), "evidence": evidence,
-         "manager_answers": answers},
-        '{"narratives":[{"cls":"","title":"","who":"","why":"","risk":"Low|Medium: ...|High: ...","tone":"","hook":""}]}',
+    task_prompt = (
+        "You are a senior education marketing strategist and professional "
+        "campaign copywriter. Generate 8 distinct, polished campaign "
+        "narratives for the specified audience and course.\n\n"
+
+        "WRITING REQUIREMENTS:\n"
+        "1. Write a descriptive, compelling headline in 'title'.\n"
+        "2. Identify the specific target audience in 'who'.\n"
+        "3. Write comprehensive campaign copy in 'why', using at least 2 detailed paragraphs. "
+        "The word count in 'why' must be at least 100 words (do not write short copy under 100 words).\n"
+        "4. Write a short, memorable campaign hook in 'hook'.\n"
+        "5. Describe the communication style in 'tone'.\n"
+        "6. Make each narrative meaningfully different in angle, "
+        "wording, and audience motivation.\n"
+        "7. Use natural, professional, specific language. "
+        "Avoid empty hype, clichés, and exaggerated promises.\n"
+        "8. Use only facts explicitly supported by the supplied "
+        "course details, claims, or evidence. Do not invent "
+        "projects, labs, certifications, partnerships, testimonials, "
+        "course features, outcomes, salaries, or placements.\n"
+        "9. Do not guarantee employment or financial outcomes. "
+        "Unsupported outcome claims must be flagged High risk "
+        "under RR-H03. Preserve RR-H02 safeguards.\n"
+        "10. Return valid JSON only, with exactly these fields: "
+        "cls, title, who, why, risk, tone, hook.\n\n"
+
+        f"Campaign narrative classes: {classes}.\n"
+        + (f"Manager instruction: {instruction}\n" if instruction else "")
     )
-    if llm and isinstance(llm.get("narratives"), list) and llm["narratives"]:
-        pool = [[x.get("cls", ""), x.get("title", ""), x.get("who", ""), x.get("why", ""), x.get("risk", "Low"),
-                 x.get("tone", ""), x.get("hook", "")] for x in llm["narratives"]]
-        used = True
-    else:
+
+    context_data = {
+        "campaign": c,
+        "course_form": course.get("form"),
+        "claims": course.get("claims"),
+        "evidence": evidence,
+        "manager_answers": answers,
+    }
+    schema_hint = '{"narratives":[{"cls":"","title":"","who":"","why":"","risk":"Low|Medium: ...|High: ...","tone":"","hook":""}]}'
+
+    retries = max(0, getattr(settings, "llm_max_retries", 2))
+    pool = None
+    used = False
+
+    for attempt in range(retries + 1):
+        if not getattr(settings, "groq_api_key", ""):
+            break
+
+        llm = complete_groq_json(
+            task_prompt,
+            context_data,
+            schema_hint,
+            max_tokens=3500,
+        )
+        if not llm or not isinstance(llm, dict):
+            continue
+
+        raw_narratives = llm.get("narratives")
+        if not isinstance(raw_narratives, list) or not raw_narratives:
+            continue
+
+        valid_candidates = []
+        for x in raw_narratives:
+            if not isinstance(x, dict):
+                continue
+            why = x.get("why", "")
+            if not _valid_narrative_why(why):
+                continue
+            if not x.get("title") or not x.get("cls"):
+                continue
+            valid_candidates.append([
+                x.get("cls", ""),
+                x.get("title", ""),
+                x.get("who", ""),
+                why,
+                x.get("risk", "Low"),
+                x.get("tone", ""),
+                x.get("hook", ""),
+            ])
+
+        if len(valid_candidates) >= 4:
+            pool = valid_candidates
+            used = True
+            break
+        elif attempt == retries and valid_candidates:
+            pool = valid_candidates
+            used = True
+            break
+        else:
+            log.warning(
+                "Groq narrative attempt %d: %d candidates returned, %d valid (>= 100 words); retrying...",
+                attempt + 1,
+                len(raw_narratives),
+                len(valid_candidates),
+            )
+
+    if not pool:
         pool, used = _templates(c, course), False
 
     out = []
+    unsupported_claims = [
+        q.get("text", "").strip()
+        for q in course.get("claims", [])
+        if q.get("status") != "Observed" and q.get("text")
+    ]
+
     for i, p in enumerate(pool):
-        text = " ".join(p[1:])
         risk = p[4]
-        if governance.has_claim(p[1] + " " + p[6]) and not risk.startswith("High"):
-            risk = "High: asserts a placement or salary claim (RR-H03). Held until Observed evidence is attached"
-        if governance.has_protected(text):
+        full_narrative = " ".join([p[1], p[2], p[3], p[5], p[6]])
+
+        # 1. Prevent unsupported outcome or salary claims from bypassing governance (RR-H03)
+        has_claim_violation = governance.has_claim(full_narrative)
+        if not has_claim_violation and unsupported_claims:
+            for c_text in unsupported_claims:
+                if c_text.lower() in full_narrative.lower():
+                    has_claim_violation = True
+                    break
+
+        if has_claim_violation and not risk.startswith("High"):
+            risk = (
+                "High: contains an outcome or salary claim requiring "
+                "evidence review (RR-H03)"
+            )
+
+        # 2. Prevent protected attribute violations (RR-H02)
+        if governance.has_protected(full_narrative):
             risk = "High: protected attribute (RR-H02)"
+
+        is_held = risk.startswith("High")
+
         s, components = score_breakdown(p[0], risk, pref, answers.get("q1", ""), i)
         out.append({
-            "id": f"nx{i}", "cls": p[0], "title": p[1], "who": p[2], "why": p[3], "risk": risk,
-            "tone": p[5], "hook": p[6], "held": risk.startswith("High"),
-            "score": s, "score_components": components, "role": None, "stamp": "Inferred",
+            "id": f"nx{i}",
+            "cls": p[0],
+            "title": p[1],
+            "who": p[2],
+            "why": p[3],
+            "risk": risk,
+            "tone": p[5],
+            "hook": p[6],
+            "held": is_held,
+            "score": s,
+            "score_components": components,
+            "role": None,
+            "stamp": "Inferred",
         })
+
     out.sort(key=lambda x: -x["score"])
     top = out[:4]
+
+    # Explicitly ensure NO held candidate is ever Primary
+    for n in out:
+        if n["held"]:
+            n["role"] = None
+
+    # Assign Primary to the highest-scoring candidate in top that is NOT held
+    primary_assigned = False
     for n in top:
         if not n["held"]:
             n["role"] = "Primary"
+            primary_assigned = True
             break
+
+    # If all candidates in top are held, find the highest-scoring unheld in out and swap into top
+    if not primary_assigned:
+        unheld = next((n for n in out if not n["held"]), None)
+        if unheld:
+            if unheld not in top:
+                top[-1] = unheld
+            unheld["role"] = "Primary"
+
+    # Strict invariant: held candidates can NEVER be Primary
+    for n in top:
+        if n["held"]:
+            n["role"] = None
 
     warnings = []
     held_count = sum(1 for n in out if n["held"])

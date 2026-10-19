@@ -1,30 +1,30 @@
+# Node.js dependencies & builds
 node_modules/
 dist/
-.env
-__pycache__/
-.pytest_cache/
-backend/uploads/*
-!backend/uploads/.gitkeep
-# Node.js
-node_modules/
-dist/
+build/
+npm-debug.log*
 
-# Environment secrets
+# Environment & secrets
 .env
 .env.*
 !.env.example
 
-# Python virtual environments
+# Python virtual environments & bytecode
 .venv/
 venv/
 ai-service/.venv/
 ai-service/venv/
-
-# Python generated files
 __pycache__/
 *.py[cod]
 .pytest_cache/
 
-# Uploaded files: keep only the placeholder
+# Uploads directory (keep directory placeholder)
 backend/uploads/*
 !backend/uploads/.gitkeep
+
+# Operating system & editor files
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json

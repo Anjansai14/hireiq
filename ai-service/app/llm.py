@@ -106,4 +106,69 @@ def complete_json(task: str, context: dict | str, schema_hint: str, max_tokens: 
     """Ask Claude for a JSON answer. Returns parsed JSON or None (fallback)."""
     data, _, _ = complete_structured(task, context, schema_hint, max_tokens)
     return data
+def complete_groq_json(
+    task: str,
+    context: dict | str,
+    schema_hint: str,
+    max_tokens: int | None = None,
+) -> Any | None:
+    """Ask Groq for JSON with bounded retries. Returns None on failure so the agent can use fallback."""
+    if not settings.groq_api_key:
+        log.info("Groq API key not configured; using deterministic fallback")
+        return None
 
+    try:
+        from groq import Groq
+
+        client = Groq(
+            api_key=settings.groq_api_key,
+            timeout=settings.llm_timeout,
+        )
+    except Exception as e:
+        log.warning("Groq client initialization failed: %s; using deterministic fallback", e)
+        return None
+
+    ctx = (
+        context
+        if isinstance(context, str)
+        else json.dumps(context, ensure_ascii=False, default=str)
+    )
+
+    import time
+    retries = max(0, settings.llm_max_retries)
+    last_err: Exception | None = None
+
+    for attempt in range(retries + 1):
+        try:
+            response = client.chat.completions.create(
+                model=settings.groq_model,
+                messages=[
+                    {"role": "system", "content": GUARDRAILS},
+                    {
+                        "role": "user",
+                        "content": (
+                            f"TASK:\n{task}\n\n"
+                            f"CONTEXT (JSON):\n{ctx}\n\n"
+                            f"Return JSON matching:\n{schema_hint}"
+                        ),
+                    },
+                ],
+                max_tokens=max_tokens or settings.llm_max_tokens,
+                temperature=0.7,
+                response_format={"type": "json_object"},
+            )
+
+            text = response.choices[0].message.content or ""
+            data = _extract_json(text)
+            if data is not None:
+                return data
+        except Exception as e:
+            last_err = e
+            if attempt < retries:
+                backoff = 0.5 * (2 ** attempt)
+                log.warning("Groq call attempt %d failed: %s; retrying in %.1fs", attempt + 1, e, backoff)
+                time.sleep(backoff)
+            else:
+                log.warning("Groq narrative request failed after %d attempts: %s; using deterministic fallback", retries + 1, e)
+
+    return None

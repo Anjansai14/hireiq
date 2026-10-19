@@ -62,6 +62,7 @@ export default function CourseBrief() {
   const [openDropdown, setOpenDropdown] = useState(null); // 'locations' | 'langs' | null
   const [uploadList, setUploadList] = useState([]);
   const [dragActive, setDragActive] = useState(false);
+  const [showReadinessModal, setShowReadinessModal] = useState(false);
 
   const activeCourseIdRef = useRef(film?.id);
   const pendingSaveTimeoutRef = useRef(null);
@@ -262,14 +263,43 @@ export default function CourseBrief() {
 
   // Confirm all fields
   const handleConfirmAll = async () => {
-    const unconfKeys = Object.keys(formSrc).filter((k) => formSrc[k]);
-    if (!unconfKeys.length) return;
     try {
       const updated = await api.post(`/courses/${film.id}/confirm`, { keys: [] });
       applyCourseUpdate(updated);
-      toast(`${unconfKeys.length} values confirmed`);
+      toast('All extracted & proposed values confirmed');
     } catch (err) {
       toast(err.message || 'Failed to confirm fields', 'error');
+    }
+  };
+
+  // Auto-fill all 9 required brief fields with sensible defaults & confirm (9/9 ready)
+  const handleAutoFillDefaults = async () => {
+    const slug = (film?.title || 'course').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const defaults = {
+      title: form.title || film?.title || 'Applied AI & ML Programme',
+      link: form.link || `nexaskills.org/${slug}`,
+      domain: form.domain || 'AI/ML',
+      level: form.level || 'Intermediate',
+      eligibility: form.eligibility || 'B.Tech/B.E. or MCA, graduated 2022–2026, 60% aggregate',
+      duration: form.duration || '16 weeks',
+      mode: form.mode || 'Hybrid',
+      locations: form.locations?.length ? form.locations : ['Andhra Pradesh', 'Telangana'],
+      batchName: form.batchName || film?.batch || 'Batch 1',
+      batchStart: form.batchStart || film?.release || '2026-11-16',
+      batchEnd: form.batchEnd || '2027-03-07',
+      screenClose: form.screenClose || '2026-10-31',
+      target: form.target || film?.target || '300',
+      ceiling: form.ceiling || film?.ceiling || '4500',
+      regLink: form.regLink || `resolence.in/r/${slug}`,
+    };
+    setForm((prev) => ({ ...prev, ...defaults }));
+    try {
+      await api.patch(`/courses/${film.id}/form`, { values: defaults });
+      const updated = await api.post(`/courses/${film.id}/confirm`, { keys: [] });
+      applyCourseUpdate(updated);
+      toast('All 9 required fields filled and confirmed (9/9 ready!)');
+    } catch (err) {
+      toast(err.message || 'Failed to auto-fill defaults', 'error');
     }
   };
 
@@ -475,6 +505,18 @@ export default function CourseBrief() {
   const rdPct = readiness?.pct ?? Math.round((rdOk / (rdReq || 1)) * 100);
   const rdColor = rdPct === 100 ? 'var(--success-600)' : 'var(--warning-600)';
 
+  const REQ_BRIEF_FIELDS = [
+    { key: 'title', label: 'Course name', val: form.title, isSet: Boolean(form.title), unconf: Boolean(formSrc.title) },
+    { key: 'link', label: 'Course link', val: form.link, isSet: Boolean(form.link), unconf: Boolean(formSrc.link) },
+    { key: 'domain', label: 'Skill domain & level', val: [form.domain, form.level].filter(Boolean).join(' · '), isSet: Boolean(form.domain && form.level), unconf: Boolean(formSrc.domain || formSrc.level) },
+    { key: 'eligibility', label: 'Eligibility', val: form.eligibility, isSet: Boolean(form.eligibility), unconf: Boolean(formSrc.eligibility) },
+    { key: 'duration', label: 'Duration & mode', val: [form.duration, form.mode].filter(Boolean).join(' · '), isSet: Boolean(form.duration && form.mode), unconf: Boolean(formSrc.duration || formSrc.mode) },
+    { key: 'locations', label: 'Target area', val: Array.isArray(form.locations) ? form.locations.join(', ') : '', isSet: Boolean(form.locations && form.locations.length > 0), unconf: Boolean(formSrc.locations) },
+    { key: 'batch', label: 'Batch start date', val: form.batchStart, isSet: Boolean(form.batchStart), unconf: Boolean(formSrc.batchStart || formSrc.batch) },
+    { key: 'target', label: 'Enrolment target & cost ceiling', val: [form.target && `${form.target} enrolments`, form.ceiling && `₹${form.ceiling}`].filter(Boolean).join(' · '), isSet: Boolean(form.target && form.ceiling), unconf: Boolean(formSrc.target || formSrc.ceiling) },
+    { key: 'regLink', label: 'Registration link (Resolence)', val: form.regLink, isSet: Boolean(form.regLink), unconf: Boolean(formSrc.regLink) }
+  ];
+
   return (
     <div style={{ padding: '28px 32px 48px', maxWidth: '1240px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Hidden file inputs */}
@@ -542,16 +584,39 @@ export default function CourseBrief() {
         </div>
 
         {/* Readiness Meter */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#fff', border: '1px solid var(--ink-100)', borderRadius: '12px', padding: '10px 16px' }}>
-          <div style={{ width: '180px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#fff', border: '1px solid var(--ink-100)', borderRadius: '12px', padding: '10px 16px', boxShadow: 'var(--e-1)' }}>
+          <div
+            onClick={() => setShowReadinessModal(true)}
+            style={{ width: '180px', cursor: 'pointer' }}
+            title="Click to view 9/9 required fields checklist"
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', lineHeight: '16px', fontSize: '12px', color: 'var(--ink-600)', marginBottom: '6px' }}>
-              <span style={{ whiteSpace: 'nowrap' }}>Required fields</span>
-              <b style={{ color: 'var(--ink-900)' }}>{rdOk}/{rdReq}</b>
+              <span style={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                Required fields <Icon name="i-info" size={12} style={{ color: 'var(--teal-600)' }} />
+              </span>
+              <b style={{ color: rdPct === 100 ? 'var(--success-700)' : 'var(--ink-900)' }}>{rdOk}/{rdReq}</b>
             </div>
             <div style={{ height: '8px', borderRadius: '999px', background: 'var(--ink-100)', overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${rdPct}%`, background: rdColor, borderRadius: '999px', transition: 'width .3s ease' }}></div>
             </div>
           </div>
+          <button
+            type="button"
+            onClick={() => setShowReadinessModal(true)}
+            style={{ border: '1px solid var(--ink-200)', background: 'var(--ink-50)', padding: '6px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, color: 'var(--ink-700)', cursor: 'pointer', whiteSpace: 'nowrap' }}
+          >
+            Checklist
+          </button>
+          {rdPct < 100 && (
+            <button
+              type="button"
+              onClick={handleAutoFillDefaults}
+              style={{ border: 0, background: 'var(--teal-700)', color: '#fff', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+              title="One-click populate and confirm all 9 required brief fields"
+            >
+              Auto-fill 9/9 ✓
+            </button>
+          )}
         </div>
       </div>
 
@@ -680,17 +745,55 @@ export default function CourseBrief() {
           ))}
 
           {/* Unconfirmed Values Banner */}
-          {unconfirmedKeys.length > 0 && (
+          {unconfirmedKeys.length > 0 ? (
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px 16px', borderRadius: '8px', background: 'var(--teal-50)', border: '1px solid var(--teal-100)', fontSize: '13px', color: 'var(--teal-900)', flexWrap: 'wrap' }}>
               <Icon name="i-info" size={18} style={{ flex: 'none' }} />
               <span style={{ flex: 1 }}>
                 {unconfirmedKeys.length} value{unconfirmedKeys.length > 1 ? 's' : ''} came from a file or link and {unconfirmedKeys.length > 1 ? 'are' : 'is'} waiting for you to confirm {unconfirmedKeys.length > 1 ? 'them' : 'it'}.
               </span>
               <button
+                type="button"
                 onClick={handleConfirmAll}
-                style={{ height: '32px', padding: '0 12px', borderRadius: '8px', border: 0, background: 'var(--teal-700)', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+                style={{ height: '32px', padding: '0 14px', borderRadius: '8px', border: 0, background: 'var(--teal-700)', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
               >
                 Confirm all
+              </button>
+            </div>
+          ) : rdOk < rdReq ? (
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px 16px', borderRadius: '8px', background: 'var(--ink-50)', border: '1px solid var(--ink-200)', fontSize: '13px', color: 'var(--ink-800)', flexWrap: 'wrap' }}>
+              <Icon name="i-info" size={18} style={{ color: 'var(--teal-600)', flex: 'none' }} />
+              <span style={{ flex: 1 }}>
+                Brief readiness is <b>{rdOk}/{rdReq}</b>. Complete all 9 required fields (or auto-fill defaults) to create and launch campaigns.
+              </span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowReadinessModal(true)}
+                  style={{ height: '32px', padding: '0 12px', borderRadius: '8px', border: '1px solid var(--ink-300)', background: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer', color: 'var(--ink-700)' }}
+                >
+                  View checklist
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAutoFillDefaults}
+                  style={{ height: '32px', padding: '0 12px', borderRadius: '8px', border: 0, background: 'var(--teal-700)', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  Auto-fill 9/9 ✓
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '10px 16px', borderRadius: '8px', background: 'var(--success-50)', border: '1px solid var(--success-200)', fontSize: '13px', color: 'var(--success-800)' }}>
+              <Icon name="i-check" size={18} style={{ color: 'var(--success-600)', flex: 'none' }} />
+              <span style={{ flex: 1 }}>
+                All 9 required brief fields are confirmed! Ready for campaign creation.
+              </span>
+              <button
+                type="button"
+                onClick={() => go('campaigns')}
+                style={{ height: '30px', padding: '0 12px', borderRadius: '6px', border: 0, background: 'var(--teal-700)', color: '#fff', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Go to Campaigns →
               </button>
             </div>
           )}
@@ -707,9 +810,18 @@ export default function CourseBrief() {
                     <b style={{ fontSize: '14px', fontWeight: 600 }}>Course name</b>
                     <span style={{ color: 'var(--ink-400)' }}>*</span>
                     {formSrc.title && (
-                      <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
-                        From file
-                      </span>
+                      <>
+                        <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
+                          From file
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmField('title')}
+                          style={{ height: '20px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--teal-600)', background: '#fff', color: 'var(--teal-700)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <Icon name="i-check" size={11} /> Confirm
+                        </button>
+                      </>
                     )}
                     <span style={{ flex: 1 }}></span>
                     <span style={{ height: '22px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--ink-200)', color: 'var(--ink-600)', fontSize: '11px', fontWeight: 700, letterSpacing: '.04em', display: 'inline-flex', alignItems: 'center' }}>
@@ -720,6 +832,7 @@ export default function CourseBrief() {
                   <input
                     value={form.title}
                     onChange={(e) => handleFieldChange('title', e.target.value)}
+                    onBlur={() => saveFieldImmediate('title', form.title)}
                     placeholder="e.g. Applied AI & ML Programme"
                     style={{ height: '40px', padding: '0 12px', border: '1px solid var(--ink-300)', borderRadius: '8px', background: '#fff', width: '100%', boxSizing: 'border-box' }}
                   />
@@ -731,9 +844,18 @@ export default function CourseBrief() {
                     <b style={{ fontSize: '14px', fontWeight: 600 }}>Course link</b>
                     <span style={{ color: 'var(--ink-400)' }}>*</span>
                     {formSrc.link && (
-                      <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
-                        From file
-                      </span>
+                      <>
+                        <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
+                          From file
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmField('link')}
+                          style={{ height: '20px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--teal-600)', background: '#fff', color: 'var(--teal-700)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <Icon name="i-check" size={11} /> Confirm
+                        </button>
+                      </>
                     )}
                     <span style={{ flex: 1 }}></span>
                     <span style={{ height: '22px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--ink-200)', color: 'var(--ink-600)', fontSize: '11px', fontWeight: 700, letterSpacing: '.04em', display: 'inline-flex', alignItems: 'center' }}>
@@ -744,6 +866,7 @@ export default function CourseBrief() {
                   <input
                     value={form.link}
                     onChange={(e) => handleFieldChange('link', e.target.value)}
+                    onBlur={() => saveFieldImmediate('link', form.link)}
                     placeholder="provider.org/course"
                     style={{ height: '40px', padding: '0 12px', border: '1px solid var(--ink-300)', borderRadius: '8px', background: '#fff', width: '100%', boxSizing: 'border-box' }}
                   />
@@ -755,9 +878,18 @@ export default function CourseBrief() {
                     <b style={{ fontSize: '14px', fontWeight: 600 }}>Skill domain</b>
                     <span style={{ color: 'var(--ink-400)' }}>*</span>
                     {formSrc.domain && (
-                      <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
-                        From file
-                      </span>
+                      <>
+                        <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
+                          From file
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmField('domain')}
+                          style={{ height: '20px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--teal-600)', background: '#fff', color: 'var(--teal-700)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <Icon name="i-check" size={11} /> Confirm
+                        </button>
+                      </>
                     )}
                     <span style={{ flex: 1 }}></span>
                     <span style={{ height: '22px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--ink-200)', color: 'var(--ink-600)', fontSize: '11px', fontWeight: 700, letterSpacing: '.04em', display: 'inline-flex', alignItems: 'center' }}>
@@ -782,9 +914,18 @@ export default function CourseBrief() {
                     <b style={{ fontSize: '14px', fontWeight: 600 }}>Level</b>
                     <span style={{ color: 'var(--ink-400)' }}>*</span>
                     {formSrc.level && (
-                      <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
-                        From file
-                      </span>
+                      <>
+                        <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
+                          From file
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmField('level')}
+                          style={{ height: '20px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--teal-600)', background: '#fff', color: 'var(--teal-700)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <Icon name="i-check" size={11} /> Confirm
+                        </button>
+                      </>
                     )}
                     <span style={{ flex: 1 }}></span>
                     <span style={{ height: '22px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--ink-200)', color: 'var(--ink-600)', fontSize: '11px', fontWeight: 700, letterSpacing: '.04em', display: 'inline-flex', alignItems: 'center' }}>
@@ -815,6 +956,7 @@ export default function CourseBrief() {
                           From file
                         </span>
                         <button
+                          type="button"
                           onClick={() => handleConfirmField('eligibility')}
                           style={{ height: '20px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--teal-600)', background: '#fff', color: 'var(--teal-700)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
                         >
@@ -833,6 +975,7 @@ export default function CourseBrief() {
                   <textarea
                     value={form.eligibility}
                     onChange={(e) => handleFieldChange('eligibility', e.target.value)}
+                    onBlur={() => saveFieldImmediate('eligibility', form.eligibility)}
                     placeholder="e.g. B.Tech/B.E. or MCA, graduated 2022–2026, 60% aggregate"
                     style={{
                       minHeight: '80px',
@@ -861,9 +1004,18 @@ export default function CourseBrief() {
                     <b style={{ fontSize: '14px', fontWeight: 600 }}>Duration</b>
                     <span style={{ color: 'var(--ink-400)' }}>*</span>
                     {formSrc.duration && (
-                      <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
-                        From file
-                      </span>
+                      <>
+                        <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
+                          From file
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmField('duration')}
+                          style={{ height: '20px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--teal-600)', background: '#fff', color: 'var(--teal-700)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <Icon name="i-check" size={11} /> Confirm
+                        </button>
+                      </>
                     )}
                     <span style={{ flex: 1 }}></span>
                     <span style={{ height: '22px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--ink-200)', color: 'var(--ink-600)', fontSize: '11px', fontWeight: 700, letterSpacing: '.04em', display: 'inline-flex', alignItems: 'center' }}>
@@ -873,6 +1025,7 @@ export default function CourseBrief() {
                   <input
                     value={form.duration}
                     onChange={(e) => handleFieldChange('duration', e.target.value)}
+                    onBlur={() => saveFieldImmediate('duration', form.duration)}
                     placeholder="e.g. 16 weeks"
                     style={{ height: '40px', padding: '0 12px', border: '1px solid var(--ink-300)', borderRadius: '8px', background: '#fff', width: '100%', boxSizing: 'border-box' }}
                   />
@@ -884,9 +1037,18 @@ export default function CourseBrief() {
                     <b style={{ fontSize: '14px', fontWeight: 600 }}>Mode</b>
                     <span style={{ color: 'var(--ink-400)' }}>*</span>
                     {formSrc.mode && (
-                      <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
-                        From file
-                      </span>
+                      <>
+                        <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
+                          From file
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmField('mode')}
+                          style={{ height: '20px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--teal-600)', background: '#fff', color: 'var(--teal-700)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <Icon name="i-check" size={11} /> Confirm
+                        </button>
+                      </>
                     )}
                     <span style={{ flex: 1 }}></span>
                     <span style={{ height: '22px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--ink-200)', color: 'var(--ink-600)', fontSize: '11px', fontWeight: 700, letterSpacing: '.04em', display: 'inline-flex', alignItems: 'center' }}>
@@ -911,9 +1073,18 @@ export default function CourseBrief() {
                     <b style={{ fontSize: '14px', fontWeight: 600 }}>Target area</b>
                     <span style={{ color: 'var(--ink-400)' }}>*</span>
                     {formSrc.locations && (
-                      <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
-                        From file
-                      </span>
+                      <>
+                        <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
+                          From file
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmField('locations')}
+                          style={{ height: '20px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--teal-600)', background: '#fff', color: 'var(--teal-700)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <Icon name="i-check" size={11} /> Confirm
+                        </button>
+                      </>
                     )}
                     <span style={{ flex: 1 }}></span>
                     <span style={{ height: '22px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--ink-200)', color: 'var(--ink-600)', fontSize: '11px', fontWeight: 700, letterSpacing: '.04em', display: 'inline-flex', alignItems: 'center' }}>
@@ -983,6 +1154,7 @@ export default function CourseBrief() {
                   <input
                     value={form.batchName}
                     onChange={(e) => handleFieldChange('batchName', e.target.value)}
+                    onBlur={() => saveFieldImmediate('batchName', form.batchName)}
                     placeholder="e.g. Batch 4"
                     style={{ height: '40px', padding: '0 12px', border: '1px solid var(--ink-300)', borderRadius: '8px', background: '#fff', width: '100%', boxSizing: 'border-box' }}
                   />
@@ -993,6 +1165,20 @@ export default function CourseBrief() {
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <b style={{ fontSize: '14px', fontWeight: 600 }}>Batch start date</b>
                     <span style={{ color: 'var(--ink-400)' }}>*</span>
+                    {(formSrc.batchStart || formSrc.batch) && (
+                      <>
+                        <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
+                          From file
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmField('batch')}
+                          style={{ height: '20px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--teal-600)', background: '#fff', color: 'var(--teal-700)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <Icon name="i-check" size={11} /> Confirm
+                        </button>
+                      </>
+                    )}
                     <span style={{ flex: 1 }}></span>
                     <span style={{ height: '22px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--ink-200)', color: 'var(--ink-600)', fontSize: '11px', fontWeight: 700, letterSpacing: '.04em', display: 'inline-flex', alignItems: 'center' }}>
                       REQUIRED
@@ -1035,6 +1221,20 @@ export default function CourseBrief() {
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <b style={{ fontSize: '14px', fontWeight: 600 }}>Enrolment target</b>
                     <span style={{ color: 'var(--ink-400)' }}>*</span>
+                    {formSrc.target && (
+                      <>
+                        <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
+                          From file
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmField('target')}
+                          style={{ height: '20px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--teal-600)', background: '#fff', color: 'var(--teal-700)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <Icon name="i-check" size={11} /> Confirm
+                        </button>
+                      </>
+                    )}
                     <span style={{ flex: 1 }}></span>
                     <span style={{ height: '22px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--ink-200)', color: 'var(--ink-600)', fontSize: '11px', fontWeight: 700, letterSpacing: '.04em', display: 'inline-flex', alignItems: 'center' }}>
                       REQUIRED
@@ -1044,6 +1244,7 @@ export default function CourseBrief() {
                   <input
                     value={form.target}
                     onChange={(e) => handleFieldChange('target', e.target.value)}
+                    onBlur={() => saveFieldImmediate('target', form.target)}
                     placeholder="e.g. 300"
                     style={{ height: '40px', padding: '0 12px', border: '1px solid var(--ink-300)', borderRadius: '8px', background: '#fff', width: '100%', boxSizing: 'border-box' }}
                   />
@@ -1054,6 +1255,20 @@ export default function CourseBrief() {
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <b style={{ fontSize: '14px', fontWeight: 600 }}>Cost ceiling per enrolment (₹)</b>
                     <span style={{ color: 'var(--ink-400)' }}>*</span>
+                    {formSrc.ceiling && (
+                      <>
+                        <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
+                          From file
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmField('ceiling')}
+                          style={{ height: '20px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--teal-600)', background: '#fff', color: 'var(--teal-700)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <Icon name="i-check" size={11} /> Confirm
+                        </button>
+                      </>
+                    )}
                     <span style={{ flex: 1 }}></span>
                     <span style={{ height: '22px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--ink-200)', color: 'var(--ink-600)', fontSize: '11px', fontWeight: 700, letterSpacing: '.04em', display: 'inline-flex', alignItems: 'center' }}>
                       REQUIRED
@@ -1062,6 +1277,7 @@ export default function CourseBrief() {
                   <input
                     value={form.ceiling}
                     onChange={(e) => handleFieldChange('ceiling', e.target.value)}
+                    onBlur={() => saveFieldImmediate('ceiling', form.ceiling)}
                     placeholder="e.g. 4500"
                     style={{ height: '40px', padding: '0 12px', border: '1px solid var(--ink-300)', borderRadius: '8px', background: '#fff', width: '100%', boxSizing: 'border-box' }}
                   />
@@ -1072,6 +1288,20 @@ export default function CourseBrief() {
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <b style={{ fontSize: '14px', fontWeight: 600 }}>Registration link (Resolence)</b>
                     <span style={{ color: 'var(--ink-400)' }}>*</span>
+                    {formSrc.regLink && (
+                      <>
+                        <span style={{ height: '20px', padding: '0 6px', borderRadius: '4px', background: 'var(--teal-50)', color: 'var(--teal-800)', fontSize: '11px', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>
+                          From file
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmField('regLink')}
+                          style={{ height: '20px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--teal-600)', background: '#fff', color: 'var(--teal-700)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <Icon name="i-check" size={11} /> Confirm
+                        </button>
+                      </>
+                    )}
                     <span style={{ flex: 1 }}></span>
                     <span style={{ height: '22px', padding: '0 6px', borderRadius: '4px', border: '1px solid var(--ink-200)', color: 'var(--ink-600)', fontSize: '11px', fontWeight: 700, letterSpacing: '.04em', display: 'inline-flex', alignItems: 'center' }}>
                       BLOCKS CREATE CAMPAIGN
@@ -1083,6 +1313,7 @@ export default function CourseBrief() {
                   <input
                     value={form.regLink}
                     onChange={(e) => handleFieldChange('regLink', e.target.value)}
+                    onBlur={() => saveFieldImmediate('regLink', form.regLink)}
                     placeholder="resolence.in/r/…"
                     style={{ height: '40px', padding: '0 12px', border: '1px solid var(--ink-300)', borderRadius: '8px', background: '#fff', width: '100%', boxSizing: 'border-box' }}
                   />
@@ -1330,6 +1561,172 @@ export default function CourseBrief() {
                 );
               })
             )}
+          </div>
+        </div>
+      )}
+
+      {/* READINESS CHECKLIST MODAL */}
+      {showReadinessModal && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div
+            onClick={() => setShowReadinessModal(false)}
+            style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.45)', backdropFilter: 'blur(3px)' }}
+          />
+          <div
+            style={{
+              position: 'relative',
+              zIndex: 10000,
+              background: '#fff',
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: '620px',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+              border: '1px solid var(--ink-200)',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              maxHeight: '85vh'
+            }}
+          >
+            {/* Header */}
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--ink-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <b style={{ fontSize: '18px', fontWeight: 600, display: 'block' }}>
+                  Course Brief Readiness Checklist
+                </b>
+                <span style={{ fontSize: '13px', color: 'var(--ink-600)' }}>
+                  All 9 required fields must be populated and confirmed to create campaigns.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowReadinessModal(false)}
+                style={{ border: 0, background: 'none', cursor: 'pointer', color: 'var(--ink-500)', padding: '4px', display: 'grid', placeItems: 'center', borderRadius: '6px' }}
+              >
+                <Icon name="i-close" size={20} />
+              </button>
+            </div>
+
+            {/* Progress bar */}
+            <div style={{ padding: '16px 24px', background: 'var(--ink-50)', borderBottom: '1px solid var(--ink-100)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 600, marginBottom: '6px' }}>
+                  <span>Confirmed Readiness</span>
+                  <span style={{ color: rdPct === 100 ? 'var(--success-700)' : 'var(--ink-800)' }}>
+                    {rdOk} of {rdReq} ({rdPct}%)
+                  </span>
+                </div>
+                <div style={{ height: '8px', borderRadius: '999px', background: 'var(--ink-200)', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${rdPct}%`, background: rdColor, borderRadius: '999px', transition: 'width .3s ease' }} />
+                </div>
+              </div>
+            </div>
+
+            {/* Checklist items */}
+            <div style={{ padding: '16px 24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {REQ_BRIEF_FIELDS.map((f, idx) => {
+                const confirmed = f.isSet && !f.unconf;
+                const unconf = f.isSet && f.unconf;
+                const missing = !f.isSet;
+
+                return (
+                  <div
+                    key={f.key}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '10px 14px',
+                      borderRadius: '8px',
+                      background: confirmed ? 'var(--success-50)' : unconf ? 'var(--teal-50)' : 'var(--danger-50)',
+                      border: `1px solid ${confirmed ? 'var(--success-200)' : unconf ? 'var(--teal-200)' : 'var(--danger-200)'}`,
+                      gap: '12px'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+                      <span
+                        style={{
+                          width: '22px',
+                          height: '22px',
+                          borderRadius: '50%',
+                          display: 'grid',
+                          placeItems: 'center',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          flex: 'none',
+                          background: confirmed ? 'var(--success-600)' : unconf ? 'var(--teal-700)' : 'var(--danger-600)',
+                          color: '#fff'
+                        }}
+                      >
+                        {confirmed ? '✓' : idx + 1}
+                      </span>
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <b style={{ fontSize: '13px', display: 'block', color: 'var(--ink-900)' }}>{f.label}</b>
+                        <span style={{ fontSize: '12px', color: 'var(--ink-600)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+                          {f.val || '— Missing / Not filled —'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 'none' }}>
+                      {confirmed && (
+                        <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--success-700)', padding: '2px 8px', borderRadius: '4px', background: '#fff' }}>
+                          Confirmed
+                        </span>
+                      )}
+                      {unconf && (
+                        <>
+                          <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--teal-800)', padding: '2px 8px', borderRadius: '4px', background: '#fff' }}>
+                            Unconfirmed
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleConfirmField(f.key)}
+                            style={{ border: '1px solid var(--teal-600)', background: '#fff', color: 'var(--teal-800)', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                          >
+                            Confirm
+                          </button>
+                        </>
+                      )}
+                      {missing && (
+                        <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--danger-700)', padding: '2px 8px', borderRadius: '4px', background: '#fff' }}>
+                          Required
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Footer */}
+            <div style={{ padding: '16px 24px', borderTop: '1px solid var(--ink-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', flexWrap: 'wrap', gap: '10px' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={handleAutoFillDefaults}
+                  style={{ border: 0, background: 'var(--teal-700)', color: '#fff', padding: '8px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  Auto-fill 9/9 Defaults ✓
+                </button>
+                {unconfirmedKeys.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleConfirmAll}
+                    style={{ border: '1px solid var(--ink-300)', background: '#fff', color: 'var(--ink-800)', padding: '8px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+                  >
+                    Confirm all values
+                  </button>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowReadinessModal(false)}
+                style={{ border: '1px solid var(--ink-300)', background: '#fff', color: 'var(--ink-700)', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Done
+              </button>
+            </div>
           </div>
         </div>
       )}

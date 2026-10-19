@@ -19,7 +19,7 @@ router.get('/', ah(async (req, res) => {
   const out = [];
   for (const { id } of rows) {
     const c = await repo.loadCourse(id);
-    out.push({ id: c.id, title: c.title, batch: c.batch, batch_start: c.batch_start, provider: c.provider, readiness: c.readiness });
+    out.push({ id: c.id, title: c.title, batch: c.batch, batch_start: c.batch_start, provider: c.provider, readiness: c.readiness, form: c.form, form_src: c.form_src, flags: c.flags });
   }
   res.json(out);
 }));

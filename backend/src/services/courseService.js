@@ -19,7 +19,14 @@ function fieldValue(key, f) {
     case 'duration': return [f.duration, f.mode].filter(Boolean).join(' · ');
     case 'locations': return j(f.locations);
     case 'batch': return f.batchStart ? `${fmtDate(f.batchStart)}${f.batchEnd ? ' – ' + fmtDate(f.batchEnd) : ''}${f.screenClose ? ' · screening closes ' + fmtDate(f.screenClose) : ''}` : '';
-    case 'target': return f.target && f.ceiling ? `${f.target} screening enrolments · ₹${Number(String(f.ceiling).replace(/,/g, '')).toLocaleString('en-IN')} per enrolment` : '';
+    case 'target': {
+      if (f.target && f.ceiling) {
+        return `${f.target} screening enrolments · ₹${Number(String(f.ceiling).replace(/,/g, '')).toLocaleString('en-IN')} per enrolment`;
+      }
+      if (f.target) return `${f.target} screening enrolments`;
+      if (f.ceiling) return `₹${Number(String(f.ceiling).replace(/,/g, '')).toLocaleString('en-IN')} ceiling per enrolment`;
+      return '';
+    }
     case 'budget': return f.budget ? `₹${f.budget}` : '';
     case 'fee': return [f.fee, f.stipend && `${f.stipend} stipend`].filter(Boolean).join(' · ');
     case 'langs': return j(f.langs);
@@ -45,7 +52,7 @@ async function syncBrief(courseId, user) {
 
   for (const b of fields) {
     const value = fieldValue(b.field_key, form);
-    const inputs = FIELD_INPUTS[b.field_key] || [b.field_key];
+    const inputs = [b.field_key, ...(FIELD_INPUTS[b.field_key] || [])];
     const fromFile = inputs.map((k) => src[k]).find(Boolean);
     let status = !value ? 'Missing' : fromFile ? 'Unconfirmed' : 'Confirmed';
     let source = !value ? null : fromFile ? fromFile : b.value && b.value !== value ? 'Edited' : b.source || 'Entered';
@@ -107,7 +114,16 @@ async function updateForm(courseId, values, user) {
   if (!c) throw new HttpError(404, 'Course not found');
   const form = { ...c.form, ...values };
   const src = { ...(c.form_src || {}) };
-  Object.keys(values).forEach((k) => delete src[k]); // a typed value is a confirmed value
+  Object.keys(values).forEach((k) => {
+    delete src[k];
+    if (FIELD_INPUTS[k]) FIELD_INPUTS[k].forEach((sub) => delete src[sub]);
+    for (const [parent, subs] of Object.entries(FIELD_INPUTS)) {
+      if (subs.includes(k) || parent === k) {
+        delete src[k];
+        delete src[parent];
+      }
+    }
+  });
   await db.update('courses', { form, form_src: src }, 'id = ?', [courseId]);
   // Inputs a read depends on changed → that read becomes Stale until Agent A2 reruns
   const changed = ['locations', 'competing', 'domain', 'eligibility'].filter((k) => k in values && JSON.stringify(values[k]) !== JSON.stringify(c.form[k]));
@@ -122,8 +138,23 @@ async function updateForm(courseId, values, user) {
 async function confirm(courseId, keys, user) {
   const c = await db.one('SELECT form_src FROM courses WHERE id = ?', [courseId]);
   const src = { ...(c.form_src || {}) };
-  (keys && keys.length ? keys : Object.keys(src)).forEach((k) => delete src[k]);
-  await db.update('courses', { form_src: src }, 'id = ?', [courseId]);
+  if (!keys || !keys.length) {
+    await db.update('courses', { form_src: {} }, 'id = ?', [courseId]);
+  } else {
+    const toDelete = new Set();
+    for (const k of keys) {
+      toDelete.add(k);
+      if (FIELD_INPUTS[k]) FIELD_INPUTS[k].forEach((sub) => toDelete.add(sub));
+      for (const [parent, subs] of Object.entries(FIELD_INPUTS)) {
+        if (subs.includes(k) || parent === k) {
+          toDelete.add(parent);
+          subs.forEach((sub) => toDelete.add(sub));
+        }
+      }
+    }
+    toDelete.forEach((k) => delete src[k]);
+    await db.update('courses', { form_src: src }, 'id = ?', [courseId]);
+  }
   await syncBrief(courseId, user);
   return repo.loadCourse(courseId);
 }

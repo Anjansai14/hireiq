@@ -79,7 +79,7 @@ function readiness(fields, flags) {
   const strong = fields.filter((b) => b.tier === 'strong');
   const reg = fields.find((b) => b.field_key === 'regLink');
   return {
-    req: req.length, ok: ok.length,
+    req: req.length, total: req.length, ok: ok.length,
     missing: req.filter((b) => !b.value || b.status !== 'Confirmed').map((b) => ({ key: b.field_key, label: b.label })),
     strongOk: strong.filter((b) => b.value && b.status === 'Confirmed').length, strong: strong.length,
     pct: req.length ? Math.round((ok.length / req.length) * 100) : 0,

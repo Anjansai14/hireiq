@@ -1,7 +1,14 @@
 $ErrorActionPreference = "Stop"
 
 Write-Host "=== Hire IQ: Checking Docker Status ==="
-$dockerPath = "C:\Users\lenovo\AppData\Local\Programs\DockerDesktop\Docker Desktop.exe"
+$possibleDockerPaths = @(
+    "$env:LOCALAPPDATA\Programs\DockerDesktop\Docker Desktop.exe",
+    "$env:ProgramFiles\Docker\Docker\Docker Desktop.exe",
+    "C:\Program Files\Docker\Docker\Docker Desktop.exe",
+    "C:\Users\lenovo\AppData\Local\Programs\DockerDesktop\Docker Desktop.exe"
+)
+
+$dockerPath = $possibleDockerPaths | Where-Object { Test-Path $_ } | Select-Object -First 1
 
 $isReady = $false
 try {
@@ -16,10 +23,10 @@ try {
 
 if (-not $isReady) {
     Write-Host "Starting Docker Desktop..."
-    if (Test-Path $dockerPath) {
+    if ($dockerPath -and (Test-Path $dockerPath)) {
         Start-Process -FilePath $dockerPath
     } else {
-        Write-Error "Docker Desktop executable not found at $dockerPath"
+        Write-Error "Docker Desktop executable not found. Please start Docker Desktop manually."
         exit 1
     }
 

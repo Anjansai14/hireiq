@@ -243,9 +243,7 @@ export default function Dashboard() {
                 HQ.toast(
                   rd.refused
                     ? `Blocked: a governance flag is Refused for ${film.title}`
-                    : rd.noRegLink
-                    ? 'Add the Resolence registration link to the brief first'
-                    : 'Complete the 9 required brief fields first',
+                    : `Complete required brief fields (${rd.ok}/9): ${(rd.missing || []).map((m) => m.label).slice(0, 3).join(', ')}${(rd.missing || []).length > 3 ? '...' : ''}`,
                   'error'
                 );
                 go('brief');
@@ -303,7 +301,7 @@ export default function Dashboard() {
         >
           <div style={{ fontSize: '13px', color: 'var(--ink-600)', marginBottom: '6px' }}>Brief readiness</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-            <span style={{ fontSize: '28px', lineHeight: '32px', fontWeight: 600 }}>{rd.ok}/{rd.total}</span>
+            <span style={{ fontSize: '28px', lineHeight: '32px', fontWeight: 600 }}>{rd.ok ?? 0}/{rd.total || rd.req || 9}</span>
             <span style={{ fontSize: '13px', color: 'var(--ink-500)' }}>required fields</span>
           </div>
           <div style={{ height: '8px', borderRadius: '999px', background: 'var(--ink-100)', overflow: 'hidden', marginTop: '12px' }}>

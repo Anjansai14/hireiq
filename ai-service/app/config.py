@@ -5,10 +5,30 @@ MySQL and arrive with every request from the Node backend, so the AI service is
 stateless and nothing business-related is hard-coded.
 """
 import os
+from pathlib import Path
+
+# Load from root .env if present (enables single root .env across all services)
+root_env = Path(__file__).resolve().parent.parent.parent / ".env"
+if root_env.exists():
+    try:
+        with open(root_env, encoding="utf-8") as _f:
+            for _line in _f:
+                _line = _line.strip()
+                if _line and not _line.startswith("#") and "=" in _line:
+                    _k, _v = _line.split("=", 1)
+                    os.environ.setdefault(_k.strip(), _v.strip())
+    except Exception:
+        pass
 
 
 class Settings:
     anthropic_api_key: str = os.getenv("ANTHROPIC_API_KEY", "")
+    groq_api_key: str = os.getenv("GROQ_API_KEY", "")
+    groq_model: str = os.getenv(
+        "GROQ_MODEL",
+        "openai/gpt-oss-120b",
+    )
+
     llm_model: str = os.getenv("LLM_MODEL", "claude-sonnet-5-5")
     llm_max_tokens: int = int(os.getenv("LLM_MAX_TOKENS", "2000"))
     llm_timeout: float = float(os.getenv("LLM_TIMEOUT", "30.0"))

@@ -75,7 +75,7 @@ async function runCohort(id, user) {
                                JOIN posts p ON p.cc_id = cs.id WHERE c.course_id = ? AND c.status = 'Closed' GROUP BY c.id`, [c.course_id]);
   const r = await ai.runAgent('a4', {
     campaign: repo.campaignDTO(c), course: repo.courseDTO(course), past_campaigns: past,
-    lookups: { district: cfg.lookups.district, qualification: cfg.lookups.qualification, age_band: cfg.lookups.age_band, exp_band: cfg.lookups.exp_band, cohort_question: cfg.lookups.cohort_question },
+    lookups: { district: cfg.lookups.district, state: cfg.lookups.state, qualification: cfg.lookups.qualification, age_band: cfg.lookups.age_band, exp_band: cfg.lookups.exp_band, cohort_question: cfg.lookups.cohort_question },
     settings: { min_cohort_size: cfg.settings.min_cohort_size },
   }, { entityType: 'campaign', entityId: id });
   if (r.refusal) {

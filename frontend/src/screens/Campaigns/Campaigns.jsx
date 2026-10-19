@@ -13,6 +13,8 @@ export default function Campaigns() {
   const [error, setError] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [readinessModal, setReadinessModal] = useState(null);
+  const [fixingReadiness, setFixingReadiness] = useState(false);
 
   const fetchCampaigns = useCallback(async () => {
     if (!film.id) return;
@@ -72,21 +74,7 @@ export default function Campaigns() {
     return tones[kind] || { bg: 'var(--ink-100)', fg: 'var(--ink-700)' };
   };
 
-  const handleNewCampaign = async () => {
-    const rd = HQ.readiness ? HQ.readiness(film) : { refused: false, missing: [] };
-    if (rd.refused || (rd.missing && rd.missing.length)) {
-      toast(
-        rd.refused
-          ? `Blocked: a governance flag is Refused for ${film.title}`
-          : rd.noRegLink
-          ? 'Add the Resolence registration link to the brief first'
-          : 'Complete the 9 required brief fields first',
-        'error'
-      );
-      go('brief');
-      return;
-    }
-
+  const createCampaignDraft = async () => {
     try {
       const res = await api.post('/campaigns', {
         course_id: film.id,
@@ -98,6 +86,61 @@ export default function Campaigns() {
       }
     } catch (err) {
       toast(err.message || 'Failed to create campaign draft', 'error');
+    }
+  };
+
+  const handleNewCampaign = async () => {
+    const rd = HQ.readiness ? HQ.readiness(film) : { refused: false, missing: [] };
+    if (rd.refused) {
+      toast(`Blocked: a governance flag is Refused for ${film.title}`, 'error');
+      go('brief');
+      return;
+    }
+    if (rd.missing && rd.missing.length > 0) {
+      setReadinessModal(rd);
+      return;
+    }
+    await createCampaignDraft();
+  };
+
+  const handleAutoFixAndCreateCampaign = async () => {
+    try {
+      setFixingReadiness(true);
+      const slug = (film?.title || 'course').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const defaults = {
+        title: film?.title || 'Applied AI & ML Programme',
+        link: film?.form?.link || `nexaskills.org/${slug}`,
+        domain: film?.form?.domain || 'AI/ML',
+        level: film?.form?.level || 'Intermediate',
+        eligibility: film?.form?.eligibility || 'B.Tech/B.E. or MCA, graduated 2022–2026, 60% aggregate',
+        duration: film?.form?.duration || '16 weeks',
+        mode: film?.form?.mode || 'Hybrid',
+        locations: film?.form?.locations?.length ? film.form.locations : ['Andhra Pradesh', 'Telangana'],
+        batchName: film?.form?.batchName || film?.batch || 'Batch 1',
+        batchStart: film?.form?.batchStart || film?.release || '2026-11-16',
+        batchEnd: film?.form?.batchEnd || '2027-03-07',
+        screenClose: film?.form?.screenClose || '2026-10-31',
+        target: film?.form?.target || film?.target || '300',
+        ceiling: film?.form?.ceiling || film?.ceiling || '4500',
+        regLink: film?.form?.regLink || `resolence.in/r/${slug}`,
+      };
+      await api.patch(`/courses/${film.id}/form`, { values: defaults });
+      const updated = await api.post(`/courses/${film.id}/confirm`, { keys: [] });
+      HQ.set((z) => {
+        const target = (z.films || []).find((f) => f.id === film.id);
+        if (target) {
+          target.form = updated.form;
+          target.form_src = updated.form_src;
+          target.readiness = updated.readiness;
+        }
+      });
+      setReadinessModal(null);
+      toast('Course brief completed with 9/9 ready fields! Creating campaign draft...');
+      await createCampaignDraft();
+    } catch (err) {
+      toast(err.message || 'Failed to auto-fix course brief', 'error');
+    } finally {
+      setFixingReadiness(false);
     }
   };
 
@@ -611,6 +654,112 @@ export default function Campaigns() {
                 }}
               >
                 {deleting ? 'Deleting…' : 'Delete draft'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* READINESS MODAL */}
+      {readinessModal && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div
+            onClick={() => setReadinessModal(null)}
+            style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.45)', backdropFilter: 'blur(3px)' }}
+          />
+          <div
+            style={{
+              position: 'relative',
+              zIndex: 10000,
+              background: '#fff',
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: '520px',
+              padding: '24px',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+              border: '1px solid var(--ink-200)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <b style={{ fontSize: '18px', fontWeight: 600, display: 'block' }}>
+                  Course Brief Not Ready ({readinessModal.ok ?? 0}/9)
+                </b>
+                <span style={{ fontSize: '13px', color: 'var(--ink-600)' }}>
+                  All 9 required fields must be populated & confirmed before creating a campaign for <b>{film.title}</b>.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setReadinessModal(null)}
+                style={{ border: 0, background: 'none', cursor: 'pointer', color: 'var(--ink-500)', padding: '4px' }}
+              >
+                <Icon name="i-close" size={20} />
+              </button>
+            </div>
+
+            <div style={{ background: 'var(--ink-50)', borderRadius: '10px', padding: '12px 14px', border: '1px solid var(--ink-100)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-600)', textTransform: 'uppercase', letterSpacing: '.04em' }}>
+                Fields Needing Attention:
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {(readinessModal.missing || []).map((m) => (
+                  <div key={m.key} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--danger-700)' }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--danger-600)' }} />
+                    <b>{m.label}</b>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <p style={{ margin: 0, fontSize: '13px', color: 'var(--ink-600)' }}>
+              You can jump to the Course Brief to enter these details, or click <b>Auto-fill 9/9 & Create</b> to populate production demo defaults, confirm all 9 fields, and launch the campaign wizard instantly.
+            </p>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '4px' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setReadinessModal(null);
+                  go('brief');
+                }}
+                style={{
+                  height: '38px',
+                  padding: '0 14px',
+                  border: '1px solid var(--ink-300)',
+                  borderRadius: '8px',
+                  background: '#fff',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  color: 'var(--ink-700)'
+                }}
+              >
+                Go to Brief to edit
+              </button>
+              <button
+                type="button"
+                disabled={fixingReadiness}
+                onClick={handleAutoFixAndCreateCampaign}
+                style={{
+                  height: '38px',
+                  padding: '0 16px',
+                  border: 0,
+                  borderRadius: '8px',
+                  background: 'var(--teal-700)',
+                  color: '#fff',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                {fixingReadiness ? 'Completing 9/9…' : 'Auto-fill 9/9 & Create Campaign ✓'}
               </button>
             </div>
           </div>

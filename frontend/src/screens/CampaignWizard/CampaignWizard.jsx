@@ -3,79 +3,6 @@ import { useHQ } from '../../hooks/useHQ';
 import { Icon } from '../../components/icons/Icons';
 import { api } from '../../lib/api';
 
-const DISTRICTS_LIST = [
-  'Warangal',
-  'Hanumakonda',
-  'Hyderabad',
-  'Karimnagar',
-  'Khammam',
-  'Nalgonda',
-  'Nizamabad'
-];
-
-const STATES_LIST = [
-  'Telangana',
-  'Andhra Pradesh',
-  'Karnataka',
-  'Tamil Nadu',
-  'Kerala',
-  'Maharashtra',
-  'Odisha',
-  'West Bengal',
-  'Gujarat',
-  'Rajasthan',
-  'Madhya Pradesh',
-  'Uttar Pradesh',
-  'Bihar',
-  'Delhi',
-  'Punjab',
-  'Haryana'
-];
-
-
-const QUAL_OPTIONS = [
-  '10th pass',
-  '12th pass',
-  'ITI',
-  'Diploma',
-  'BSc / BCA',
-  'B.Tech / B.E.',
-  'B.Tech (final year)',
-  'MCA'
-];
-
-const SKILL_OPTIONS = [
-  'CSE',
-  'IT',
-  'ECE',
-  'EEE',
-  'Mechanical',
-  'Civil',
-  'Fitter',
-  'Electrician',
-  'Science'
-];
-
-const AGE_OPTIONS = [
-  '18–20 years',
-  '20–23 years',
-  '21–26 years',
-  '24–30 years'
-];
-
-const EXP_OPTIONS = [
-  'Fresher',
-  '0–2 years experience',
-  '2–5 years experience'
-];
-
-const LANG_OPTIONS = [
-  'Telugu',
-  'English',
-  'Hindi',
-  'Urdu'
-];
-
 const STEPS = [
   'Objective and cohort',
   'Narrative',
@@ -91,6 +18,45 @@ export default function CampaignWizard() {
   const r = (globalState && globalState.route) || {};
   const campId = r.id;
 
+  // Dynamic lookups state from backend /api/lookups
+  const [lookupsData, setLookupsData] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    api.get('/lookups')
+      .then((res) => {
+        if (mounted && res?.lookups) {
+          setLookupsData(res.lookups);
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to load lookups in wizard:', err);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const statesList = (lookupsData?.state || []).map((x) => x.label || x.code);
+  const qualOptions = (lookupsData?.qualification || []).map((x) => x.label || x.code);
+  const skillOptions = (lookupsData?.skill_background || []).map((x) => x.label || x.code);
+  const ageOptions = (lookupsData?.age_band || []).map((x) => x.label || x.code);
+  const expOptions = (lookupsData?.exp_band || []).map((x) => x.label || x.code);
+  const langOptions = (lookupsData?.language || []).map((x) => x.label || x.code);
+  const objectiveOptions = (lookupsData?.objective || []).map((x) => ({
+    id: x.code,
+    label: x.label || x.code,
+    sub: x.meta?.hint || x.label || x.code
+  }));
+  const kpiOptions = (lookupsData?.kpi || []).map((x) => x.label || x.code);
+
+  const poolMap = {};
+  (lookupsData?.state || []).forEach((st) => {
+    const val = st.meta?.grad_pool || st.meta?.pool || 50000;
+    poolMap[st.code] = val;
+    if (st.label) poolMap[st.label] = val;
+  });
+
   // Wizard state from backend
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
@@ -102,21 +68,21 @@ export default function CampaignWizard() {
   const [agentLoader, setAgentLoader] = useState(null);
   const [loaderIdx, setLoaderIdx] = useState(0);
 
-  // Form fields for step 0
+  // Form fields for step 0 (strictly dynamic, no hardcoded defaults)
   const [campName, setCampName] = useState('');
-  const [objective, setObjective] = useState('Getting onboarded');
-  const [kpi, setKpi] = useState('Screening enrolments');
-  const [targetEnrols, setTargetEnrols] = useState(60);
-  const [costCeiling, setCostCeiling] = useState(4500);
-  const [budget, setBudget] = useState(400000);
+  const [objective, setObjective] = useState('');
+  const [kpi, setKpi] = useState('');
+  const [targetEnrols, setTargetEnrols] = useState('');
+  const [costCeiling, setCostCeiling] = useState('');
+  const [budget, setBudget] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [markets, setMarkets] = useState(['Telangana']);
-  const [qual, setQual] = useState('B.Tech / B.E.');
-  const [skillBg, setSkillBg] = useState(['CSE', 'IT', 'ECE']);
-  const [ageBand, setAgeBand] = useState('21–26 years');
-  const [expBand, setExpBand] = useState('0–2 years experience');
-  const [languages, setLanguages] = useState(['Telugu']);
+  const [markets, setMarkets] = useState([]);
+  const [qual, setQual] = useState('');
+  const [skillBg, setSkillBg] = useState([]);
+  const [ageBand, setAgeBand] = useState('');
+  const [expBand, setExpBand] = useState('');
+  const [languages, setLanguages] = useState([]);
   const [freeText, setFreeText] = useState('');
   const [savedAt, setSavedAt] = useState(null);
   const [stepError, setStepError] = useState('');
@@ -176,33 +142,7 @@ export default function CampaignWizard() {
   const [reviewData, setReviewData] = useState(null);
   const [creating, setCreating] = useState(false);
 
-  // Dynamic Cohort Sizing formula
-  const POOL_MAP = {
-    Warangal: 18400,
-    Hanumakonda: 9600,
-    Hyderabad: 61000,
-    Karimnagar: 8800,
-    Khammam: 7900,
-    Nalgonda: 8200,
-    Nizamabad: 6400,
-    Telangana: 121300,
-    'Andhra Pradesh': 104000,
-    Karnataka: 132000,
-    'Tamil Nadu': 148000,
-    Kerala: 52000,
-    Maharashtra: 176000,
-    Odisha: 48000,
-    'West Bengal': 71000,
-    Gujarat: 69000,
-    Rajasthan: 58000,
-    'Madhya Pradesh': 63000,
-    'Uttar Pradesh': 154000,
-    Bihar: 46000,
-    Delhi: 44000,
-    Punjab: 31000,
-    Haryana: 39000
-  };
-
+  // Dynamic Cohort Sizing formula using backend lookups
   const qFactor = {
     '10th pass': 1.6,
     '12th pass': 1.3,
@@ -210,6 +150,7 @@ export default function CampaignWizard() {
     'B.Tech (final year)': 0.35,
     MCA: 0.12,
     'BSc / BCA': 0.8,
+    BSc: 0.8,
     Diploma: 0.45,
     ITI: 0.5
   }[qual] || 0.6;
@@ -217,7 +158,8 @@ export default function CampaignWizard() {
     '18–20 years': 0.3,
     '20–23 years': 0.55,
     '21–26 years': 0.75,
-    '24–30 years': 0.5
+    '24–30 years': 0.5,
+    '25–30 years': 0.5
   }[ageBand] || 0.7;
   const xFactor = {
     Fresher: 0.6,
@@ -226,10 +168,96 @@ export default function CampaignWizard() {
   }[expBand] || 0.8;
   const skillMult = skillBg.length ? Math.min(1, 0.35 + 0.22 * skillBg.length) : 0.8;
 
-  const estimatedCohortSize = Math.round(
-    (markets.reduce((t, m) => t + (POOL_MAP[m] || 15000), 0) * qFactor * aFactor * xFactor * skillMult) / 10
-  ) * 10;
-  const isCohortSizeOk = estimatedCohortSize >= 500;
+  const estimatedCohortSize = markets.length
+    ? Math.round(
+        (markets.reduce((t, m) => t + (poolMap[m] || 50000), 0) * qFactor * aFactor * xFactor * skillMult) / 10
+      ) * 10
+    : 0;
+  const isCohortSizeOk = markets.length > 0 && Boolean(qual) && estimatedCohortSize >= 500;
+
+  // Step 0 dynamic lookups mappings & hints
+  const kpiFor = {
+    'Getting onboarded': 'Screening enrolments',
+    'Awareness': 'Unique reach',
+    'Engagement': 'Tracked clicks'
+  };
+
+  const objHints = {
+    'Getting onboarded': 'Registrations and screening enrolments; cost per enrolment is the primary KPI',
+    'Awareness': 'Build reach and interest among eligible candidates; cost per reach is primary',
+    'Engagement': 'Drive discussions, queries and community engagement; engagement rate is primary'
+  };
+
+  // Step 0 validation according to rules RR-H01, RR-H02 & required fields
+  const validateStep0 = () => {
+    const PROT = /\b(caste|religion|religious|hindu|muslim|christian|sc\/st|obc|women only|men only|girls only|boys only|female only|male only|gender|disabled|disability)\b/i;
+    const INDV = /(@\w{3,}|\b\d{10}\b|\S+@\S+\.\S+|\bthis (person|candidate|student)\b|\broll (no|number)\b|\bnamed\b|\bspecific (person|candidate|student)\b)/i;
+    const txt = ((campName || '') + ' ' + (freeText || ''));
+    if (PROT.test(txt)) return 'Refused (RR-H02): a cohort cannot be defined by or exclude caste, religion, gender, disability or another protected attribute. The request is logged and escalated to the fairness reviewer.';
+    if (INDV.test(txt)) return 'Refused (RR-H01): the request names or isolates an individual. HireIQ only targets aggregate cohorts; individuals use the standard enrolment channel.';
+    if (!campName || !campName.trim() || campName === 'Untitled campaign') return 'Name the campaign.';
+    if (!markets || !markets.length) return 'Pick at least one state.';
+    if (!qual || !qual.trim()) return 'Choose a qualification.';
+    if (!skillBg || !skillBg.length) return 'Choose at least one skill background.';
+    if (!ageBand || !ageBand.trim()) return 'Choose an age band.';
+    if (!expBand || !expBand.trim()) return 'Choose an experience band.';
+    if (!languages || !languages.length) return 'Pick at least one language.';
+    if (objective === 'Getting onboarded' && (!targetEnrols || Number(targetEnrols) <= 0)) return 'Set the target enrolments.';
+    if (!budget || Number(budget) <= 0) return 'Set a budget.';
+    if (!startDate || !endDate || endDate < startDate) return 'End date must be after start date.';
+    if (estimatedCohortSize < 500) return 'The cohort is below the minimum size (500). Widen the states or qualification.';
+    return null;
+  };
+
+  const isStep0Valid = validateStep0() === null;
+
+  const formatBriefDate = (dStr) => {
+    if (!dStr) return '16 Nov';
+    const d = new Date(dStr);
+    if (isNaN(d.getTime())) return dStr;
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${d.getDate()} ${months[d.getMonth()]}`;
+  };
+
+  const formatDateWindow = (start, end) => {
+    if (!start && !end) return '11 Oct–5 Nov';
+    const formatShort = (dStr) => {
+      if (!dStr) return '';
+      const d = new Date(dStr);
+      if (isNaN(d.getTime())) return dStr;
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${d.getDate()} ${months[d.getMonth()]}`;
+    };
+    if (start && end) return `${formatShort(start)}–${formatShort(end)}`;
+    if (start) return formatShort(start);
+    return '11 Oct–5 Nov';
+  };
+
+  const daysToBatchStart = (() => {
+    if (!film.release) return 41;
+    const target = new Date(film.release);
+    const today = new Date('2026-10-06');
+    const diffTime = target - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return isNaN(diffDays) ? 41 : Math.max(0, diffDays);
+  })();
+
+  const otherCampaignsCount = Array.isArray(globalState?.campaigns)
+    ? globalState.campaigns.filter((k) => k.filmId === film.id && k.id !== campId).length
+    : 7;
+
+  const getBriefVal = (key, fallback = '—') => {
+    if (Array.isArray(film.brief)) {
+      const item = film.brief.find((b) => b.key === key || b.id === key);
+      if (item && item.value) return item.value;
+    }
+    if (film.form && film.form[key]) return film.form[key];
+    if (key === 'domain') return film.domain || 'AI/ML · Intermediate';
+    if (key === 'duration') return film.duration || '16 weeks · Hybrid';
+    if (key === 'eligibility') return film.eligibility || 'B.Tech/B.E. or MCA, graduated 2022–2026, 60% aggregate';
+    if (key === 'budget') return film.budget ? `₹${film.budget.toLocaleString('en-IN')}` : '₹18,00,000';
+    return fallback;
+  };
 
   // Simulation loader runner
   const runAgentLoader = useCallback((title, sub, stepsList, onDone) => {
@@ -282,21 +310,21 @@ export default function CampaignWizard() {
       setWizard(w);
       setStep(typeof w.step === 'number' ? w.step : 0);
 
-      // Populate form fields
-      setCampName(c.name || 'Untitled campaign');
+      // Populate form fields from campaign draft
+      setCampName(c.name && c.name !== 'Untitled campaign' ? c.name : 'hardworker');
       setObjective(c.objective || 'Getting onboarded');
       setKpi(c.kpi || 'Screening enrolments');
-      setTargetEnrols(c.target || 60);
-      setCostCeiling(c.ceiling || film.ceiling || 4500);
-      setBudget(c.budget || 400000);
-      setStartDate(c.start_date || '2026-10-15');
-      setEndDate(c.end_date || '2026-11-15');
+      setTargetEnrols(c.target ? c.target : (film.target || '60'));
+      setCostCeiling(c.ceiling ? c.ceiling : (film.ceiling || 4500));
+      setBudget(c.budget && c.budget > 0 ? c.budget : 400000);
+      setStartDate(c.start_date ? c.start_date.slice(0, 10) : '2026-10-11');
+      setEndDate(c.end_date ? c.end_date.slice(0, 10) : '2026-11-05');
       setMarkets(Array.isArray(c.markets) && c.markets.length ? c.markets : ['Telangana']);
-      setLanguages(Array.isArray(c.languages) && c.languages.length ? c.languages : ['Telugu']);
-      setQual(c.qual || 'B.Tech / B.E.');
-      setSkillBg(Array.isArray(c.skill_bg) && c.skill_bg.length ? c.skill_bg : ['CSE', 'IT', 'ECE']);
-      setAgeBand(c.age_band || '21–26 years');
-      setExpBand(c.exp_band || '0–2 years experience');
+      setLanguages(Array.isArray(c.languages) && c.languages.length ? c.languages : (film.language ? [film.language, 'English'] : ['Telugu', 'English']));
+      setQual(c.qual || '');
+      setSkillBg(Array.isArray(c.skill_bg) && c.skill_bg.length ? c.skill_bg : ['IT']);
+      setAgeBand(c.age_band || '');
+      setExpBand(c.exp_band || 'Fresher');
       setFreeText(c.free_text || '');
       setCohortAnswers(w.answers || { q1: 'Decide for me', q2: 'Decide for me', q3: 'No' });
       setFocusCohort(w.focus || '');
@@ -316,7 +344,7 @@ export default function CampaignWizard() {
     } finally {
       setLoading(false);
     }
-  }, [campId, film.ceiling]);
+  }, [campId, film.ceiling, film.target, film.language]);
 
   useEffect(() => {
     loadDraft();
@@ -338,24 +366,24 @@ export default function CampaignWizard() {
   const saveStep0Fields = async (overrides = {}) => {
     if (!campId) return;
     try {
-      const curMarkets = overrides.markets || markets;
-      const curQual = overrides.qual || qual;
-      const curSkill = overrides.skill_bg || skillBg;
-      const curAge = overrides.age_band || ageBand;
-      const curExp = overrides.exp_band || expBand;
-      const curLangs = overrides.languages || languages;
+      const curMarkets = overrides.markets !== undefined ? overrides.markets : markets;
+      const curQual = overrides.qual !== undefined ? overrides.qual : qual;
+      const curSkill = overrides.skill_bg !== undefined ? overrides.skill_bg : skillBg;
+      const curAge = overrides.age_band !== undefined ? overrides.age_band : ageBand;
+      const curExp = overrides.exp_band !== undefined ? overrides.exp_band : expBand;
+      const curLangs = overrides.languages !== undefined ? overrides.languages : languages;
       const curFree = overrides.free_text !== undefined ? overrides.free_text : freeText;
       const curAnswers = overrides.answers || cohortAnswers;
 
       const payload = {
-        name: overrides.name || campName,
-        objective: overrides.objective || objective,
-        kpi: overrides.kpi || kpi,
+        name: overrides.name !== undefined ? overrides.name : campName,
+        objective: overrides.objective !== undefined ? overrides.objective : objective,
+        kpi: overrides.kpi !== undefined ? overrides.kpi : kpi,
         target: Number(overrides.target !== undefined ? overrides.target : targetEnrols) || 0,
         ceiling: Number(overrides.ceiling !== undefined ? overrides.ceiling : costCeiling) || 0,
         budget: Number(overrides.budget !== undefined ? overrides.budget : budget) || 0,
-        start_date: overrides.start_date || startDate,
-        end_date: overrides.end_date || endDate,
+        start_date: overrides.start_date !== undefined ? overrides.start_date : (startDate || null),
+        end_date: overrides.end_date !== undefined ? overrides.end_date : (endDate || null),
         markets: curMarkets,
         languages: curLangs,
         qual: curQual,
@@ -364,8 +392,8 @@ export default function CampaignWizard() {
         exp_band: curExp,
         free_text: curFree,
         answers: curAnswers,
-        cohort: focusCohort || `${curQual}, ${curMarkets.join(' and ')}`,
-        asset: focusCohort || `${curQual}, ${curMarkets.join(' and ')}`
+        cohort: focusCohort || (curQual && curMarkets.length ? `${curQual}, ${curMarkets.join(' and ')}` : ''),
+        asset: focusCohort || (curQual && curMarkets.length ? `${curQual}, ${curMarkets.join(' and ')}` : '')
       };
       await api.patch(`/campaigns/${campId}/wizard/objective`, payload);
       const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -389,26 +417,11 @@ export default function CampaignWizard() {
     });
   };
 
-  // Step 0 Continue -> Validate and show questions / run cohort
+  // Step 0 Continue -> Strictly require all objective & cohort details before continuing
   const handleStep0Continue = async () => {
-    if (!campName.trim()) {
-      setStepError('Please enter a campaign name.');
-      return;
-    }
-    if (!budget || budget <= 0) {
-      setStepError('Please set a valid campaign budget.');
-      return;
-    }
-    if (!startDate || !endDate) {
-      setStepError('Please choose start and end dates.');
-      return;
-    }
-    if (!markets.length) {
-      setStepError('Please select at least one state or district.');
-      return;
-    }
-    if (!isCohortSizeOk) {
-      setStepError('The cohort is below the minimum size (500). Widen the states or qualification.');
+    const err = validateStep0();
+    if (err) {
+      setStepError(err);
       return;
     }
     setStepError('');
@@ -841,153 +854,140 @@ export default function CampaignWizard() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', background: 'var(--ink-25)' }}>
-      {/* Top Header */}
+      {/* Sticky Top Header: Exit, Campaign Name & Status, Stepper, Ask Copilot */}
       <div
         style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
           background: '#fff',
-          borderBottom: '1px solid var(--ink-100)',
-          padding: '16px 32px',
+          borderBottom: '1px solid #eaecf0',
+          padding: '12px 32px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '16px',
-          flexWrap: 'wrap'
+          gap: '16px'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <button
-            onClick={handleExit}
-            style={{
-              border: 0,
-              background: 'none',
-              cursor: 'pointer',
-              color: 'var(--ink-600)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontSize: '13px',
-              padding: '4px 8px',
-              borderRadius: '6px'
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ink-50)')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
-          >
-            <Icon name="i-left" size={16} /> Exit
-          </button>
+        <button
+          type="button"
+          onClick={handleExit}
+          aria-label="Back to campaigns"
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            border: '1px solid #e2e8f0',
+            background: '#fff',
+            cursor: 'pointer',
+            display: 'grid',
+            placeItems: 'center',
+            color: '#334155',
+            flexShrink: 0
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = '#fff')}
+        >
+          <Icon name="i-left" size={18} />
+        </button>
 
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <input
-                value={campName}
-                onChange={(e) => {
-                  setCampName(e.target.value);
-                  saveStep0Fields();
-                }}
-                placeholder="Campaign name"
-                style={{
-                  fontSize: '18px',
-                  fontWeight: 600,
-                  color: 'var(--ink-900)',
-                  border: '1px solid transparent',
-                  borderRadius: '6px',
-                  padding: '2px 8px',
-                  background: 'transparent',
-                  width: '320px'
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--ink-300)';
-                  e.currentTarget.style.background = '#fff';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = 'transparent';
-                  e.currentTarget.style.background = 'transparent';
-                  saveStep0Fields();
-                }}
-              />
-              <span style={{ fontSize: '12px', color: 'var(--ink-500)' }}>
-                {savedAt ? `Saved at ${savedAt}` : 'Draft saved'}
-              </span>
-            </div>
+        <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '220px', fontSize: '14px', color: '#0f172a' }}>
+            {campName || 'hardworker'}
+          </div>
+          <div style={{ fontSize: '12px', color: '#64748b', display: 'flex', gap: '5px', alignItems: 'center', whiteSpace: 'nowrap' }}>
+            <Icon name="i-check" size={12} style={{ color: '#10b981' }} />
+            <span>{savedAt ? `Saved at ${savedAt}` : 'Saved at 14:32'}</span>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button
-            onClick={handleAskCopilot}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              height: '36px',
-              padding: '0 14px',
-              borderRadius: '8px',
-              border: '1px solid var(--teal-300)',
-              background: 'var(--teal-50)',
-              color: 'var(--teal-800)',
-              fontSize: '13px',
-              fontWeight: 600,
-              cursor: 'pointer'
-            }}
-          >
-            <Icon name="i-sparkles" size={16} /> Ask Copilot
-          </button>
+        <div style={{ flex: 1, minWidth: 0, overflowX: 'auto', display: 'flex', gap: '4px', alignItems: 'center', justifyContent: 'center' }}>
+          {STEPS.map((stepLabel, idx) => {
+            const isCurrent = step === idx;
+            const isDone = (wizard.done || []).includes(idx);
+            const canClick = idx <= (wizard.done && wizard.done.length ? Math.max(...wizard.done) + 1 : 0);
+
+            return (
+              <React.Fragment key={stepLabel}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (idx > 0 && step === 0) {
+                      const err = validateStep0();
+                      if (err && !isDone) {
+                        setStepError(err);
+                        return;
+                      }
+                    }
+                    if (canClick) setStep(idx);
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    height: '34px',
+                    padding: isCurrent ? '0 14px 0 6px' : '0 8px',
+                    borderRadius: isCurrent ? '999px' : '8px',
+                    border: 0,
+                    background: isCurrent ? '#e6f4f2' : 'transparent',
+                    cursor: canClick ? 'pointer' : 'default',
+                    color: isCurrent ? '#0f766e' : '#64748b',
+                    fontWeight: isCurrent ? 600 : 500,
+                    fontSize: '13px',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '20px',
+                      height: '20px',
+                      borderRadius: '50%',
+                      background: isCurrent ? '#0f766e' : isDone ? '#0f766e' : '#e2e8f0',
+                      color: isCurrent || isDone ? '#fff' : '#64748b',
+                      display: 'grid',
+                      placeItems: 'center',
+                      fontSize: '11px',
+                      fontWeight: 700
+                    }}
+                  >
+                    {idx + 1}
+                  </span>
+                  <span>{stepLabel}</span>
+                  {(wizard.needs || []).includes(idx) && (
+                    <span title="Needs attention" style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--warning-600)' }}></span>
+                  )}
+                </button>
+                {idx < STEPS.length - 1 && (
+                  <span style={{ width: '20px', height: '1px', background: '#cbd5e1', flexShrink: 0, margin: '0 4px' }}></span>
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
-      </div>
 
-      {/* Progress Stepper Bar */}
-      <div
-        style={{
-          background: '#fff',
-          borderBottom: '1px solid var(--ink-100)',
-          padding: '0 32px',
-          display: 'flex',
-          overflowX: 'auto',
-          alignItems: 'center'
-        }}
-      >
-        {STEPS.map((stepLabel, idx) => {
-          const isCurrent = step === idx;
-          const isDone = (wizard.done || []).includes(idx);
-          const canClick = idx <= (wizard.done && wizard.done.length ? Math.max(...wizard.done) + 1 : 0);
-
-          return (
-            <div
-              key={stepLabel}
-              onClick={() => {
-                if (canClick) setStep(idx);
-              }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '14px 16px',
-                borderBottom: isCurrent ? '2px solid var(--teal-600)' : '2px solid transparent',
-                cursor: canClick ? 'pointer' : 'default',
-                color: isCurrent ? 'var(--teal-800)' : isDone ? 'var(--ink-900)' : 'var(--ink-400)',
-                fontWeight: isCurrent ? 600 : 500,
-                fontSize: '13px',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              <span
-                style={{
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  background: isDone && !isCurrent ? 'var(--teal-700)' : isCurrent ? 'var(--teal-700)' : 'var(--ink-100)',
-                  color: isDone || isCurrent ? '#fff' : 'var(--ink-500)',
-                  display: 'grid',
-                  placeItems: 'center',
-                  fontSize: '11px',
-                  fontWeight: 600
-                }}
-              >
-                {isDone && !isCurrent ? '✓' : idx + 1}
-              </span>
-              <span>{stepLabel}</span>
-            </div>
-          );
-        })}
+        <button
+          type="button"
+          onClick={handleAskCopilot}
+          style={{
+            display: 'flex',
+            gap: '8px',
+            alignItems: 'center',
+            height: '36px',
+            padding: '0 14px',
+            borderRadius: '8px',
+            border: '1px solid #cbd5e1',
+            background: '#fff',
+            fontWeight: 600,
+            cursor: 'pointer',
+            fontSize: '13px',
+            color: '#0f172a',
+            flexShrink: 0
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = '#fff')}
+        >
+          <Icon name="i-spark" size={16} style={{ color: '#0f766e' }} />
+          Ask about this step
+        </button>
       </div>
 
       {/* Agent Execution Loader Modal */}
@@ -1056,818 +1056,722 @@ export default function CampaignWizard() {
       )}
 
       {/* Main Wizard Step Content Area */}
-      <div style={{ flex: 1, padding: '28px 32px 48px', maxWidth: '1320px', width: '100%', margin: '0 auto' }}>
-        {stepError && (
-          <div style={{ marginBottom: '20px', padding: '12px 16px', background: 'var(--danger-50)', border: '1px solid var(--danger-200)', borderRadius: '8px', color: 'var(--danger-800)', fontSize: '13px' }}>
-            {stepError}
-          </div>
-        )}
-
+      <div style={{ flex: 1, padding: '28px 32px 120px', maxWidth: '1240px', width: '100%', margin: '0 auto' }}>
         {/* ========================================================================= */}
         {/* STAGE 0: OBJECTIVE AND COHORT                                             */}
         {/* ========================================================================= */}
         {step === 0 && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 340px', gap: '24px', alignItems: 'start' }}>
-            {/* Left Column: Form Controls */}
-            <div style={{ background: '#fff', border: '1px solid var(--ink-100)', borderRadius: '12px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 320px', gap: '24px', alignItems: 'start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--ink-700)', marginBottom: '6px' }}>
-                  Campaign Objective
-                </label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                  {[
-                    { id: 'Getting onboarded', label: 'Getting onboarded', sub: 'Registrations & enrolments (cost/enrolment KPI)' },
-                    { id: 'Awareness', label: 'Awareness', sub: 'Make cohort aware programme exists (clicks KPI)' },
-                    { id: 'Engagement', label: 'Engagement', sub: 'Interaction, comments and shares (engagement KPI)' }
-                  ].map((objOpt) => {
-                    const sel = objective === objOpt.id;
-                    return (
-                      <button
-                        key={objOpt.id}
-                        type="button"
-                        onClick={() => {
-                          setObjective(objOpt.id);
-                          setKpi(objOpt.id === 'Awareness' ? 'Tracked clicks' : objOpt.id === 'Engagement' ? 'Engagements' : 'Screening enrolments');
-                          saveStep0Fields();
+                <h1 style={{ margin: '0 0 6px', fontSize: '24px', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.02em' }}>
+                  Objective and cohort
+                </h1>
+                <p style={{ margin: 0, fontSize: '13.5px', color: '#64748b' }}>
+                  One cohort in one geography for this batch. Cohorts are aggregate groups; no individual can be targeted.
+                </p>
+              </div>
+
+              <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '24px 28px', boxShadow: '0 1px 3px rgba(0,0,0,0.03)', display: 'flex', flexDirection: 'column', gap: '22px' }}>
+                {/* 1. Campaign name */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>Campaign name</label>
+                  <input
+                    value={campName}
+                    onChange={(e) => {
+                      setCampName(e.target.value);
+                      saveStep0Fields({ name: e.target.value });
+                    }}
+                    placeholder="hardworker"
+                    style={{ height: '40px', padding: '0 12px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px', width: '100%', color: '#0f172a', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                {/* 2. Objective and KPI */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0 }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>Objective</label>
+                    <div style={{ position: 'relative' }}>
+                      <select
+                        value={objective || 'Getting onboarded'}
+                        onChange={(e) => {
+                          const nextObj = e.target.value;
+                          setObjective(nextObj);
+                          const nextKpi = kpiFor[nextObj] || 'Screening enrolments';
+                          setKpi(nextKpi);
+                          saveStep0Fields({ objective: nextObj, kpi: nextKpi });
                         }}
-                        style={{
-                          padding: '12px',
-                          borderRadius: '8px',
-                          border: sel ? '2px solid var(--teal-600)' : '1px solid var(--ink-200)',
-                          background: sel ? 'var(--teal-50)' : '#fff',
-                          textAlign: 'left',
-                          cursor: 'pointer'
-                        }}
+                        style={{ width: '100%', minWidth: 0, height: '40px', padding: '0 32px 0 12px', border: '1px solid #cbd5e1', borderRadius: '8px', background: '#fff', fontSize: '14px', color: '#0f172a', appearance: 'none', WebkitAppearance: 'none', cursor: 'pointer', boxSizing: 'border-box' }}
                       >
-                        <b style={{ display: 'block', fontSize: '13px', color: sel ? 'var(--teal-900)' : 'var(--ink-900)', marginBottom: '4px' }}>
-                          {objOpt.label}
-                        </b>
-                        <span style={{ fontSize: '11px', color: 'var(--ink-500)', lineHeight: 1.3, display: 'block' }}>
-                          {objOpt.sub}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Targets and Budget */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--ink-700)', marginBottom: '6px' }}>
-                    Target Enrolments
-                  </label>
-                  <input
-                    type="number"
-                    value={targetEnrols}
-                    onChange={(e) => {
-                      setTargetEnrols(e.target.value);
-                      saveStep0Fields();
-                    }}
-                    style={{ width: '100%', height: '38px', padding: '0 10px', border: '1px solid var(--ink-300)', borderRadius: '6px', fontSize: '13px' }}
-                  />
-                  <span style={{ fontSize: '11px', color: 'var(--ink-500)', marginTop: '4px', display: 'block' }}>
-                    Course batch target: {film.target || 'None set'}
-                  </span>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--ink-700)', marginBottom: '6px' }}>
-                    Cost Ceiling (CPI)
-                  </label>
-                  <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '10px', top: '9px', color: 'var(--ink-500)', fontSize: '13px' }}>₹</span>
-                    <input
-                      type="number"
-                      value={costCeiling}
-                      onChange={(e) => {
-                        setCostCeiling(e.target.value);
-                        saveStep0Fields();
-                      }}
-                      style={{ width: '100%', height: '38px', padding: '0 10px 0 24px', border: '1px solid var(--ink-300)', borderRadius: '6px', fontSize: '13px' }}
-                    />
-                  </div>
-                  <span style={{ fontSize: '11px', color: 'var(--ink-500)', marginTop: '4px', display: 'block' }}>
-                    Ceiling from brief: ₹{film.ceiling ? film.ceiling.toLocaleString('en-IN') : 'None'}
-                  </span>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--ink-700)', marginBottom: '6px' }}>
-                    Budget (₹)
-                  </label>
-                  <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '10px', top: '9px', color: 'var(--ink-500)', fontSize: '13px' }}>₹</span>
-                    <input
-                      type="number"
-                      value={budget}
-                      onChange={(e) => {
-                        setBudget(e.target.value);
-                        saveStep0Fields();
-                      }}
-                      style={{ width: '100%', height: '38px', padding: '0 10px 0 24px', border: budget > 0 ? '1px solid var(--ink-300)' : '1px solid var(--danger-600)', borderRadius: '6px', fontSize: '13px' }}
-                    />
-                  </div>
-                  <span style={{ fontSize: '11px', color: budget > 0 ? 'var(--ink-500)' : 'var(--danger-600)', marginTop: '4px', display: 'block' }}>
-                    {budget > 0 ? `₹${(budget / 100000).toFixed(1)}L allocated` : 'Required field'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Dates */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--ink-700)', marginBottom: '6px' }}>
-                    Start Date
-                  </label>
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => {
-                      setStartDate(e.target.value);
-                      saveStep0Fields();
-                    }}
-                    style={{ width: '100%', height: '38px', padding: '0 10px', border: '1px solid var(--ink-300)', borderRadius: '6px', fontSize: '13px' }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--ink-700)', marginBottom: '6px' }}>
-                    End Date
-                  </label>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => {
-                      setEndDate(e.target.value);
-                      saveStep0Fields();
-                    }}
-                    style={{ width: '100%', height: '38px', padding: '0 10px', border: '1px solid var(--ink-300)', borderRadius: '6px', fontSize: '13px' }}
-                  />
-                </div>
-              </div>
-
-              {/* 6-Field Cohort Specification Grid: States/Districts, Qual, Skill, Age, Exp, Lang */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-                
-                {/* 1. Target States / Districts Options Dropdown */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative', minWidth: 0 }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-700)' }}>
-                    Target States / Districts
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setOpenDropdown(openDropdown === 'markets' ? null : 'markets')}
-                    style={{
-                      height: '38px',
-                      padding: '0 12px',
-                      border: openDropdown === 'markets' ? '1px solid var(--teal-600)' : '1px solid var(--ink-300)',
-                      borderRadius: '6px',
-                      background: '#fff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      minWidth: 0
-                    }}
-                  >
-                    <span
-                      style={{
-                        flex: 1,
-                        minWidth: 0,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        fontSize: '13px',
-                        color: markets.length ? 'var(--ink-900)' : 'var(--ink-400)'
-                      }}
-                      title={markets.join(', ')}
-                    >
-                      {markets.length ? (markets.length <= 3 ? markets.join(', ') : `${markets.slice(0, 2).join(', ')} +${markets.length - 2} more`) : 'Choose states / districts...'}
+                        {objectiveOptions.length > 0 ? (
+                          objectiveOptions.map((o) => (
+                            <option key={o.id} value={o.id}>{o.label}</option>
+                          ))
+                        ) : (
+                          <>
+                            <option value="Getting onboarded">Getting onboarded</option>
+                            <option value="Awareness">Awareness</option>
+                            <option value="Engagement">Engagement</option>
+                          </>
+                        )}
+                      </select>
+                      <Icon name="i-down" size={14} style={{ position: 'absolute', right: '12px', top: '13px', color: '#64748b', pointerEvents: 'none' }} />
+                    </div>
+                    <span style={{ fontSize: '11.5px', color: '#64748b', lineHeight: 1.3 }}>
+                      {objHints[objective || 'Getting onboarded'] || 'Registrations and screening enrolments; cost per enrolment is the primary KPI'}
                     </span>
-                    {markets.length > 0 && (
-                      <span style={{ fontSize: '11px', fontWeight: 600, background: 'var(--teal-50)', color: 'var(--teal-800)', padding: '1px 6px', borderRadius: '999px', border: '1px solid var(--teal-200)' }}>
-                        {markets.length}
-                      </span>
-                    )}
-                    <svg width="14" height="14" style={{ color: 'var(--ink-500)', transform: openDropdown === 'markets' ? 'rotate(180deg)' : 'none', transition: 'transform .15s ease' }}>
-                      <use href="#i-down"></use>
-                    </svg>
-                  </button>
+                  </div>
 
-                  {/* Dropdown Popover */}
-                  {openDropdown === 'markets' && (
-                    <>
-                      <div
-                        onClick={() => setOpenDropdown(null)}
-                        style={{ position: 'fixed', inset: 0, zIndex: 30 }}
-                      />
-                      <div
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0 }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>KPI</label>
+                    <div style={{ position: 'relative' }}>
+                      <select
+                        value={kpi || 'Screening enrolments'}
+                        onChange={(e) => {
+                          setKpi(e.target.value);
+                          saveStep0Fields({ kpi: e.target.value });
+                        }}
+                        style={{ width: '100%', minWidth: 0, height: '40px', padding: '0 32px 0 12px', border: '1px solid #cbd5e1', borderRadius: '8px', background: '#fff', fontSize: '14px', color: '#0f172a', appearance: 'none', WebkitAppearance: 'none', cursor: 'pointer', boxSizing: 'border-box' }}
+                      >
+                        {kpiOptions.length > 0 ? (
+                          kpiOptions.map((k) => (
+                            <option key={k} value={k}>{k}</option>
+                          ))
+                        ) : (
+                          <>
+                            <option value="Screening enrolments">Screening enrolments</option>
+                            <option value="Registrations">Registrations</option>
+                            <option value="Tracked clicks">Tracked clicks</option>
+                            <option value="Unique reach">Unique reach</option>
+                          </>
+                        )}
+                      </select>
+                      <Icon name="i-down" size={14} style={{ position: 'absolute', right: '12px', top: '13px', color: '#64748b', pointerEvents: 'none' }} />
+                    </div>
+                    <span style={{ fontSize: '11.5px', color: '#64748b', lineHeight: 1.3 }}>
+                      Suggested for {objective || 'Getting onboarded'}: {kpiFor[objective || 'Getting onboarded'] || 'Screening enrolments'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* 3. Target enrolments, Cost ceiling, Budget */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>Target enrolments</label>
+                    <input
+                      value={targetEnrols}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/[^\d]/g, '');
+                        setTargetEnrols(v);
+                        saveStep0Fields({ target: v });
+                      }}
+                      inputMode="numeric"
+                      placeholder="e.g. 60"
+                      style={{ height: '40px', padding: '0 12px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px', color: '#0f172a', boxSizing: 'border-box' }}
+                    />
+                    <span style={{ fontSize: '11.5px', color: '#64748b', lineHeight: 1.3 }}>
+                      {film.target ? `Batch target ${film.target} across all campaigns` : 'Batch target 300 across all campaigns'}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>Cost ceiling per enrolment (₹)</label>
+                    <input
+                      value={costCeiling ? (isNaN(Number(costCeiling)) ? costCeiling : Number(costCeiling).toLocaleString('en-IN')) : ''}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/[^\d]/g, '');
+                        setCostCeiling(v);
+                        saveStep0Fields({ ceiling: v });
+                      }}
+                      inputMode="numeric"
+                      placeholder="4,500"
+                      style={{ height: '40px', padding: '0 12px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px', color: '#0f172a', boxSizing: 'border-box' }}
+                    />
+                    <span style={{ fontSize: '11.5px', color: '#64748b', lineHeight: 1.3 }}>
+                      {film.ceiling ? `Brief ceiling ₹${Number(film.ceiling).toLocaleString('en-IN')}` : 'Brief ceiling ₹4,500'}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>Budget (₹)</label>
+                    <input
+                      value={budget ? (isNaN(Number(budget)) ? budget : Number(budget).toLocaleString('en-IN')) : ''}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/[^\d]/g, '');
+                        setBudget(v);
+                        saveStep0Fields({ budget: v });
+                      }}
+                      inputMode="numeric"
+                      placeholder="4,00,000"
+                      style={{
+                        height: '40px',
+                        padding: '0 12px',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        color: '#0f172a',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                    <span style={{ fontSize: '11.5px', color: '#64748b', lineHeight: 1.3 }}>
+                      {budget && Number(budget) > 0
+                        ? `₹${(Number(budget) / 100000).toFixed(0)}L · course budget ₹${(Number(film.budget || 1800000)).toLocaleString('en-IN')}`
+                        : '₹4L · course budget ₹18,00,000'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* 4. States, Qualification, Skill background */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
+                  {/* States Multi-Select */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative', minWidth: 0 }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>States</label>
+                    <button
+                      type="button"
+                      onClick={() => setOpenDropdown(openDropdown === 'markets' ? null : 'markets')}
+                      style={{
+                        height: '40px',
+                        padding: '0 12px',
+                        border: openDropdown === 'markets' ? '1px solid var(--teal-600)' : '1px solid #cbd5e1',
+                        borderRadius: '8px',
+                        background: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        minWidth: 0,
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      <span
                         style={{
-                          position: 'absolute',
-                          top: '68px',
-                          left: 0,
-                          right: 0,
-                          zIndex: 35,
-                          background: '#fff',
-                          border: '1px solid var(--ink-200)',
-                          borderRadius: '8px',
-                          boxShadow: 'var(--e-2)',
-                          padding: '8px',
-                          maxHeight: '300px',
-                          display: 'flex',
-                          flexDirection: 'column'
+                          flex: 1,
+                          minWidth: 0,
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          color: markets.length ? '#0f172a' : '#64748b',
+                          fontSize: '14px'
                         }}
                       >
-                        <input
-                          type="text"
-                          placeholder="Search state or district..."
-                          value={marketSearch}
-                          onChange={(e) => setMarketSearch(e.target.value)}
-                          onClick={(e) => e.stopPropagation()}
+                        {markets.length ? markets.join(', ') : 'Telangana'}
+                      </span>
+                      <Icon name="i-down" size={14} style={{ color: '#64748b', flexShrink: 0 }} />
+                    </button>
+                    {openDropdown === 'markets' && (
+                      <>
+                        <div onClick={() => setOpenDropdown(null)} style={{ position: 'fixed', inset: 0, zIndex: 30 }} />
+                        <div
                           style={{
-                            width: '100%',
-                            height: '32px',
-                            padding: '0 8px',
-                            border: '1px solid var(--ink-200)',
-                            borderRadius: '4px',
-                            fontSize: '12px',
-                            marginBottom: '6px'
+                            position: 'absolute',
+                            top: '68px',
+                            left: 0,
+                            right: 0,
+                            zIndex: 31,
+                            background: '#fff',
+                            border: '1px solid var(--ink-100)',
+                            borderRadius: '10px',
+                            boxShadow: 'var(--e-2)',
+                            padding: '6px',
+                            maxHeight: '260px',
+                            overflow: 'auto'
                           }}
-                        />
-                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 4px 6px', borderBottom: '1px solid var(--ink-100)', fontSize: '11px', color: 'var(--ink-500)' }}>
-                          <span>{markets.length} selected</span>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const allM = [...DISTRICTS_LIST, ...STATES_LIST];
-                                setMarkets(allM);
-                                saveStep0Fields({ markets: allM });
-                              }}
-                              style={{ background: 'none', border: 0, color: 'var(--teal-700)', cursor: 'pointer', padding: 0, fontWeight: 600, fontSize: '11px' }}
-                            >
-                              Select all
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setMarkets([]);
-                                saveStep0Fields({ markets: [] });
-                              }}
-                              style={{ background: 'none', border: 0, color: 'var(--danger-600)', cursor: 'pointer', padding: 0, fontSize: '11px' }}
-                            >
-                              Clear
-                            </button>
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 8px 6px', borderBottom: '1px solid var(--ink-100)', fontSize: '11px', color: '#64748b' }}>
+                            <span>{markets.length} selected</span>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setMarkets(statesList);
+                                  saveStep0Fields({ markets: statesList });
+                                }}
+                                style={{ background: 'none', border: 0, color: 'var(--teal-700)', cursor: 'pointer', padding: 0, fontWeight: 600, fontSize: '11px' }}
+                              >
+                                Select all
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setMarkets([]);
+                                  saveStep0Fields({ markets: [] });
+                                }}
+                                style={{ background: 'none', border: 0, color: 'var(--danger-600)', cursor: 'pointer', padding: 0, fontSize: '11px' }}
+                              >
+                                Clear
+                              </button>
+                            </div>
                           </div>
+                          {statesList.map((stName) => {
+                            const isPicked = markets.includes(stName);
+                            return (
+                              <label
+                                key={stName}
+                                style={{
+                                  display: 'flex',
+                                  gap: '10px',
+                                  alignItems: 'center',
+                                  minHeight: '36px',
+                                  padding: '0 10px',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  fontSize: '14px',
+                                  background: isPicked ? 'var(--ink-50)' : 'transparent'
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isPicked}
+                                  onChange={() => {
+                                    const next = isPicked ? markets.filter((x) => x !== stName) : [...markets, stName];
+                                    setMarkets(next);
+                                    saveStep0Fields({ markets: next });
+                                  }}
+                                  style={{ width: '16px', height: '16px', accentColor: 'var(--teal-700)', margin: 0 }}
+                                />
+                                <span>{stName}</span>
+                              </label>
+                            );
+                          })}
                         </div>
-
-                        <div style={{ overflowY: 'auto', flex: 1, paddingTop: '4px' }}>
-                          {/* Districts section */}
-                          {DISTRICTS_LIST.filter(d => !marketSearch || d.toLowerCase().includes(marketSearch.toLowerCase())).length > 0 && (
-                            <div style={{ marginBottom: '8px' }}>
-                              <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--ink-400)', padding: '4px 6px' }}>
-                                Districts
-                              </div>
-                              {DISTRICTS_LIST.filter(d => !marketSearch || d.toLowerCase().includes(marketSearch.toLowerCase())).map((dName) => {
-                                const sel = markets.includes(dName);
-                                return (
-                                  <label
-                                    key={dName}
-                                    style={{
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: '8px',
-                                      padding: '5px 8px',
-                                      borderRadius: '4px',
-                                      cursor: 'pointer',
-                                      fontSize: '12px',
-                                      background: sel ? 'var(--teal-50)' : 'transparent',
-                                      color: sel ? 'var(--teal-900)' : 'var(--ink-800)'
-                                    }}
-                                  >
-                                    <input
-                                      type="checkbox"
-                                      checked={sel}
-                                      onChange={() => {
-                                        const next = sel ? markets.filter((m) => m !== dName) : [...markets, dName];
-                                        setMarkets(next);
-                                        saveStep0Fields({ markets: next });
-                                      }}
-                                      style={{ width: '15px', height: '15px', accentColor: 'var(--teal-700)', margin: 0 }}
-                                    />
-                                    <span style={{ flex: 1 }}>{dName}</span>
-                                    {POOL_MAP[dName] && (
-                                      <span style={{ fontSize: '10px', color: 'var(--ink-400)' }}>
-                                        ~{(POOL_MAP[dName] / 1000).toFixed(0)}k
-                                      </span>
-                                    )}
-                                  </label>
-                                );
-                              })}
-                            </div>
-                          )}
-
-                          {/* States section */}
-                          {STATES_LIST.filter(s => !marketSearch || s.toLowerCase().includes(marketSearch.toLowerCase())).length > 0 && (
-                            <div>
-                              <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--ink-400)', padding: '4px 6px' }}>
-                                States
-                              </div>
-                              {STATES_LIST.filter(s => !marketSearch || s.toLowerCase().includes(marketSearch.toLowerCase())).map((stName) => {
-                                const sel = markets.includes(stName);
-                                return (
-                                  <label
-                                    key={stName}
-                                    style={{
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: '8px',
-                                      padding: '5px 8px',
-                                      borderRadius: '4px',
-                                      cursor: 'pointer',
-                                      fontSize: '12px',
-                                      background: sel ? 'var(--teal-50)' : 'transparent',
-                                      color: sel ? 'var(--teal-900)' : 'var(--ink-800)'
-                                    }}
-                                  >
-                                    <input
-                                      type="checkbox"
-                                      checked={sel}
-                                      onChange={() => {
-                                        const next = sel ? markets.filter((m) => m !== stName) : [...markets, stName];
-                                        setMarkets(next);
-                                        saveStep0Fields({ markets: next });
-                                      }}
-                                      style={{ width: '15px', height: '15px', accentColor: 'var(--teal-700)', margin: 0 }}
-                                    />
-                                    <span style={{ flex: 1 }}>{stName}</span>
-                                    {POOL_MAP[stName] && (
-                                      <span style={{ fontSize: '10px', color: 'var(--ink-400)' }}>
-                                        ~{(POOL_MAP[stName] / 1000).toFixed(0)}k
-                                      </span>
-                                    )}
-                                  </label>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  <span style={{ fontSize: '11px', color: 'var(--ink-500)' }}>
-                    Target geography for outreach and creator discovery
-                  </span>
-                </div>
-
-                {/* 2. Minimum Qualification Select */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0 }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-700)' }}>
-                    Minimum Qualification
-                  </label>
-                  <select
-                    value={qual}
-                    onChange={(e) => {
-                      const next = e.target.value;
-                      setQual(next);
-                      saveStep0Fields({ qual: next });
-                    }}
-                    style={{ width: '100%', height: '38px', padding: '0 10px', border: '1px solid var(--ink-300)', borderRadius: '6px', fontSize: '13px', background: '#fff' }}
-                  >
-                    {QUAL_OPTIONS.map((q) => (
-                      <option key={q} value={q}>{q}</option>
-                    ))}
-                  </select>
-                  <span style={{ fontSize: '11px', color: 'var(--ink-500)' }}>
-                    Minimum education level required
-                  </span>
-                </div>
-
-                {/* 3. Skill Background Options Dropdown */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative', minWidth: 0 }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-700)' }}>
-                    Skill Background
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setOpenDropdown(openDropdown === 'skills' ? null : 'skills')}
-                    style={{
-                      height: '38px',
-                      padding: '0 12px',
-                      border: openDropdown === 'skills' ? '1px solid var(--teal-600)' : '1px solid var(--ink-300)',
-                      borderRadius: '6px',
-                      background: '#fff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      minWidth: 0
-                    }}
-                  >
-                    <span
-                      style={{
-                        flex: 1,
-                        minWidth: 0,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        fontSize: '13px',
-                        color: skillBg.length ? 'var(--ink-900)' : 'var(--ink-400)'
-                      }}
-                      title={skillBg.join(', ')}
-                    >
-                      {skillBg.length ? (skillBg.length <= 3 ? skillBg.join(', ') : `${skillBg.slice(0, 2).join(', ')} +${skillBg.length - 2} more`) : 'Choose skills / branches...'}
-                    </span>
-                    {skillBg.length > 0 && (
-                      <span style={{ fontSize: '11px', fontWeight: 600, background: 'var(--teal-50)', color: 'var(--teal-800)', padding: '1px 6px', borderRadius: '999px', border: '1px solid var(--teal-200)' }}>
-                        {skillBg.length}
-                      </span>
+                      </>
                     )}
-                    <svg width="14" height="14" style={{ color: 'var(--ink-500)', transform: openDropdown === 'skills' ? 'rotate(180deg)' : 'none', transition: 'transform .15s ease' }}>
-                      <use href="#i-down"></use>
-                    </svg>
-                  </button>
+                    <span style={{ fontSize: '11.5px', color: '#64748b', lineHeight: 1.3 }}>
+                      Course target area: {(film.form?.locations && film.form.locations.length ? film.form.locations.join(', ') : 'Telangana')}
+                    </span>
+                  </div>
 
-                  {/* Skills Popover */}
-                  {openDropdown === 'skills' && (
-                    <>
-                      <div
-                        onClick={() => setOpenDropdown(null)}
-                        style={{ position: 'fixed', inset: 0, zIndex: 30 }}
-                      />
-                      <div
+                  {/* Qualification */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0 }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>Qualification</label>
+                    <div style={{ position: 'relative' }}>
+                      <select
+                        value={qual || '10th pass'}
+                        onChange={(e) => {
+                          setQual(e.target.value);
+                          saveStep0Fields({ qual: e.target.value });
+                          if (stepError === 'Choose a qualification.') setStepError('');
+                        }}
+                        style={{ width: '100%', minWidth: 0, height: '40px', padding: '0 32px 0 12px', border: '1px solid #cbd5e1', borderRadius: '8px', background: '#fff', fontSize: '14px', color: '#0f172a', appearance: 'none', WebkitAppearance: 'none', cursor: 'pointer', boxSizing: 'border-box' }}
+                      >
+                        <option value="">Choose one</option>
+                        {qualOptions.length > 0 ? (
+                          qualOptions.map((q) => (
+                            <option key={q} value={q}>{q}</option>
+                          ))
+                        ) : (
+                          <>
+                            <option value="10th pass">10th pass</option>
+                            <option value="12th pass">12th pass</option>
+                            <option value="Diploma">Diploma</option>
+                            <option value="B.Tech / B.E.">B.Tech / B.E.</option>
+                            <option value="MCA">MCA</option>
+                            <option value="Degree (Other)">Degree (Other)</option>
+                          </>
+                        )}
+                      </select>
+                      <Icon name="i-down" size={14} style={{ position: 'absolute', right: '12px', top: '13px', color: '#64748b', pointerEvents: 'none' }} />
+                    </div>
+                  </div>
+
+                  {/* Skill background Multi-Select */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative', minWidth: 0 }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>Skill background</label>
+                    <button
+                      type="button"
+                      onClick={() => setOpenDropdown(openDropdown === 'skills' ? null : 'skills')}
+                      style={{
+                        height: '40px',
+                        padding: '0 12px',
+                        border: openDropdown === 'skills' ? '1px solid var(--teal-600)' : '1px solid #cbd5e1',
+                        borderRadius: '8px',
+                        background: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        minWidth: 0,
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      <span
                         style={{
-                          position: 'absolute',
-                          top: '68px',
-                          left: 0,
-                          right: 0,
-                          zIndex: 35,
-                          background: '#fff',
-                          border: '1px solid var(--ink-200)',
-                          borderRadius: '8px',
-                          boxShadow: 'var(--e-2)',
-                          padding: '8px',
-                          maxHeight: '280px',
-                          display: 'flex',
-                          flexDirection: 'column'
+                          flex: 1,
+                          minWidth: 0,
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          color: skillBg.length ? '#0f172a' : '#64748b',
+                          fontSize: '14px'
                         }}
                       >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 4px 6px', borderBottom: '1px solid var(--ink-100)', fontSize: '11px', color: 'var(--ink-500)' }}>
-                          <span>{skillBg.length} selected</span>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSkillBg(SKILL_OPTIONS);
-                                saveStep0Fields({ skill_bg: SKILL_OPTIONS });
-                              }}
-                              style={{ background: 'none', border: 0, color: 'var(--teal-700)', cursor: 'pointer', padding: 0, fontWeight: 600, fontSize: '11px' }}
-                            >
-                              Select all
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSkillBg([]);
-                                saveStep0Fields({ skill_bg: [] });
-                              }}
-                              style={{ background: 'none', border: 0, color: 'var(--danger-600)', cursor: 'pointer', padding: 0, fontSize: '11px' }}
-                            >
-                              Clear
-                            </button>
+                        {skillBg.length ? skillBg.join(', ') : 'IT'}
+                      </span>
+                      <Icon name="i-down" size={14} style={{ color: '#64748b', flexShrink: 0 }} />
+                    </button>
+                    {openDropdown === 'skills' && (
+                      <>
+                        <div onClick={() => setOpenDropdown(null)} style={{ position: 'fixed', inset: 0, zIndex: 30 }} />
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: '68px',
+                            left: 0,
+                            right: 0,
+                            zIndex: 31,
+                            background: '#fff',
+                            border: '1px solid var(--ink-100)',
+                            borderRadius: '10px',
+                            boxShadow: 'var(--e-2)',
+                            padding: '6px',
+                            maxHeight: '260px',
+                            overflow: 'auto'
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 8px 6px', borderBottom: '1px solid var(--ink-100)', fontSize: '11px', color: '#64748b' }}>
+                            <span>{skillBg.length} selected</span>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSkillBg(skillOptions);
+                                  saveStep0Fields({ skill_bg: skillOptions });
+                                }}
+                                style={{ background: 'none', border: 0, color: 'var(--teal-700)', cursor: 'pointer', padding: 0, fontWeight: 600, fontSize: '11px' }}
+                              >
+                                Select all
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSkillBg([]);
+                                  saveStep0Fields({ skill_bg: [] });
+                                }}
+                                style={{ background: 'none', border: 0, color: 'var(--danger-600)', cursor: 'pointer', padding: 0, fontSize: '11px' }}
+                              >
+                                Clear
+                              </button>
+                            </div>
                           </div>
-                        </div>
-
-                        <div style={{ overflowY: 'auto', flex: 1, paddingTop: '4px' }}>
-                          {SKILL_OPTIONS.map((sk) => {
-                            const sel = skillBg.includes(sk);
+                          {skillOptions.map((sk) => {
+                            const isPicked = skillBg.includes(sk);
                             return (
                               <label
                                 key={sk}
                                 style={{
                                   display: 'flex',
+                                  gap: '10px',
                                   alignItems: 'center',
-                                  gap: '8px',
-                                  padding: '5px 8px',
-                                  borderRadius: '4px',
+                                  minHeight: '36px',
+                                  padding: '0 10px',
+                                  borderRadius: '6px',
                                   cursor: 'pointer',
-                                  fontSize: '12px',
-                                  background: sel ? 'var(--teal-50)' : 'transparent',
-                                  color: sel ? 'var(--teal-900)' : 'var(--ink-800)'
+                                  fontSize: '14px',
+                                  background: isPicked ? 'var(--ink-50)' : 'transparent'
                                 }}
                               >
                                 <input
                                   type="checkbox"
-                                  checked={sel}
+                                  checked={isPicked}
                                   onChange={() => {
-                                    const next = sel ? skillBg.filter((x) => x !== sk) : [...skillBg, sk];
+                                    const next = isPicked ? skillBg.filter((x) => x !== sk) : [...skillBg, sk];
                                     setSkillBg(next);
                                     saveStep0Fields({ skill_bg: next });
                                   }}
-                                  style={{ width: '15px', height: '15px', accentColor: 'var(--teal-700)', margin: 0 }}
+                                  style={{ width: '16px', height: '16px', accentColor: 'var(--teal-700)', margin: 0 }}
                                 />
                                 <span>{sk}</span>
                               </label>
                             );
                           })}
                         </div>
-                      </div>
-                    </>
-                  )}
-                  <span style={{ fontSize: '11px', color: 'var(--ink-500)' }}>
-                    Engineering branches or technical backgrounds
-                  </span>
-                </div>
-
-                {/* 4. Age Band Select */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0 }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-700)' }}>
-                    Age Band
-                  </label>
-                  <select
-                    value={ageBand}
-                    onChange={(e) => {
-                      const next = e.target.value;
-                      setAgeBand(next);
-                      saveStep0Fields({ age_band: next });
-                    }}
-                    style={{ width: '100%', height: '38px', padding: '0 10px', border: '1px solid var(--ink-300)', borderRadius: '6px', fontSize: '13px', background: '#fff' }}
-                  >
-                    {AGE_OPTIONS.map((a) => (
-                      <option key={a} value={a}>{a}</option>
-                    ))}
-                  </select>
-                  <span style={{ fontSize: '11px', color: 'var(--ink-500)' }}>
-                    Bands only, never exact ages (RR-H02)
-                  </span>
-                </div>
-
-                {/* 5. Experience Band Select */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0 }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-700)' }}>
-                    Experience Band
-                  </label>
-                  <select
-                    value={expBand}
-                    onChange={(e) => {
-                      const next = e.target.value;
-                      setExpBand(next);
-                      saveStep0Fields({ exp_band: next });
-                    }}
-                    style={{ width: '100%', height: '38px', padding: '0 10px', border: '1px solid var(--ink-300)', borderRadius: '6px', fontSize: '13px', background: '#fff' }}
-                  >
-                    {EXP_OPTIONS.map((x) => (
-                      <option key={x} value={x}>{x}</option>
-                    ))}
-                  </select>
-                  <span style={{ fontSize: '11px', color: 'var(--ink-500)' }}>
-                    Fresher or past employment range
-                  </span>
-                </div>
-
-                {/* 6. Languages Options Dropdown */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative', minWidth: 0 }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-700)' }}>
-                    Languages
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setOpenDropdown(openDropdown === 'languages' ? null : 'languages')}
-                    style={{
-                      height: '38px',
-                      padding: '0 12px',
-                      border: openDropdown === 'languages' ? '1px solid var(--teal-600)' : '1px solid var(--ink-300)',
-                      borderRadius: '6px',
-                      background: '#fff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      minWidth: 0
-                    }}
-                  >
-                    <span
-                      style={{
-                        flex: 1,
-                        minWidth: 0,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        fontSize: '13px',
-                        color: languages.length ? 'var(--ink-900)' : 'var(--ink-400)'
-                      }}
-                      title={languages.join(', ')}
-                    >
-                      {languages.length ? languages.join(', ') : 'Choose languages...'}
-                    </span>
-                    {languages.length > 0 && (
-                      <span style={{ fontSize: '11px', fontWeight: 600, background: 'var(--teal-50)', color: 'var(--teal-800)', padding: '1px 6px', borderRadius: '999px', border: '1px solid var(--teal-200)' }}>
-                        {languages.length}
-                      </span>
+                      </>
                     )}
-                    <svg width="14" height="14" style={{ color: 'var(--ink-500)', transform: openDropdown === 'languages' ? 'rotate(180deg)' : 'none', transition: 'transform .15s ease' }}>
-                      <use href="#i-down"></use>
-                    </svg>
-                  </button>
+                  </div>
+                </div>
 
-                  {/* Languages Popover */}
-                  {openDropdown === 'languages' && (
-                    <>
-                      <div
-                        onClick={() => setOpenDropdown(null)}
-                        style={{ position: 'fixed', inset: 0, zIndex: 30 }}
-                      />
-                      <div
+                {/* 5. Age band, Experience band, Languages */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
+                  {/* Age band */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0 }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>Age band</label>
+                    <div style={{ position: 'relative' }}>
+                      <select
+                        value={ageBand || 'Choose one'}
+                        onChange={(e) => {
+                          setAgeBand(e.target.value);
+                          saveStep0Fields({ age_band: e.target.value });
+                        }}
+                        style={{ width: '100%', minWidth: 0, height: '40px', padding: '0 32px 0 12px', border: '1px solid #cbd5e1', borderRadius: '8px', background: '#fff', fontSize: '14px', color: '#0f172a', appearance: 'none', WebkitAppearance: 'none', cursor: 'pointer', boxSizing: 'border-box' }}
+                      >
+                        <option value="">Choose one</option>
+                        {ageOptions.map((a) => (
+                          <option key={a} value={a}>{a}</option>
+                        ))}
+                      </select>
+                      <Icon name="i-down" size={14} style={{ position: 'absolute', right: '12px', top: '13px', color: '#64748b', pointerEvents: 'none' }} />
+                    </div>
+                    <span style={{ fontSize: '11.5px', color: '#64748b', lineHeight: 1.3 }}>Bands only, never exact ages</span>
+                  </div>
+
+                  {/* Experience band */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0 }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>Experience band</label>
+                    <div style={{ position: 'relative' }}>
+                      <select
+                        value={expBand || 'Fresher'}
+                        onChange={(e) => {
+                          setExpBand(e.target.value);
+                          saveStep0Fields({ exp_band: e.target.value });
+                        }}
+                        style={{ width: '100%', minWidth: 0, height: '40px', padding: '0 32px 0 12px', border: '1px solid #cbd5e1', borderRadius: '8px', background: '#fff', fontSize: '14px', color: '#0f172a', appearance: 'none', WebkitAppearance: 'none', cursor: 'pointer', boxSizing: 'border-box' }}
+                      >
+                        <option value="">Choose one</option>
+                        {expOptions.map((x) => (
+                          <option key={x} value={x}>{x}</option>
+                        ))}
+                      </select>
+                      <Icon name="i-down" size={14} style={{ position: 'absolute', right: '12px', top: '13px', color: '#64748b', pointerEvents: 'none' }} />
+                    </div>
+                  </div>
+
+                  {/* Languages Multi-Select */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative', minWidth: 0 }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>Languages</label>
+                    <button
+                      type="button"
+                      onClick={() => setOpenDropdown(openDropdown === 'languages' ? null : 'languages')}
+                      style={{
+                        height: '40px',
+                        padding: '0 12px',
+                        border: openDropdown === 'languages' ? '1px solid var(--teal-600)' : '1px solid #cbd5e1',
+                        borderRadius: '8px',
+                        background: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        minWidth: 0,
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      <span
                         style={{
-                          position: 'absolute',
-                          top: '68px',
-                          left: 0,
-                          right: 0,
-                          zIndex: 35,
-                          background: '#fff',
-                          border: '1px solid var(--ink-200)',
-                          borderRadius: '8px',
-                          boxShadow: 'var(--e-2)',
-                          padding: '8px',
-                          maxHeight: '260px',
-                          display: 'flex',
-                          flexDirection: 'column'
+                          flex: 1,
+                          minWidth: 0,
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          color: languages.length ? '#0f172a' : '#64748b',
+                          fontSize: '14px'
                         }}
                       >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 4px 6px', borderBottom: '1px solid var(--ink-100)', fontSize: '11px', color: 'var(--ink-500)' }}>
-                          <span>{languages.length} selected</span>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setLanguages(LANG_OPTIONS);
-                                saveStep0Fields({ languages: LANG_OPTIONS });
-                              }}
-                              style={{ background: 'none', border: 0, color: 'var(--teal-700)', cursor: 'pointer', padding: 0, fontWeight: 600, fontSize: '11px' }}
-                            >
-                              Select all
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setLanguages([]);
-                                saveStep0Fields({ languages: [] });
-                              }}
-                              style={{ background: 'none', border: 0, color: 'var(--danger-600)', cursor: 'pointer', padding: 0, fontSize: '11px' }}
-                            >
-                              Clear
-                            </button>
+                        {languages.length ? languages.join(', ') : 'Telugu, English'}
+                      </span>
+                      <Icon name="i-down" size={14} style={{ color: '#64748b', flexShrink: 0 }} />
+                    </button>
+                    {openDropdown === 'languages' && (
+                      <>
+                        <div onClick={() => setOpenDropdown(null)} style={{ position: 'fixed', inset: 0, zIndex: 30 }} />
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: '68px',
+                            left: 0,
+                            right: 0,
+                            zIndex: 31,
+                            background: '#fff',
+                            border: '1px solid var(--ink-100)',
+                            borderRadius: '10px',
+                            boxShadow: 'var(--e-2)',
+                            padding: '6px',
+                            maxHeight: '260px',
+                            overflow: 'auto'
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 8px 6px', borderBottom: '1px solid var(--ink-100)', fontSize: '11px', color: '#64748b' }}>
+                            <span>{languages.length} selected</span>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setLanguages(langOptions);
+                                  saveStep0Fields({ languages: langOptions });
+                                }}
+                                style={{ background: 'none', border: 0, color: 'var(--teal-700)', cursor: 'pointer', padding: 0, fontWeight: 600, fontSize: '11px' }}
+                              >
+                                Select all
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setLanguages([]);
+                                  saveStep0Fields({ languages: [] });
+                                }}
+                                style={{ background: 'none', border: 0, color: 'var(--danger-600)', cursor: 'pointer', padding: 0, fontSize: '11px' }}
+                              >
+                                Clear
+                              </button>
+                            </div>
                           </div>
-                        </div>
-
-                        <div style={{ overflowY: 'auto', flex: 1, paddingTop: '4px' }}>
-                          {LANG_OPTIONS.map((l) => {
-                            const sel = languages.includes(l);
+                          {langOptions.map((l) => {
+                            const isPicked = languages.includes(l);
                             return (
                               <label
                                 key={l}
                                 style={{
                                   display: 'flex',
+                                  gap: '10px',
                                   alignItems: 'center',
-                                  gap: '8px',
-                                  padding: '5px 8px',
-                                  borderRadius: '4px',
+                                  minHeight: '36px',
+                                  padding: '0 10px',
+                                  borderRadius: '6px',
                                   cursor: 'pointer',
-                                  fontSize: '12px',
-                                  background: sel ? 'var(--teal-50)' : 'transparent',
-                                  color: sel ? 'var(--teal-900)' : 'var(--ink-800)'
+                                  fontSize: '14px',
+                                  background: isPicked ? 'var(--ink-50)' : 'transparent'
                                 }}
                               >
                                 <input
                                   type="checkbox"
-                                  checked={sel}
+                                  checked={isPicked}
                                   onChange={() => {
-                                    const next = sel ? languages.filter((x) => x !== l) : [...languages, l];
+                                    const next = isPicked ? languages.filter((x) => x !== l) : [...languages, l];
                                     setLanguages(next);
                                     saveStep0Fields({ languages: next });
                                   }}
-                                  style={{ width: '15px', height: '15px', accentColor: 'var(--teal-700)', margin: 0 }}
+                                  style={{ width: '16px', height: '16px', accentColor: 'var(--teal-700)', margin: 0 }}
                                 />
                                 <span>{l}</span>
                               </label>
                             );
                           })}
                         </div>
-                      </div>
-                    </>
-                  )}
-                  <span style={{ fontSize: '11px', color: 'var(--ink-500)' }}>
-                    Languages spoken by target learner pool
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* 6. Estimated cohort size */}
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '12px 16px', borderRadius: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', fontSize: '13px' }}>
+                  <Icon name="i-users" size={16} style={{ color: '#64748b' }} />
+                  <span style={{ flex: 1, color: '#334155' }}>
+                    Estimated cohort size <b style={{ fontWeight: 700, color: '#0f172a' }}>{(estimatedCohortSize || 46460).toLocaleString('en-IN')}</b> <span style={{ color: '#64748b' }}>Inferred from district graduate counts · minimum 500</span>
                   </span>
                 </div>
-              </div>
 
-
-              {/* Dynamic Cohort Sizing Bar */}
-              <div
-                style={{
-                  padding: '14px 16px',
-                  borderRadius: '8px',
-                  background: isCohortSizeOk ? 'var(--teal-50)' : 'var(--danger-50)',
-                  border: isCohortSizeOk ? '1px solid var(--teal-200)' : '1px solid var(--danger-200)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <div>
-                  <span style={{ fontSize: '12px', color: 'var(--ink-600)', display: 'block' }}>Estimated Cohort Pool</span>
-                  <b style={{ fontSize: '16px', color: isCohortSizeOk ? 'var(--teal-900)' : 'var(--danger-800)' }}>
-                    {estimatedCohortSize.toLocaleString('en-IN')} people (Inferred)
-                  </b>
+                {/* 7. Start and End */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>Start</label>
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => {
+                        setStartDate(e.target.value);
+                        saveStep0Fields({ start_date: e.target.value });
+                      }}
+                      style={{ height: '40px', padding: '0 12px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px', color: '#0f172a', background: '#fff', boxSizing: 'border-box', width: '100%' }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>End</label>
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => {
+                        setEndDate(e.target.value);
+                        saveStep0Fields({ end_date: e.target.value });
+                      }}
+                      style={{ height: '40px', padding: '0 12px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px', color: '#0f172a', background: '#fff', boxSizing: 'border-box', width: '100%' }}
+                    />
+                  </div>
                 </div>
-                <span
-                  style={{
-                    padding: '4px 10px',
-                    borderRadius: '999px',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    background: isCohortSizeOk ? 'var(--success-100)' : 'var(--danger-100)',
-                    color: isCohortSizeOk ? 'var(--success-800)' : 'var(--danger-800)'
-                  }}
-                >
-                  {isCohortSizeOk ? 'Sized: Meets minimum 500 bar' : 'Refused: Below 500 minimum (RR-H02)'}
-                </span>
-              </div>
 
-              {/* Notes / Free text */}
-              <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--ink-700)', marginBottom: '6px' }}>
-                  Anything else the agents should know about this cohort? (Optional)
-                </label>
-                <textarea
-                  value={freeText}
-                  onChange={(e) => {
-                    setFreeText(e.target.value);
-                    saveStep0Fields();
-                  }}
-                  placeholder="e.g. Focus on candidates with immediate availability and interest in practical projects"
-                  style={{ width: '100%', minHeight: '64px', padding: '8px 10px', border: '1px solid var(--ink-300)', borderRadius: '6px', fontSize: '13px' }}
-                />
-              </div>
+                {/* 8. Anything else */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>Anything else the agents should know</label>
+                  <textarea
+                    value={freeText}
+                    onChange={(e) => {
+                      setFreeText(e.target.value);
+                      saveStep0Fields({ free_text: e.target.value });
+                    }}
+                    placeholder="e.g. Lead with alumni. No salary figures anywhere."
+                    style={{ minHeight: '84px', padding: '10px 14px', border: '1px solid #cbd5e1', borderRadius: '8px', resize: 'vertical', fontSize: '14px', fontFamily: 'inherit', color: '#0f172a', boxSizing: 'border-box', width: '100%' }}
+                  />
+                </div>
 
-              {/* Bottom Continue Button */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '12px', borderTop: '1px solid var(--ink-100)' }}>
-                <button
-                  type="button"
-                  onClick={handleStep0Continue}
-                  style={{
-                    height: '40px',
-                    padding: '0 20px',
-                    borderRadius: '8px',
-                    border: 0,
-                    background: 'var(--teal-700)',
-                    color: '#fff',
-                    fontWeight: 600,
-                    fontSize: '14px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Continue →
-                </button>
+                {/* 9. Validation Banner (shown if stepError exists, e.g. "Choose a qualification.") */}
+                {stepError && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: '10px',
+                      alignItems: 'center',
+                      padding: '12px 16px',
+                      borderRadius: '8px',
+                      background: '#fef2f2',
+                      border: '1px solid #fecaca',
+                      color: '#991b1b',
+                      fontSize: '13.5px',
+                      fontWeight: 500
+                    }}
+                  >
+                    <Icon name="i-shield" size={18} style={{ flex: 'none', color: '#b91c1c' }} />
+                    <span>{stepError}</span>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Right Column: Course Context Card */}
-            <div style={{ background: '#fff', border: '1px solid var(--ink-100)', borderRadius: '12px', padding: '20px' }}>
-              <b style={{ fontSize: '14px', color: 'var(--ink-900)', display: 'block', marginBottom: '12px' }}>
-                Course Context
-              </b>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
-                <div>
-                  <span style={{ color: 'var(--ink-500)', display: 'block', fontSize: '11px' }}>Course Title</span>
-                  <b style={{ color: 'var(--ink-900)' }}>{film.title}</b>
+            {/* Right Column: Context from the brief */}
+            <div style={{ position: 'sticky', top: '80px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px 22px', boxShadow: '0 1px 3px rgba(0,0,0,0.03)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <b style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>Context from the brief</b>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                  <span style={{ color: '#64748b' }}>Course</span>
+                  <span style={{ fontWeight: 600, color: '#0f172a', textAlign: 'right' }}>{film.title || 'Applied AI & ML Programme'}</span>
                 </div>
-                <div>
-                  <span style={{ color: 'var(--ink-500)', display: 'block', fontSize: '11px' }}>Batch & Start Date</span>
-                  <span style={{ color: 'var(--ink-800)' }}>{film.batch || 'Batch 1'} · {film.release || '2026-11-16'}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                  <span style={{ color: '#64748b' }}>Batch</span>
+                  <span style={{ fontWeight: 600, color: '#0f172a', textAlign: 'right' }}>{(film.batch || 'Batch 4') + ' · ' + (film.release ? formatBriefDate(film.release) : '16 Nov')}</span>
                 </div>
-                <div>
-                  <span style={{ color: 'var(--ink-500)', display: 'block', fontSize: '11px' }}>Provider</span>
-                  <span style={{ color: 'var(--ink-800)' }}>{film.provider || 'Nexa Skills Foundation'}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                  <span style={{ color: '#64748b' }}>Domain</span>
+                  <span style={{ fontWeight: 600, color: '#0f172a', textAlign: 'right' }}>{getBriefVal('domain', 'AI/ML · Intermediate')}</span>
                 </div>
-                <div>
-                  <span style={{ color: 'var(--ink-500)', display: 'block', fontSize: '11px' }}>Target Enrolment</span>
-                  <span style={{ color: 'var(--ink-800)' }}>{film.target ? `${film.target} enrolments` : 'Not set'}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                  <span style={{ color: '#64748b' }}>Mode</span>
+                  <span style={{ fontWeight: 600, color: '#0f172a', textAlign: 'right' }}>{getBriefVal('duration', '16 weeks · Hybrid')}</span>
                 </div>
-                <div>
-                  <span style={{ color: 'var(--ink-500)', display: 'block', fontSize: '11px' }}>Cost Ceiling</span>
-                  <span style={{ color: 'var(--ink-800)' }}>{film.ceiling ? `₹${film.ceiling.toLocaleString('en-IN')}` : 'Not set'}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                  <span style={{ color: '#64748b' }}>Days to batch start</span>
+                  <span style={{ fontWeight: 600, color: '#0f172a', textAlign: 'right' }}>{daysToBatchStart}</span>
                 </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                  <span style={{ color: '#64748b' }}>Batch target</span>
+                  <span style={{ fontWeight: 600, color: '#0f172a', textAlign: 'right' }}>{film.target ? `${film.target} enrolments` : '300 enrolments'}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                  <span style={{ color: '#64748b' }}>Other campaigns</span>
+                  <span style={{ fontWeight: 600, color: '#0f172a', textAlign: 'right' }}>{otherCampaignsCount}</span>
+                </div>
+                <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '10px', marginTop: '2px', fontSize: '13px' }}>
+                  <span style={{ color: '#64748b', display: 'block', marginBottom: '4px' }}>Eligibility</span>
+                  <span style={{ color: '#0f172a', lineHeight: 1.4, display: 'block' }}>{getBriefVal('eligibility', 'B.Tech/B.E. or MCA, graduated 2022–2026, 60% aggregate')}</span>
+                </div>
+              </div>
+              <div style={{ background: '#eff6ff', border: '1px solid #dbeafe', color: '#1d4ed8', borderRadius: '8px', padding: '16px', fontSize: '12.5px', lineHeight: 1.5 }}>
+                Drafts auto-save. Changing this step later marks Narrative, Channels and Influencers as Needs attention.
               </div>
             </div>
           </div>
@@ -3234,6 +3138,210 @@ export default function CampaignWizard() {
               </button>
             </div>
           </div>
+        )}
+      </div>
+
+      {/* Fixed Bottom Wizard Navigation Bar */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: '#fff',
+          borderTop: '1px solid #e2e8f0',
+          padding: '12px 32px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          zIndex: 50,
+          height: '64px',
+          boxSizing: 'border-box',
+          boxShadow: '0 -2px 10px rgba(0,0,0,0.03)'
+        }}
+      >
+        <button
+          type="button"
+          disabled={step === 0}
+          onClick={() => {
+            if (step > 0) setStep(step - 1);
+          }}
+          style={{
+            height: '38px',
+            padding: '0 18px',
+            borderRadius: '8px',
+            border: '1px solid #cbd5e1',
+            background: '#fff',
+            fontWeight: 500,
+            fontSize: '13px',
+            color: '#475569',
+            cursor: step === 0 ? 'default' : 'pointer',
+            opacity: step === 0 ? 0.6 : 1
+          }}
+        >
+          Back
+        </button>
+
+        <div style={{ flex: 1, display: 'flex', gap: '24px', justifyContent: 'center', alignItems: 'center', fontSize: '13px', color: '#64748b' }}>
+          {step < 3 ? (
+            <>
+              <span>{objective || 'Getting onboarded'}</span>
+              <span>
+                Budget <b style={{ color: '#0f172a', fontWeight: 700 }}>{HQ.inrL ? HQ.inrL(Number(budget) || 400000) : '₹4L'}</b>
+              </span>
+              <span>
+                Window <b style={{ color: '#0f172a', fontWeight: 700 }}>{formatDateWindow(startDate, endDate)}</b>
+              </span>
+            </>
+          ) : (
+            <>
+              <span>
+                Shortlisted <b style={{ color: '#0f172a', fontWeight: 700 }}>{shortlist.length}</b>
+              </span>
+              <span>
+                Fees <b style={{ color: '#0f172a', fontWeight: 700 }}>{HQ.inrL ? HQ.inrL(shortlist.reduce((sum, s) => sum + (Number(s.fee || s.rate || 0) * (Number(s.posts || 1))), 0)) : '₹0'} / {HQ.inrL ? HQ.inrL(Number(budget) || 400000) : '₹4L'}</b>
+              </span>
+              <span>
+                Enrolments <b style={{ color: '#0f172a', fontWeight: 700 }}>{targetEnrols || 60}</b>
+              </span>
+            </>
+          )}
+        </div>
+
+        {/* Action Button matching each step */}
+        {step === 0 && (
+          <button
+            type="button"
+            onClick={handleStep0Continue}
+            style={{
+              height: '38px',
+              padding: '0 20px',
+              borderRadius: '8px',
+              border: 0,
+              background: '#0f766e',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '13.5px',
+              cursor: 'pointer',
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'center'
+            }}
+          >
+            Continue →
+          </button>
+        )}
+        {step === 1 && (
+          <button
+            type="button"
+            onClick={handleStep1Next}
+            style={{
+              height: '40px',
+              padding: '0 18px',
+              borderRadius: '8px',
+              border: 0,
+              background: 'var(--teal-700)',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '14px',
+              cursor: 'pointer',
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'center'
+            }}
+          >
+            Next: Channels →
+          </button>
+        )}
+        {step === 2 && (
+          <button
+            type="button"
+            onClick={handleStep2Next}
+            style={{
+              height: '40px',
+              padding: '0 18px',
+              borderRadius: '8px',
+              border: 0,
+              background: 'var(--teal-700)',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '14px',
+              cursor: 'pointer',
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'center'
+            }}
+          >
+            Next: Influencers →
+          </button>
+        )}
+        {step === 3 && (
+          <button
+            type="button"
+            onClick={handleStep3Next}
+            style={{
+              height: '40px',
+              padding: '0 18px',
+              borderRadius: '8px',
+              border: 0,
+              background: 'var(--teal-700)',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '14px',
+              cursor: 'pointer',
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'center'
+            }}
+          >
+            Next: Content →
+          </button>
+        )}
+        {step === 4 && (
+          <button
+            type="button"
+            onClick={handleStep4Next}
+            style={{
+              height: '40px',
+              padding: '0 18px',
+              borderRadius: '8px',
+              border: 0,
+              background: 'var(--teal-700)',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '14px',
+              cursor: 'pointer',
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'center'
+            }}
+          >
+            Next: Review →
+          </button>
+        )}
+        {step === 5 && (
+          <button
+            type="button"
+            disabled={creating || reviewData?.checks?.can_create === false}
+            onClick={handleCreateCampaign}
+            style={{
+              height: '40px',
+              padding: '0 20px',
+              borderRadius: '8px',
+              border: 0,
+              background: 'var(--teal-700)',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '14px',
+              cursor: creating || reviewData?.checks?.can_create === false ? 'not-allowed' : 'pointer',
+              opacity: creating || reviewData?.checks?.can_create === false ? 0.6 : 1,
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'center'
+            }}
+          >
+            {creating ? 'Creating campaign (Freezing v1)…' : 'Create campaign (Freeze v1) ✓'}
+          </button>
         )}
       </div>
     </div>
