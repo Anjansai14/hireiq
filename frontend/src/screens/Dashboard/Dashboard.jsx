@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useHQ } from '../../hooks/useHQ';
 import { Icon } from '../../components/icons/Icons';
 import NewCourseModal from '../Courses/NewCourseModal';
+import { api } from '../../lib/api';
 
 export default function Dashboard() {
   const { state, HQ, currentCourse, go, set, toast } = useHQ();
@@ -236,60 +237,30 @@ export default function Dashboard() {
             Course brief
           </button>
           <button
-            onClick={() => {
-              // Create or resume draft
-              const draft = s.campaigns.find(c => c.filmId === film.id && c.status === 'Draft');
-              if (draft) {
-                go('wizard', { id: draft.id });
-              } else {
-                const newId = HQ.uid('k');
-                HQ.set(x => {
-                  x.campaigns.push({
-                    id: newId,
-                    name: 'New campaign draft',
-                    status: 'Draft',
-                    filmId: film.id,
-                    batch: film.batch || 'Batch 4',
-                    objective: 'Getting onboarded',
-                    targetKPI: 'Screening enrolments',
-                    targetEnrolments: 50,
-                    costCeiling: 4500,
-                    budget: 300000,
-                    spent: 0,
-                    start: '2026-10-15',
-                    end: '2026-11-10',
-                    markets: ['Telangana'],
-                    cohort: 'Engineering graduates',
-                    checkpoints: [],
-                    diagnosis: { verdict: null, gap: 0, topCause: '', moves: [] },
-                    alerts: [],
-                    ccs: [],
-                    comments: [],
-                    wiz: {
-                      step: 0,
-                      done: [],
-                      answers: { q1: 'No', q2: 'No', q3: 'No' },
-                      focus: null,
-                      needs: [],
-                      targetEnrolments: 50,
-                      costCeiling: 4500,
-                      budget: 300000,
-                      qualification: 'B.Tech / B.E.',
-                      skill: 'CSE, IT, ECE',
-                      age: '21–26 years',
-                      exp: '0–2 years experience',
-                      lang: 'Telugu',
-                      channels: [
-                        { ch: 'YouTube', format: 'Long video', share: 45 },
-                        { ch: 'Instagram', format: 'Reels', share: 30 },
-                        { ch: 'LinkedIn', format: 'Posts', share: 15 },
-                        { ch: 'WhatsApp', format: 'Community broadcast', share: 10 }
-                      ],
-                      shortlist: []
-                    }
-                  });
+            onClick={async () => {
+              const rd = HQ.readiness ? HQ.readiness(film) : { refused: false, missing: [] };
+              if (rd.refused || (rd.missing && rd.missing.length)) {
+                HQ.toast(
+                  rd.refused
+                    ? `Blocked: a governance flag is Refused for ${film.title}`
+                    : rd.noRegLink
+                    ? 'Add the Resolence registration link to the brief first'
+                    : 'Complete the 9 required brief fields first',
+                  'error'
+                );
+                go('brief');
+                return;
+              }
+              try {
+                const res = await api.post('/campaigns', {
+                  course_id: film.id,
+                  name: 'Untitled campaign'
                 });
-                go('wizard', { id: newId });
+                if (res && res.campaign) {
+                  go('wizard', { id: res.campaign.id });
+                }
+              } catch (err) {
+                HQ.toast(err.message || 'Failed to create campaign draft', 'error');
               }
             }}
             style={{
