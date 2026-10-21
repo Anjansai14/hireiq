@@ -7,8 +7,6 @@ Partial or Failed, and optionally infers type/tone from recent titles.
 """
 from __future__ import annotations
 
-from __future__ import annotations
-
 import httpx
 
 from ..config import settings

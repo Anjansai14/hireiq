@@ -18,11 +18,15 @@ AGENT = {"id": "A9", "name": "Predictor", "kind": "model"}
 
 def source_pred(c: dict, s: dict, posts: int, f: dict, institutional: list[str], anchors: list[str]) -> tuple[dict, list[str]]:
     missing_flags = []
-    inst = s.get("type") in institutional
-    anchor = s.get("type") in anchors
-    mk = max(0.15, sum((s.get("markets") or {}).get(m, 0) for m in c.get("markets") or []) / 100)
+    stype = (s.get("type") or "").strip().lower()
+    inst = any(stype == it.strip().lower() for it in institutional)
+    anchor = any(stype == at.strip().lower() for at in anchors)
+
+    sm = {k.strip().lower(): v for k, v in (s.get("markets") or {}).items()}
+    mk_val = sum(sm.get(m.strip().lower(), 0) for m in c.get("markets") or []) / 100
+    mk = max(0.15, mk_val)
     
-    mv = s.get("median_views")
+    mv = s.get("median_views") or s.get("mv")
     if not mv:
         catchment = s.get("catchment") or 1000
         base_views = catchment * 0.55
@@ -98,6 +102,8 @@ def run(payload: dict) -> dict:
     reach = [v * (1 - ov) for v in reach]
     views = [v * (1 - ov) for v in views]
     enrols = [round(v * (1 - ov * 0.6)) for v in enrols]
+    if enrols[0] > enrols[1]:
+        enrols[0] = enrols[1]
     with_hist = sum(1 for sl in shortlist if (sources.get(sl["source_id"]) or {}).get("history"))
     conf = "Medium" if k and with_hist >= k / 2 else "Low"
     tot_en = sum(r["enrols"][1] for r in rows) or 1

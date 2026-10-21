@@ -4,8 +4,7 @@ Write-Host "=== Hire IQ: Checking Docker Status ==="
 $possibleDockerPaths = @(
     "$env:LOCALAPPDATA\Programs\DockerDesktop\Docker Desktop.exe",
     "$env:ProgramFiles\Docker\Docker\Docker Desktop.exe",
-    "C:\Program Files\Docker\Docker\Docker Desktop.exe",
-    "C:\Users\lenovo\AppData\Local\Programs\DockerDesktop\Docker Desktop.exe"
+    "$env:USERPROFILE\AppData\Local\Programs\DockerDesktop\Docker Desktop.exe"
 )
 
 $dockerPath = $possibleDockerPaths | Where-Object { Test-Path $_ } | Select-Object -First 1

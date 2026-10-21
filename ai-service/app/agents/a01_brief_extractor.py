@@ -15,14 +15,32 @@ from __future__ import annotations
 import base64
 import io
 import re
+from typing import Any
 
+# pyrefly: ignore[missing-import]
 import httpx
 
-from .. import governance
-from ..llm import complete_json
-from ..util import make_envelope, now_iso
+try:
+    from .. import governance
+    from ..llm import complete_json
+    from ..util import make_envelope
+except (ImportError, ValueError):
+    import sys
+    from pathlib import Path
+    _root = Path(__file__).resolve().parents[2]
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+    from app import governance  # type: ignore
+    from app.llm import complete_json  # type: ignore
+    from app.util import make_envelope  # type: ignore
 
 AGENT = {"id": "A1", "name": "Brief Extractor", "kind": "llm+rules"}
+
+
+def _item_code(item: Any) -> str:
+    if isinstance(item, dict):
+        return str(item.get("code") or item.get("name") or "")
+    return str(item or "")
 
 
 def _fetch_url_text(url: str) -> list[str]:
@@ -40,6 +58,7 @@ def _fetch_url_text(url: str) -> list[str]:
 
 
 def _pdf_pages(b64: str) -> list[str]:
+    # pyrefly: ignore[missing-import]
     from pypdf import PdfReader
 
     reader = PdfReader(io.BytesIO(base64.b64decode(b64)))
@@ -51,7 +70,8 @@ def _find(pattern: str, text: str, flags=re.I) -> str:
     return m.group(1).strip(" .:-\n") if m else ""
 
 
-def _fallback(pages: list[str], lookups: dict) -> dict:
+def _fallback(pages: list[str], lookups: dict | None) -> dict:
+    lookups = lookups or {}
     text = "\n".join(pages)
     vals: dict[str, object] = {}
     page_of: dict[str, int] = {}
@@ -69,22 +89,33 @@ def _fallback(pages: list[str], lookups: dict) -> dict:
     put("title", _find(r"^\s*([A-Z][^\n]{6,80}(?:Programme|Program|Course|Bootcamp|Technician))", text, re.M))
     put("eligibility", _find(r"eligib\w*\s*[:\-]?\s*([^\n]{8,200})", text))
     put("duration", _find(r"(\d{1,2}\s*(?:weeks|months))", text))
-    for mode in lookups.get("course_mode", []):
-        if re.search(rf"\b{re.escape(mode)}\b", text, re.I):
+    for raw_mode in (lookups.get("course_mode") or []):
+        mode = _item_code(raw_mode)
+        if mode and re.search(rf"\b{re.escape(mode)}\b", text, re.I):
             put("mode", mode)
             break
-    for lvl in lookups.get("course_level", []):
-        if re.search(rf"\b{re.escape(lvl)}\b", text, re.I):
+    for raw_lvl in (lookups.get("course_level") or []):
+        lvl = _item_code(raw_lvl)
+        if lvl and re.search(rf"\b{re.escape(lvl)}\b", text, re.I):
             put("level", lvl)
             break
-    for dom in lookups.get("course_domain", []):
-        if re.search(rf"\b{re.escape(dom)}\b", text, re.I) or (dom == "AI/ML" and re.search(r"\bAI\s*(?:/|&)\s*ML\b", text, re.I)):
+    for raw_dom in (lookups.get("course_domain") or []):
+        dom = _item_code(raw_dom)
+        if dom and (re.search(rf"\b{re.escape(dom)}\b", text, re.I) or (dom == "AI/ML" and re.search(r"\bAI\s*(?:/|&)\s*ML\b", text, re.I))):
             put("domain", dom)
             break
-    locs = [d for d in lookups.get("district", []) if re.search(rf"\b{re.escape(d)}\b", text, re.I)]
+    locs = []
+    for raw_d in (lookups.get("district") or []):
+        d = _item_code(raw_d)
+        if d and re.search(rf"\b{re.escape(d)}\b", text, re.I):
+            locs.append(d)
     if locs:
         put("locations", locs, locs[0])
-    langs = [l for l in lookups.get("language", []) if re.search(rf"\b{re.escape(l)}\b", text, re.I)]
+    langs = []
+    for raw_l in (lookups.get("language") or []):
+        l = _item_code(raw_l)
+        if l and re.search(rf"\b{re.escape(l)}\b", text, re.I):
+            langs.append(l)
     if langs:
         put("langs", langs, langs[0])
     fee = _find(r"\b(no fee|free of cost|fee\s*[:\-]\s*[^\n]{2,40})", text)
@@ -97,16 +128,20 @@ def _fallback(pages: list[str], lookups: dict) -> dict:
     return {"values": vals, "pages": page_of}
 
 
-def run(payload: dict) -> dict:
+def run(payload: dict | None) -> dict:
+    payload = payload or {}
     filename = payload.get("filename") or "upload"
-    lookups = payload.get("lookups", {})
+    lookups = payload.get("lookups") or {}
     data_sources = [filename]
 
     if payload.get("file_b64"):
         try:
             pages = _pdf_pages(payload["file_b64"])
         except Exception:
-            pages = [base64.b64decode(payload["file_b64"]).decode("utf-8", "ignore")]
+            try:
+                pages = [base64.b64decode(payload["file_b64"]).decode("utf-8", "ignore")]
+            except Exception:
+                pages = [str(payload["file_b64"])]
     elif payload.get("url"):
         pages = _fetch_url_text(payload["url"])
         if not pages and payload.get("text"):
@@ -122,6 +157,7 @@ def run(payload: dict) -> dict:
             status="Failed",
             execution_mode="deterministic_fallback",
             data_sources=data_sources,
+            calculation_details={"extracted_fields_count": 0, "claims_count": 0, "flags_count": 0},
             warnings=["No readable text or pages found in the brief upload"],
             values={},
             sources={},
@@ -132,11 +168,17 @@ def run(payload: dict) -> dict:
             note="No readable text found",
         )
 
-    fields = [f["code"] for f in payload.get("fields", [])] or [
-        "title", "link", "domain", "level", "eligibility", "duration", "mode", "locations",
-        "batchName", "batchStart", "batchEnd", "screenClose", "fee", "stipend", "benefits",
-        "outcome", "langs", "provider", "competing", "past",
-    ]
+    raw_fields = payload.get("fields") or []
+    if raw_fields and isinstance(raw_fields[0], dict):
+        fields = [f["code"] for f in raw_fields if isinstance(f, dict) and "code" in f]
+    elif raw_fields and isinstance(raw_fields[0], str):
+        fields = [str(f) for f in raw_fields]
+    else:
+        fields = [
+            "title", "link", "domain", "level", "eligibility", "duration", "mode", "locations",
+            "batchName", "batchStart", "batchEnd", "screenClose", "fee", "stipend", "benefits",
+            "outcome", "langs", "provider", "competing", "past",
+        ]
     llm = complete_json(
         "Extract course brief fields from this brochure. Only use text present in the document. "
         "For each field also give the 1-based page number it came from. Lists (locations, langs) must use "
@@ -144,18 +186,24 @@ def run(payload: dict) -> dict:
         {"pages": [p[:6000] for p in pages[:12]], "fields": fields, "allowed": lookups},
         '{"values": {"<field>": "<value or list>"}, "pages": {"<field>": <page int>}}',
     )
-    used_llm = bool(llm and isinstance(llm.get("values"), dict))
-    out = llm if used_llm else _fallback(pages, lookups)
+    used_llm = bool(llm and isinstance(llm, dict) and isinstance(llm.get("values"), dict))
+    out = (llm if used_llm and llm is not None else _fallback(pages, lookups)) or {}
 
-    values = {k: v for k, v in out.get("values", {}).items() if k in fields and v not in (None, "", [])}
-    sources = {k: f"{filename} · p.{out.get('pages', {}).get(k, 1)}" for k in values}
+    out_vals = out.get("values")
+    vals_map = out_vals if isinstance(out_vals, dict) else {}
+    values = {k: v for k, v in vals_map.items() if k in fields and v not in (None, "", [])}
+
+    out_pages = out.get("pages")
+    pages_map = out_pages if isinstance(out_pages, dict) else {}
+    sources = {k: f"{filename} · p.{pages_map.get(k, 1)}" for k in values}
 
     claims, flags = [], []
     full = "\n".join(pages)
     for m in governance.CLAIM.finditer(full):
-        line = full[max(0, full.rfind("\n", 0, m.start()) + 1): full.find("\n", m.end()) if full.find("\n", m.end()) > 0 else len(full)]
-        line = line.strip()[:200]
-        if line and all(c["text"] != line for c in claims):
+        end_idx = full.find("\n", m.end())
+        line_end = end_idx if end_idx != -1 else len(full)
+        line = full[max(0, full.rfind("\n", 0, m.start()) + 1): line_end].strip()[:200]
+        if line and all(c.get("text") != line for c in claims):
             page = next((i + 1 for i, p in enumerate(pages) if line[:30] in p), 1)
             claims.append({"text": line, "src": f"{filename} · p.{page}", "status": "Awaiting evidence", "rule": "RR-H03"})
     if values.get("outcome") and governance.has_claim(str(values["outcome"])):
@@ -165,7 +213,7 @@ def run(payload: dict) -> dict:
         flags.append({"type": "Eligibility", "status": "Refused", "rule": "RR-H02",
                       "note": "Eligibility mentions a protected attribute. Escalated to the fairness reviewer; field stays unconfirmed until changed."})
 
-    status = "Blocked" if any(f["status"] == "Refused" for f in flags) else "Success"
+    status = "Blocked" if any(f.get("status") == "Refused" for f in flags) else "Success"
     exec_mode = "llm" if used_llm else "deterministic_fallback"
 
     return make_envelope(
@@ -174,7 +222,8 @@ def run(payload: dict) -> dict:
         status=status,
         execution_mode=exec_mode,
         data_sources=data_sources,
-        evidence=[{"claim": c["text"], "src": c["src"]} for c in claims],
+        evidence=[{"claim": c.get("text", ""), "src": c.get("src", "")} for c in claims],
+        calculation_details={"extracted_fields_count": len(values), "claims_count": len(claims), "flags_count": len(flags)},
         validation={"flags": flags, "claims_awaiting_evidence": len(claims)},
         values=values,
         sources=sources,

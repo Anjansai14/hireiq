@@ -63,6 +63,8 @@ export default function App() {
                   ex.release = c.batch_start || ex.release;
                   ex.provider = c.provider;
                   ex.readiness = c.readiness;
+                  if (c.target != null) ex.target = c.target;
+                  if (c.ceiling != null) ex.ceiling = c.ceiling;
                   if (c.form) ex.form = c.form;
                   if (c.form_src) ex.form_src = c.form_src;
                   if (c.flags) ex.flags = c.flags;
@@ -74,6 +76,8 @@ export default function App() {
                     language: 'Telugu',
                     release: c.batch_start || '2026-11-16',
                     provider: c.provider || 'Nexa Skills Foundation',
+                    target: c.target,
+                    ceiling: c.ceiling,
                     form: c.form || {},
                     form_src: c.form_src || {},
                     brief: {

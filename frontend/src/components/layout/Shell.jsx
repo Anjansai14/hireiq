@@ -97,7 +97,7 @@ export default function Shell({ children }) {
     });
   });
 
-  state.campaigns.filter(c => c.filmId === film.id && c.status === 'Live').forEach(c => {
+  state.campaigns.filter(c => (c.filmId === film.id || c.course_id === film.id) && c.status === 'Live').forEach(c => {
     const cp = (c.checkpoints || []).filter(k => k.verdict).slice(-1)[0];
     if (cp && cp.verdict === 'Behind') {
       alerts.push({

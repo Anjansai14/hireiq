@@ -9,6 +9,8 @@ leans on an unevidenced claim is returned as `held` and cannot be selected.
 from __future__ import annotations
 
 import logging
+from typing import Any
+
 from .. import governance
 from ..config import settings
 from ..llm import complete_groq_json
@@ -18,7 +20,7 @@ log = logging.getLogger("hireiq.a05")
 AGENT = {"id": "A5", "name": "Narrative Generator", "kind": "llm+scoring"}
 
 
-def _valid_narrative_why(why: str) -> bool:
+def _valid_narrative_why(why: Any) -> bool:
     """Check whether campaign copy meets the required minimum word count (>= 100 words)."""
     if not isinstance(why, str):
         return False
@@ -82,8 +84,9 @@ def run(payload: dict) -> dict:
         "WRITING REQUIREMENTS:\n"
         "1. Write a descriptive, compelling headline in 'title'.\n"
         "2. Identify the specific target audience in 'who'.\n"
-        "3. Write comprehensive campaign copy in 'why', using at least 2 detailed paragraphs. "
-        "The word count in 'why' must be at least 100 words (do not write short copy under 100 words).\n"
+        "3. Write comprehensive campaign copy in 'why', using at least 2 detailed paragraphs with 110 to 150 words. "
+        "Every single narrative's 'why' MUST exceed 100 words (do not write short copy under 100 words). "
+        "Elaborate on learner motivations, career progression, and course features to ensure each 'why' is 110-150 words.\n"
         "4. Write a short, memorable campaign hook in 'hook'.\n"
         "5. Describe the communication style in 'tone'.\n"
         "6. Make each narrative meaningfully different in angle, "
@@ -171,6 +174,12 @@ def run(payload: dict) -> dict:
 
     if not pool:
         pool, used = _templates(c, course), False
+    elif len(pool) < 4:
+        for tpl in _templates(c, course):
+            if len(pool) >= 4:
+                break
+            if not any(p[1] == tpl[1] for p in pool):
+                pool.append(tpl)
 
     out = []
     unsupported_claims = [

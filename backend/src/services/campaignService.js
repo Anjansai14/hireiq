@@ -11,16 +11,20 @@ const stats = require('./stats');
 const ai = require('./ai');
 const { uid, inr, daysBetween, HttpError } = require('../utils/helpers');
 
-async function listCampaigns(courseId) {
-  const rows = await db.query('SELECT id FROM campaigns WHERE course_id = ? ORDER BY FIELD(status,"Live","Draft","Closed"), created_at DESC', [courseId]);
+async function listCampaigns(courseId = null) {
+  const where = courseId ? 'WHERE course_id = ?' : '';
+  const params = courseId ? [courseId] : [];
+  const rows = await db.query(`SELECT id FROM campaigns ${where} ORDER BY FIELD(status,"Live","Draft","Closed"), created_at DESC`, params);
   const out = [];
   for (const { id } of rows) {
     const c = await repo.loadCampaign(id);
     const st = await repo.withStats(c);
     out.push({
-      id: c.id, name: c.name, status: c.status, objective: c.objective, asset: c.asset, kpi: c.kpi, start_date: c.start_date, end_date: c.end_date,
+      id: c.id, course_id: c.course_id, filmId: c.course_id, name: c.name, status: c.status, objective: c.objective, asset: c.asset, cohort: c.cohort,
+      markets: c.markets || [], languages: c.languages || [], kpi: c.kpi, start_date: c.start_date, end_date: c.end_date,
       budget: c.budget, version: c.version, sources: c.ccs.length, enrols: st.enrols, clicks: st.clicks, spent: st.spent, committed: st.committed,
       target: c.target, verdict: c.diagnosis?.verdict || null, pred: c.pred_frozen, wizard_step: c.wizard?.step ?? null, created_at: c.created_at,
+      unattributed: c.unattributed || 0, summary: c.summary || null, checkpoints: c.checkpoints || [], alerts: c.alerts || [], ccs: c.ccs || []
     });
   }
   return out;

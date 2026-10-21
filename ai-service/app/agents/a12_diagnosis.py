@@ -10,7 +10,7 @@ version; the frozen prediction never changes.
 """
 from __future__ import annotations
 
-from __future__ import annotations
+from datetime import date
 
 from ..llm import complete_json
 from ..util import add_days, days_between, ds, inr, make_envelope, n
@@ -18,7 +18,7 @@ from ..util import add_days, days_between, ds, inr, make_envelope, n
 AGENT = {"id": "A12", "name": "Diagnosis & Next Moves", "kind": "rules+llm-narration"}
 
 
-def band_at(pred_enrols: list, start: str, end: str, day: str) -> list[int]:
+def band_at(pred_enrols: list, start: str | None, end: str | None, day: str | None) -> list[int]:
     total = max(1, days_between(start, end))
     t = max(0, min(total, days_between(start, day)))
     f = (t / total) ** 0.8
@@ -31,7 +31,7 @@ def verdict_for(actual: float, band: list[int]) -> str:
 
 def run(payload: dict) -> dict:
     c = payload.get("campaign", {})
-    today = payload.get("today")
+    today: str = payload.get("today") or date.today().isoformat()
     pred = c.get("pred") or {}
     pe = pred.get("enrols") or [0, 0]
     stats = payload.get("stats", {})
@@ -47,17 +47,17 @@ def run(payload: dict) -> dict:
         {"label": "Close", "days": None},
     ]
     series = payload.get("series", [])  # [{day, v}] cumulative enrolments by day
-    end_or_today = c.get("end") if c.get("status") == "Closed" else today
+    end_or_today: str = c.get("end") if (c.get("status") == "Closed" and c.get("end")) else today
 
-    def actual_on(day):
-        pts = [p for p in series if p["day"] <= day]
+    def actual_on(day: str) -> float:
+        pts = [p for p in series if p.get("day") and p["day"] <= day]
         return pts[-1]["v"] if pts else 0
 
     checkpoints = []
     for cp in cps_cfg:
         d = c.get("end") if cp.get("days") is None else add_days(c.get("start"), cp["days"])
         b = band_at(pe, c.get("start"), c.get("end"), d)
-        if d <= end_or_today:
+        if d is not None and d <= end_or_today:
             a = round(actual_on(d))
             checkpoints.append({
                 "label": cp["label"],

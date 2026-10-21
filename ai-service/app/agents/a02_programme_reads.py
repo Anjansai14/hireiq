@@ -12,8 +12,6 @@ marked Stale by the backend when brief inputs they depend on change.
 """
 from __future__ import annotations
 
-from __future__ import annotations
-
 from ..config import settings
 from ..llm import complete_json
 from ..util import make_envelope
@@ -30,7 +28,9 @@ ALLOWED_STAMPS = {"Observed", "Inferred", "Predicted"}
 
 
 def _fallback(course: dict, evidence: dict) -> dict:
-    f = course.get("form", {})
+    course = course or {}
+    evidence = evidence or {}
+    f = course.get("form") or {}
     dom = f.get("domain") or "the skill domain"
     locs = ", ".join(f.get("locations") or []) or "target districts"
     langs = ", ".join(f.get("langs") or ["their primary language"])
@@ -103,8 +103,8 @@ def _fallback(course: dict, evidence: dict) -> dict:
 
 
 def run(payload: dict) -> dict:
-    course = payload.get("course", {})
-    evidence = payload.get("evidence", {})
+    course = payload.get("course") or {}
+    evidence = payload.get("evidence") or {}
     today = payload.get("today")
     missing_data = []
 
@@ -118,17 +118,24 @@ def run(payload: dict) -> dict:
         {"course": course, "evidence": evidence},
         '{"public":[{"t":"","stamp":"","src":""}],"audience":[...],"risk":[...]}',
     )
-    used = bool(llm and all(k in llm for k in TITLES))
-    data = llm if used else _fallback(course, evidence)
+    if isinstance(llm, dict) and all(k in llm for k in TITLES):
+        data = llm
+        used = True
+    else:
+        data = _fallback(course, evidence)
+        used = False
 
     # Sanitize stamps and ensure citations
     for k in TITLES:
-        items = data.get(k, [])
+        raw_items = data.get(k)
+        items = raw_items if isinstance(raw_items, list) else []
+        data[k] = items
         for it in items:
-            if it.get("stamp") not in ALLOWED_STAMPS:
-                it["stamp"] = "Inferred"
-            if not it.get("src"):
-                it["src"] = "Programme brief & historical priors"
+            if isinstance(it, dict):
+                if it.get("stamp") not in ALLOWED_STAMPS:
+                    it["stamp"] = "Inferred"
+                if not it.get("src"):
+                    it["src"] = "Programme brief & historical priors"
 
     status_str = "Ready" if not missing_data else "Partial"
     reads = [
@@ -138,7 +145,7 @@ def run(payload: dict) -> dict:
             "status": "Ready",  # preserve 'Ready' for UI status indicators
             "read_status": status_str,
             "date": today,
-            "items": data.get(k, [])[:5],
+            "items": (data.get(k) or [])[:5],
         }
         for k, t in TITLES.items()
     ]

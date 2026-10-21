@@ -19,7 +19,7 @@ router.get('/', ah(async (req, res) => {
   const out = [];
   for (const { id } of rows) {
     const c = await repo.loadCourse(id);
-    out.push({ id: c.id, title: c.title, batch: c.batch, batch_start: c.batch_start, provider: c.provider, readiness: c.readiness, form: c.form, form_src: c.form_src, flags: c.flags });
+    out.push({ id: c.id, title: c.title, batch: c.batch, batch_start: c.batch_start, provider: c.provider, readiness: c.readiness, form: c.form, form_src: c.form_src, flags: c.flags, target: c.target, ceiling: c.ceiling });
   }
   res.json(out);
 }));
@@ -93,26 +93,62 @@ router.get('/:id/dashboard', ah(async (req, res) => {
   const course = await repo.loadCourse(req.params.id);
   const list = await campaigns.listCampaigns(req.params.id);
   const live = list.filter((c) => c.status !== 'Draft');
-  const totals = { clicks: 0, regs: 0, enrols: 0, spent: 0, committed: 0 };
+  const totals = { clicks: 0, regs: 0, enrols: 0, spent: 0, committed: 0, reach: 0, unattributed: 0, posts: 0 };
+  const campaignDetails = [];
   for (const c of live) {
     const full = await campaigns.getCampaign(c.id);
-    totals.clicks += full.stats.clicks; totals.regs += full.stats.regs; totals.enrols += full.stats.enrols; totals.spent += full.stats.spent; totals.committed += full.stats.committed;
+    totals.clicks += full.stats.clicks || 0;
+    totals.regs += full.stats.regs || 0;
+    totals.enrols += full.stats.enrols || 0;
+    totals.spent += full.stats.spent || 0;
+    totals.committed += full.stats.committed || 0;
+    totals.reach += full.stats.reach || 0;
+    totals.unattributed += full.unattributed || 0;
+    totals.posts += full.stats.posts || 0;
     c.summary = full.summary;
+    c.stats = full.stats;
+    campaignDetails.push(full);
   }
   const target = course.target || Number(course.form?.target) || 0;
+  const cpe = totals.enrols ? Math.round(totals.spent / totals.enrols) : null;
   res.json({
-    course: { id: course.id, title: course.title, batch: course.batch, batch_start: course.batch_start, provider: course.provider, readiness: course.readiness, reads: course.reads, activity: course.activity, watch: course.watch },
+    course: {
+      id: course.id,
+      title: course.title,
+      batch: course.batch,
+      batch_start: course.batch_start,
+      provider: course.provider,
+      readiness: course.readiness,
+      reads: course.reads,
+      activity: course.activity,
+      watch: course.watch,
+      flags: course.flags,
+      form: course.form,
+      target: course.target,
+      ceiling: course.ceiling,
+    },
+    totals,
     kpis: [
       { l: 'Screening enrolments', v: totals.enrols, sub: target ? `of ${target} target` : 'no target set', stamp: 'Observed' },
       { l: 'Registrations', v: totals.regs, sub: `${totals.clicks.toLocaleString('en-IN')} tracked clicks`, stamp: 'Observed' },
-      { l: 'Cost per enrolment', v: totals.enrols ? Math.round(totals.spent / totals.enrols) : null, sub: course.ceiling ? `ceiling ₹${course.ceiling.toLocaleString('en-IN')}` : '', stamp: 'Observed' },
+      { l: 'Cost per enrolment', v: cpe, sub: course.ceiling ? `ceiling ₹${course.ceiling.toLocaleString('en-IN')}` : '', stamp: 'Observed' },
       { l: 'Committed spend', v: totals.committed, sub: course.form?.budget ? `of ₹${course.form.budget}` : '', stamp: 'Observed' },
     ],
     funnel: [
-      { l: 'Tracked clicks', v: totals.clicks },
+      { l: 'Reach', v: totals.reach, rate: 'Inferred where no API' },
+      { l: 'Clicks', v: totals.clicks, rate: totals.reach ? (totals.clicks / totals.reach) * 100 : 0 },
       { l: 'Registrations', v: totals.regs, rate: totals.clicks ? (totals.regs / totals.clicks) * 100 : 0 },
       { l: 'Screening enrolments', v: totals.enrols, rate: totals.regs ? (totals.enrols / totals.regs) * 100 : 0 },
     ],
+    districts: campaignDetails.map((full) => ({
+      cohort: full.cohort || full.name,
+      districts: Array.isArray(full.markets) ? full.markets.join(', ') : (full.markets || ''),
+      clicks: full.stats.clicks,
+      regs: full.stats.regs,
+      enrols: full.stats.enrols,
+      rate: full.stats.regs ? ((full.stats.enrols / full.stats.regs) * 100).toFixed(1) + '%' : '—',
+      cpe: full.stats.enrols ? Math.round(full.stats.spent / full.stats.enrols) : null,
+    })),
     campaigns: list,
     talk: live.find((c) => c.summary)?.summary || null,
   });

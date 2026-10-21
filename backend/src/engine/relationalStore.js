@@ -975,7 +975,7 @@ class RelationalStore {
     }
 
     // 8. comments join campaigns
-    if (/comments\s+cm\s+JOIN\s+campaigns\s+k\s+ON\s+k\.id\s*=\s*cm\.campaign_id\s+WHERE\s+k\.course_id\s*=\s*\?/i.test(sql)) {
+    if (/comments\s+cm\s+JOIN\s+campaigns\s+[ck]\s+ON\s+[ck]\.id\s*=\s*cm\.campaign_id\s+WHERE\s+[ck]\.course_id\s*=\s*\?/i.test(sql)) {
       const courseId = params[0];
       const camps = new Set(this.getTable('campaigns').filter(c => c.course_id === courseId).map(c => c.id));
       const cmRows = this.getTable('comments').filter(cm => camps.has(cm.campaign_id));

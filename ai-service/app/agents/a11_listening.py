@@ -8,8 +8,6 @@ placement-doubt share crosses the threshold from settings. Writes the
 """
 from __future__ import annotations
 
-from __future__ import annotations
-
 import re
 
 from ..llm import complete_json

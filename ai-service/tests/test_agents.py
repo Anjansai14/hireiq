@@ -61,6 +61,26 @@ def test_a1_extracts_and_holds_claims():
     assert any(f["rule"] == "RR-H03" for f in r["flags"])
 
 
+def test_a1_resilience_and_dict_lookups():
+    text = "Applied AI & ML Programme\nDuration 12 weeks, Hybrid mode in Warangal. Taught in Telugu."
+    # Pass raw dicts in lookups as lk(k) returns, plus string fields
+    r = run("a1", {
+        "text": text,
+        "fields": ["title", "duration", "mode", "locations", "langs"],
+        "lookups": {
+            "course_mode": [{"code": "Hybrid", "name": "Hybrid"}],
+            "district": [{"code": "Warangal", "name": "Warangal"}],
+            "language": [{"code": "Telugu", "name": "Telugu"}],
+        }
+    })
+    assert r["status"] == "Success"
+    assert r["values"]["duration"] == "12 weeks"
+    assert r["values"]["mode"] == "Hybrid"
+    assert r["values"]["locations"] == ["Warangal"]
+    assert r["values"]["langs"] == ["Telugu"]
+    assert "extracted_fields_count" in r["calculation_details"]
+
+
 def test_a4_sizes_cohort_and_screens():
     r = run("a4", {"campaign": dict(CAMP, markets=["warangal", "Hanamkonda"]), "course": COURSE_DTO,
                    "lookups": {"district": lk("district"), "qualification": lk("qualification"), "age_band": lk("age_band"),
@@ -349,4 +369,39 @@ def test_a12_lag_curve_and_cause_shares_sum_100():
     assert len(r["causes"]) >= 2
     total_shares = sum(c["share"] for c in r["causes"])
     assert total_shares == 100, f"Expected 100 but got {total_shares}"
+
+
+def test_a9_source_pred_resilience():
+    # Test handling of mv key, lowercase markets and monotonicity
+    raw_source = {
+        "id": "c_raw",
+        "name": "Raw Creator",
+        "type": "Digital creator",
+        "platform": "YouTube",
+        "mv": 12000,
+        "markets": {"warangal": 60, "karimnagar": 40},
+        "history": [{"status": "Delivered", "enrols": 10}],
+    }
+    shortlist = [{"source_id": "c_raw", "posts": 2, "fee": 10000}]
+    r = run("a9", {
+        "campaign": {"markets": ["Warangal", "Karimnagar"]},
+        "shortlist": shortlist,
+        "sources": [raw_source],
+        "funnel": CFG["settings"]["funnel_defaults"]["value"],
+    })
+    pred = r["prediction"]
+    assert pred["enrols"][0] <= pred["enrols"][1]
+    assert pred["reach"][0] > 0
+    assert pred["cpi"][0] <= pred["cpi"][1]
+
+
+def test_a12_missing_today_and_dates():
+    # Verify that a12 runs safely when today is omitted or None
+    r1 = run("a12", {"campaign": {"start": "2026-09-22", "end": "2026-10-26", "pred": {"enrols": [50, 100]}}, "stats": {"enrols": 30}})
+    assert r1["status"] == "OK"
+    assert r1["agent_id"] == "A12"
+
+    r2 = run("a12", {"campaign": {"start": "2026-09-22", "pred": {"enrols": [50, 100]}}, "today": None, "stats": {"enrols": 30}})
+    assert r2["status"] == "OK"
+    assert r2["agent_id"] == "A12"
 
